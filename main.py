@@ -25,12 +25,7 @@ def debug_agent():
         overflow_handler=Overflow.openai_lmdeploy,
         context_window_size=3
     )
-
-    agent([Content(type="text", text="Who won the world series in 2020?")])
-    agent([Content(type="text", text="Where was it played?")])
-
-    from pprint import pprint
-    pprint(agent.dump_history())
+    print(agent())
 
 if __name__ == "__main__":
     debug_agent()

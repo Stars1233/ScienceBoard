@@ -131,16 +131,19 @@ class Agent:
         assert isinstance(context_window_size, int)
         self.context_window_size = context_window_size
 
+        self._load_system_message()
+        self.context_window: List[Message] = []
+
+    def _load_system_message(self, text="You are a helpful assistant."):
         self.system_message: Message = Message(
             role="system",
             content=[
                 Content(
                     type="text",
-                    text="You are a helpful assistant."
+                    text=text
                 )
             ]
         )
-        self.context_window: List[Message] = []
 
     def __dump(self, context_count: int) -> Dict:
         return [asdict(message) for message in [
