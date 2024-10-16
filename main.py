@@ -4,7 +4,7 @@ sys.dont_write_bytecode = True
 from sci import Model, Agent, Content, Access, Overflow
 from sci.ChimeraX import ChimeraX, ChimeraXTask
 
-if __name__ == "__main__":
+def debug_chimerax():
     with ChimeraX(sort="daily", port=8080, gui=True, version="0.4") as chimerax:
         single_task = ChimeraXTask(
             config_path="sci/ChimeraX/tasks/example.json",
@@ -12,6 +12,7 @@ if __name__ == "__main__":
         )
         print(single_task.test())
 
+def debug_agent():
     model = Model(
         style="openai",
         base_url="http://server.ichinoe.xyz:500/v1/chat/completions",
@@ -30,3 +31,6 @@ if __name__ == "__main__":
 
     from pprint import pprint
     pprint(agent.dump_history())
+
+if __name__ == "__main__":
+    debug_chimerax()
