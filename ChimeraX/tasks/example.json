@@ -10,8 +10,14 @@
     ],
     "evaluate": [
         {
+            "type": "states",
             "key": "_state_containers.models._models.(1,)._redraw_needed.cached_drawing_bounds.xyz_min",
             "value": "^\\[ -0\\.30499998  -5\\.4719996  -11\\.4869995 \\]$"
+        },
+        {
+            "type": "info",
+            "key": "",
+            "value": []
         }
     ]
 }

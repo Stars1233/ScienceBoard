@@ -88,7 +88,7 @@ class ChimeraX:
         zip_file_path = os.path.join(self.temp_dir, f"{version}.zip")
         bundle_dir_path = os.path.join(self.temp_dir, f"chimerax-states-{version}")
         urllib.request.urlretrieve(ChimeraX.TOOL_URL(version), zip_file_path)
-        
+
         with zipfile.ZipFile(zip_file_path, "r") as zip_ref:
             zip_ref.extractall(self.temp_dir)
 

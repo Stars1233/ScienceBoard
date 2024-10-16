@@ -27,9 +27,24 @@ class ChimeraXTask(Task):
             assert isinstance(init_item["func"], str)
 
         for eval_item in self.evaluate:
+            assert "type" in eval_item
+            assert eval_item["type"] in ("states", "info")
+
+            assert "key" in eval_item
+            assert "value" in eval_item
+
             for key_name in eval_item:
-                assert key_name in ("find", "key", "value")
-                assert isinstance(eval_item[key_name], str)
+                assert key_name in ("type", "find", "key", "value")
+
+                if key_name == "find":
+                    assert eval_item["type"] == "states"
+
+                if key_name == "value" and eval_item["type"] == "info":
+                    assert isinstance(eval_item[key_name], list)
+                    for sub_item in eval_item[key_name]:
+                        assert isinstance(sub_item)
+                else:
+                    assert isinstance(eval_item[key_name], str)
 
     def __recover(self) -> bool:
         return self.manager._run("close") and self.manager.clear_history()
@@ -85,9 +100,14 @@ class ChimeraXTask(Task):
             raw_value = json.dumps(raw_value)
         return re.search(value, raw_value) is not None
 
+    @Task._error_handler
+    def __eval_info(self, current_states, eval_item):
+        return True
+
     def exec_eval(self) -> bool:
         current_states = self.manager.states_dump()
         for eval_item in self.evaluate:
-            if not self.__eval_states(current_states, eval_item):
+            eval_func = getattr(self, f"_ChimeraXTask__eval_{eval_item['type']}")
+            if not eval_func(current_states, eval_item):
                 return False
         return True
