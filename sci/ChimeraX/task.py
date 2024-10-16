@@ -5,7 +5,7 @@ import json
 from typing import List, Tuple, Dict, Callable, Any
 
 sys.dont_write_bytecode = True
-from task import Task
+from ..task import Task
 from .chimerax import ChimeraX
 
 class ChimeraXTask(Task):
