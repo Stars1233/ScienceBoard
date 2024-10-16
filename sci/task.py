@@ -52,7 +52,7 @@ class Task:
         input(self.instruction)
         return self.exec_eval()
 
-    def test(self) -> bool:
+    def __call__(self) -> bool:
         assert hasattr(self, "manager")
         manager = getattr(self, "manager")
         if not manager.entered:

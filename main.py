@@ -1,8 +1,8 @@
 import sys
 
 sys.dont_write_bytecode = True
-from sci import Model, Agent, Content, Access, Overflow
-from sci.ChimeraX import ChimeraX, ChimeraXTask
+from sci import Model, Content, Access, Overflow
+from sci.ChimeraX import ChimeraX, ChimeraXTask, ChimeraXAgent
 
 def debug_chimerax():
     with ChimeraX(sort="daily", port=8080, gui=True, version="0.4") as chimerax:
@@ -10,7 +10,7 @@ def debug_chimerax():
             config_path="sci/ChimeraX/tasks/example.json",
             manager=chimerax
         )
-        print(single_task.test())
+        print(single_task())
 
 def debug_agent():
     model = Model(
@@ -19,7 +19,7 @@ def debug_agent():
         model_name="/mnt/workspace/ichinoe/model/InternVL2-8B/snapshots/357996b2cba121dce8748498968e9fddcc62e386",
     )
 
-    agent = Agent(
+    agent = ChimeraXAgent(
         model=model,
         access_handler=Access.openai,
         overflow_handler=Overflow.openai_lmdeploy,
@@ -33,4 +33,4 @@ def debug_agent():
     pprint(agent.dump_history())
 
 if __name__ == "__main__":
-    debug_chimerax()
+    debug_agent()
