@@ -102,11 +102,11 @@ class ChimeraXTask(Task):
             raw_value: str = json.dumps(raw_value)
         return re.search(value, raw_value) is not None
 
-    # @Task._error_handler
+    @Task._error_handler
     def __eval_info(self, eval_item: Dict[str, Any], current_states: Dict[str, Any]):
-        key: str = eval_item["key"]
-        value: List[str] = eval_item["value"]
-        info_list: List[str] = self.manager.run(f"info {key}")[0].strip().split("\n")
+        key = eval_item["key"]
+        value = eval_item["value"]
+        info_list = self.manager.run(f"info {key}")[0].strip().split("\n")
         return set(info_list) == set(value)
 
     def exec_eval(self) -> bool:
