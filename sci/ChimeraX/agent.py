@@ -1,5 +1,4 @@
 import sys
-from typing import List
 
 sys.dont_write_bytecode = True
 from ..agent import Agent, Content

@@ -11,7 +11,7 @@ def debug_chimerax():
         print(single_task())
 
 def debug_agent():
-    from sci import Model, Content, Access, Overflow
+    from sci import Model, Access, Overflow
     from sci.ChimeraX import ChimeraXAgent
     model = Model(
         style="openai",
