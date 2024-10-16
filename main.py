@@ -1,10 +1,8 @@
 import sys
-
 sys.dont_write_bytecode = True
-from sci import Model, Content, Access, Overflow
-from sci.ChimeraX import ChimeraX, ChimeraXTask, ChimeraXAgent
 
 def debug_chimerax():
+    from sci.ChimeraX import ChimeraX, ChimeraXTask
     with ChimeraX(sort="daily", port=8080, gui=True, version="0.4") as chimerax:
         single_task = ChimeraXTask(
             config_path="sci/ChimeraX/tasks/example.json",
@@ -13,6 +11,8 @@ def debug_chimerax():
         print(single_task())
 
 def debug_agent():
+    from sci import Model, Content, Access, Overflow
+    from sci.ChimeraX import ChimeraXAgent
     model = Model(
         style="openai",
         base_url="http://server.ichinoe.xyz:500/v1/chat/completions",
