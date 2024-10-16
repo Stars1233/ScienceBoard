@@ -82,8 +82,6 @@ class Model:
         ...
 
     def __call__(self, messages: Dict) -> requests.Response:
-        from pprint import pprint
-        pprint(messages)
         call_func = getattr(self, f"_Model__style_{self.style}")
         return call_func(messages)
 
@@ -155,15 +153,26 @@ class Agent:
     def dump_history(self) -> Dict:
         return self.__dump(len(self.context_window))
 
-    def __call__(self, contents: List[Content]) -> requests.Response:
+    def __call__(
+        self,
+        contents: List[Content],
+        shorten: bool = False
+    ) -> Message:
         assert isinstance(contents, list)
         for content in contents:
             assert isinstance(content, Content)
 
         self.context_window.append(Message(role="user", content=contents))
         response = self.model(messages=self.dump_payload())
-        return response
 
+        is_overflow = self.overflow_handler(response)
+        if is_overflow and not shorten:
+            return self(contents, shorten)
+        assert not is_overflow, "Failed to call LLM"
+
+        response_message = self.access_handler(response)
+        self.context_window.append(response_message)
+        return response_message
 
 if __name__ == "__main__":
     model = Model(
@@ -174,15 +183,20 @@ if __name__ == "__main__":
 
     agent = Agent(
         model=model,
+        access_handler=Access.openai,
         overflow_handler=Overflow.openai_lmdeploy,
         context_window_size=3
     )
 
-    response = agent([Content(
+    agent([Content(
         type="text",
         text="Who won the world series in 2020?"
     )])
 
-    import json
-    print(json.dumps(response.json(), indent=2))
-    print(Access.openai(response))
+    agent([Content(
+        type="text",
+        text="Where was it played?"
+    )])
+
+    from pprint import pprint
+    pprint(agent.dump_history())
