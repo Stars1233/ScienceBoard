@@ -1,6 +1,8 @@
 import os
 import json
 
+from typing import Callable
+
 class Task:
     CONFIG_RETRY = 5
 
@@ -34,7 +36,7 @@ class Task:
     def exec_init(self) -> bool:
         raise NotImplementedError
 
-    def _error_handler(method):
+    def _error_handler(method: Callable):
         def wrapper(self, *args):
             try:
                 return method(self, *args)
