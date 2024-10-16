@@ -3,7 +3,8 @@ import requests
 from dataclasses import dataclass, asdict
 from typing import Any, Optional, List, Dict, Callable, Literal
 
-# https://stackoverflow.com/a/78289335
+# modify asdict() for class Content
+# ref: https://stackoverflow.com/a/78289335
 import dataclasses
 _asdict_inner_actual = dataclasses._asdict_inner
 def _asdict_inner(obj, dict_factory):
@@ -29,7 +30,7 @@ class Content:
             key: getattr(self, key)
             for key in self.__dataclass_fields__
             if getattr(self, key) is not None
-    }
+        }
 
 
 @dataclass
