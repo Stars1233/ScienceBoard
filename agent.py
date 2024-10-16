@@ -1,7 +1,42 @@
 import requests
 
-from dataclasses import dataclass
-from typing import Any, Optional, List, Dict, Callable
+from dataclasses import dataclass, asdict
+from typing import Any, Optional, List, Dict, Callable, Literal
+
+# https://stackoverflow.com/a/78289335
+import dataclasses
+_asdict_inner_actual = dataclasses._asdict_inner
+def _asdict_inner(obj, dict_factory):
+    if dataclasses._is_dataclass_instance(obj):
+        if getattr(obj, "__dict_factory_override__", None):
+            user_dict = obj.__dict_factory_override__()
+            for key, value in user_dict.items():
+                if dataclasses._is_dataclass_instance(value):
+                    user_dict[key] = _asdict_inner(value, dict_factory)
+            return user_dict
+    return _asdict_inner_actual(obj, dict_factory)
+dataclasses._asdict_inner = _asdict_inner
+
+
+@dataclass
+class Content:
+    type: Literal["text", "image_url"]
+    text: Optional[str] = None
+    image_url: Optional[Dict[str, str]] = None
+
+    def __dict_factory_override__(self):
+        return {
+            key: getattr(self, key)
+            for key in self.__dataclass_fields__
+            if getattr(self, key) is not None
+    }
+
+
+@dataclass
+class Message:
+    role: Literal["system", "user", "assistant"]
+    content: List[Content]
+
 
 @dataclass
 class Model:
@@ -47,19 +82,49 @@ class Model:
         ...
 
     def __call__(self, messages: Dict) -> requests.Response:
+        from pprint import pprint
+        pprint(messages)
         call_func = getattr(self, f"_Model__style_{self.style}")
         return call_func(messages)
+
+
+class Access:
+    @staticmethod
+    def openai(response: requests.Response) -> Message:
+        message = response.json()["choices"][0]["message"]
+        return Message(
+            role=message["role"],
+            content=[Content(
+                type="text",
+                text=message["content"]
+            )]
+        )
+
+
+class Overflow:
+    @staticmethod
+    def openai_gpt(response: requests.Response) -> bool:
+        return response.status_code != 200 \
+            and response.json()["error"]["code"] == "context_length_exceeded"
+
+    @staticmethod
+    def openai_lmdeploy(response: requests.Response) -> bool:
+        return Access.openai(response).content == ""
 
 
 class Agent:
     def __init__(
         self,
         model: Model,
+        access_handler: Optional[Callable] = None,
         overflow_handler: Optional[Callable] = None,
         context_window_size: int = 3
     ) -> None:
         assert isinstance(model, Model)
         self.model = model
+
+        assert access_handler is None or hasattr(access_handler, "__call__")
+        self.access_handler = access_handler
 
         assert overflow_handler is None or hasattr(overflow_handler, "__call__")
         self.overflow_handler = overflow_handler
@@ -67,21 +132,37 @@ class Agent:
         assert isinstance(context_window_size, int)
         self.context_window_size = context_window_size
 
-        self.history_messages: List = []
+        self.system_message: Message = Message(
+            role="system",
+            content=[
+                Content(
+                    type="text",
+                    text="You are a helpful assistant."
+                )
+            ]
+        )
+        self.context_window: List[Message] = []
 
-    def __call__(self) -> Dict:
-        ...
+    def __dump(self, context_count: int) -> Dict:
+        return [asdict(message) for message in [
+            self.system_message,
+            *self.context_window[-context_count:]
+        ]]
 
+    def dump_payload(self) -> Dict:
+        return self.__dump(self.context_window_size * 2 + 1)
 
-class Overflow:
-    @staticmethod
-    def gpt(response: requests.Response) -> bool:
-        return response.status_code != 200 \
-            and response.json()["error"]["code"] == "context_length_exceeded"
+    def dump_history(self) -> Dict:
+        return self.__dump(len(self.context_window))
 
-    @staticmethod
-    def lmdeploy(response: requests.Response) -> bool:
-        return response.json()["choices"][0]["message"]["content"] == ""
+    def __call__(self, contents: List[Content]) -> requests.Response:
+        assert isinstance(contents, list)
+        for content in contents:
+            assert isinstance(content, Content)
+
+        self.context_window.append(Message(role="user", content=contents))
+        response = self.model(messages=self.dump_payload())
+        return response
 
 
 if __name__ == "__main__":
@@ -91,25 +172,17 @@ if __name__ == "__main__":
         model_name="/mnt/workspace/ichinoe/model/InternVL2-8B/snapshots/357996b2cba121dce8748498968e9fddcc62e386",
     )
 
-    response = model(messages=[
-        {
-            "role": "system",
-            "content": "You are a helpful assistant."
-        },
-        {
-            "role": "user",
-            "content": "Who won the world series in 2020?"
-        },
-        {
-            "role": "assistant",
-            "content": "The Los Angeles Dodgers won the World Series in 2020."
-        },
-        {
-            "role": "user",
-            "content": "Where was it played?"
-        }
-    ])
+    agent = Agent(
+        model=model,
+        overflow_handler=Overflow.openai_lmdeploy,
+        context_window_size=3
+    )
+
+    response = agent([Content(
+        type="text",
+        text="Who won the world series in 2020?"
+    )])
 
     import json
-    print(response.status_code)
     print(json.dumps(response.json(), indent=2))
+    print(Access.openai(response))
