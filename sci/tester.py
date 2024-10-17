@@ -9,6 +9,7 @@ sys.dont_write_bytecode
 from . import Model, Agent
 from . import Manager
 from . import Task
+from . import Log
 
 # DO NOT REMOVE THESE
 from .ChimeraX.task import ChimeraXTask
@@ -23,7 +24,8 @@ class Tester:
         self,
         tasks_path: str,
         agents: Dict[str, Agent],
-        managers: Dict[str, Manager]
+        managers: Dict[str, Manager],
+        log: Log
     ) -> None:
         tasks_path = os.path.expanduser(tasks_path)
         assert os.path.exists(tasks_path)
@@ -45,6 +47,9 @@ class Tester:
             assert issubclass(type(manager), Manager)
             assert type(manager) != Manager
         self.managers = managers
+
+        assert isinstance(log, Log)
+        self.log = log
 
         self.tasks_info: List[TaskInfo] = []
         self.__traverse_tasks()
