@@ -34,4 +34,4 @@ if __name__ == "__main__":
     )
 
     from pprint import pprint
-    pprint(tester.task_info)
+    pprint(tester.tasks_info)

@@ -71,7 +71,11 @@ class ChimeraXTask(Task):
         return False
 
     @Task._error_handler
-    def __eval_states(self, eval_item: Dict[str, Any], current_states: Dict[str, Any]):
+    def __eval_states(
+        self,
+        eval_item: Dict[str, Any],
+        current_states: Dict[str, Any]
+    ) -> bool:
         find: str = eval_item["find"] if "find" in eval_item else None
         key: str = eval_item["key"]
         value: str = eval_item["value"]
@@ -107,7 +111,11 @@ class ChimeraXTask(Task):
         return re.search(value, raw_value) is not None
 
     @Task._error_handler
-    def __eval_info(self, eval_item: Dict[str, Any], current_states: Dict[str, Any]):
+    def __eval_info(
+        self,
+        eval_item: Dict[str, Any],
+        current_states: Dict[str, Any]
+    ) -> bool:
         key = eval_item["key"]
         value = eval_item["value"]
         info_list = self.manager.run(f"info {key}")[0].strip().split("\n")

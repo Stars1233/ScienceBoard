@@ -51,8 +51,8 @@ class Task:
     def init(self) -> bool:
         raise NotImplementedError
 
-    def _error_handler(method: Callable):
-        def wrapper(self, *args):
+    def _error_handler(method: Callable) -> Callable:
+        def wrapper(self, *args) -> bool:
             try:
                 return method(self, *args)
             except:

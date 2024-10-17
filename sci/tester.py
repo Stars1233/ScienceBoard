@@ -10,6 +10,7 @@ from . import Model, Agent
 from . import Manager
 from . import Task
 
+# DO NOT REMOVE THESE
 from .ChimeraX.task import ChimeraXTask
 
 @dataclass
@@ -45,8 +46,9 @@ class Tester:
             assert type(manager) != Manager
         self.managers = managers
 
-        self.task_info: List[TaskInfo] = []
+        self.tasks_info: List[TaskInfo] = []
         self.__traverse_tasks()
+        self.__traverse_logs()
 
     def __load(self, config_path) -> Task:
         # using nil agent & manager only to load type field
@@ -66,13 +68,13 @@ class Tester:
             manager=self.managers[task_type]
         )
 
-    def __traverse_tasks(self, current_infix: str = ""):
+    def __traverse_tasks(self, current_infix: str = "") -> None:
         current_dir_path = os.path.join(self.path, current_infix)
         for unknown_name in os.listdir(current_dir_path):
             unknown_path = os.path.join(current_dir_path, unknown_name)
             if os.path.isfile(unknown_path):
                 try:
-                    self.task_info.append(TaskInfo(
+                    self.tasks_info.append(TaskInfo(
                         task=self.__load(unknown_path),
                         infix=current_infix
                     ))
@@ -83,5 +85,6 @@ class Tester:
             else:
                 self.__traverse_tasks(os.path.join(current_infix, unknown_name))
 
-    def __traverse_logs(self):
-        ...
+    def __traverse_logs(self) -> None:
+        for task_info in self.tasks_info:
+            ...

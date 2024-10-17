@@ -1,7 +1,7 @@
 import requests
 
 from dataclasses import dataclass, asdict
-from typing import Optional, List, Dict, Callable, Literal
+from typing import Optional, List, Dict, Callable, Literal, Any, Self
 
 # modify asdict() for class Content
 # ref: https://stackoverflow.com/a/78289335
@@ -26,10 +26,10 @@ class Content:
     image_url: Optional[Dict[str, str]] = None
 
     @staticmethod
-    def text_content(text: str):
+    def text_content(text: str) -> Self:
         return Content(type="text", text=text)
 
-    def __dict_factory_override__(self):
+    def __dict_factory_override__(self) -> dict[str, Any]:
         return {
             key: getattr(self, key)
             for key in self.__dataclass_fields__
@@ -138,7 +138,10 @@ class Agent:
         self._init_system_message()
         self.context_window: List[Message] = []
 
-    def _init_system_message(self, text = "You are a helpful assistant."):
+    def _init_system_message(
+        self,
+        text = "You are a helpful assistant."
+    ) -> None:
         self.system_message: Message = Message(
             role="system",
             content=[Content.text_content(text)]

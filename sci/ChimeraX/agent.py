@@ -5,7 +5,7 @@ from .. import Agent, Content
 from .. import Task
 
 class ChimeraXAgent(Agent):
-    def _init_system_message(self):
+    def _init_system_message(self) -> None:
         super()._init_system_message("You are a helpful assistant...")
 
     def __call__(self, task: Task) -> None:
