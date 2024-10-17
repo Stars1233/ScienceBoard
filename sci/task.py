@@ -10,7 +10,6 @@ from .agent import Agent
 # base class for all tasks, subclass should include
 # - init(): parse & execute init part of config
 # - eval(): parse & execute eval part of config
-# _check_config() cannot be overrided, use __check_config() in subclass instead
 class Task:
     CONFIG_RETRY = 5
 
@@ -18,14 +17,14 @@ class Task:
         assert os.path.exists(config_path)
         self.path = config_path
         self.config = json.load(open(self.path, mode="r", encoding="utf-8"))
-        self._check_config()
+        self.__check_config()
 
         assert isinstance(agent, Agent)
         assert issubclass(type(agent), Agent)
         self.agent = agent
         self.manager = manager
 
-    def _check_config(self) -> None:
+    def __check_config(self) -> None:
         assert "type" in self.config
         self.type = self.config["type"]
         assert isinstance(self.type, str)
