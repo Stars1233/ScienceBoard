@@ -14,7 +14,7 @@ from typing import List, Dict, Optional, Callable
 sys.dont_write_bytecode
 from ..manager import Manager
 
-class ChimeraX(Manager):
+class ChimeraXManagerRaw(Manager):
     SORT_MAP: Dict[str, List[str]] = {
         "stable": [
             "chimerax"
@@ -42,7 +42,7 @@ class ChimeraX(Manager):
     ) -> None:
         super().__init__()
 
-        assert sort in ChimeraX.SORT_MAP
+        assert sort in ChimeraXManagerRaw.SORT_MAP
         self.sort = sort
 
         assert port in range(1024, 65536)
@@ -62,7 +62,7 @@ class ChimeraX(Manager):
 
     def __run(self, command: str) -> Dict:
         return requests.get(
-            ChimeraX.BASE_URL(self.port),
+            ChimeraXManagerRaw.BASE_URL(self.port),
             params={"command": command}
         ).json()
 
@@ -92,7 +92,7 @@ class ChimeraX(Manager):
     def __install_bundle(self, version: str, uninstall=True) -> None:
         zip_file_path = os.path.join(self.temp_dir, f"{version}.zip")
         bundle_dir_path = os.path.join(self.temp_dir, f"chimerax-states-{version}")
-        urllib.request.urlretrieve(ChimeraX.TOOL_URL(version), zip_file_path)
+        urllib.request.urlretrieve(ChimeraXManagerRaw.TOOL_URL(version), zip_file_path)
 
         with zipfile.ZipFile(zip_file_path, "r") as zip_ref:
             zip_ref.extractall(self.temp_dir)
@@ -106,17 +106,17 @@ class ChimeraX(Manager):
         if current_version != desired_version:
             self.__install_bundle(desired_version, current_version is not None)
 
-    def __enter__(self) -> "ChimeraX":
+    def __enter__(self) -> "ChimeraXManagerRaw":
         nogui = [] if self.gui else ["--nogui"]
         self.process = subprocess.Popen([
-            *ChimeraX.SORT_MAP[self.sort],
+            *ChimeraXManagerRaw.SORT_MAP[self.sort],
             *nogui,
             "--cmd",
             f"remotecontrol rest start json true port {self.port}",
         ], stdout=subprocess.PIPE, text=True)
 
         while True:
-            if self.process.stdout.readline().startswith(ChimeraX.REST_FLAG):
+            if self.process.stdout.readline().startswith(ChimeraXManagerRaw.REST_FLAG):
                 self.__prepare_env(self.version)
                 self.entered = True
                 return self

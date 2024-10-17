@@ -1,7 +1,7 @@
 import sys
 
 sys.dont_write_bytecode = True
-from sci.ChimeraX import ChimeraX, ChimeraXTask
+from sci.ChimeraX import ChimeraXManagerRaw, ChimeraXTask
 from sci import Model, Overflow
 from sci.ChimeraX import ChimeraXAgent
 
@@ -17,7 +17,12 @@ if __name__ == "__main__":
         overflow_handler=Overflow.openai_lmdeploy
     )
 
-    with ChimeraX(sort="daily", port=8080, gui=True, version="0.4") as chimerax:
+    with ChimeraXManagerRaw(
+        sort="daily",
+        port=8080,
+        gui=True,
+        version="0.4"
+    ) as chimerax:
         single_task = ChimeraXTask(
             agent=agent,
             config_path="example.json",
