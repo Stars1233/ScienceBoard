@@ -138,7 +138,7 @@ class Agent:
         self._init_system_message()
         self.context_window: List[Message] = []
 
-    def _init_system_message(self, text="You are a helpful assistant."):
+    def _init_system_message(self, text = "You are a helpful assistant."):
         self.system_message: Message = Message(
             role="system",
             content=[Content.text_content(text)]

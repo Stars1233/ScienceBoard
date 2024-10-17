@@ -90,7 +90,7 @@ class ChimeraXManagerRaw(Manager):
         else:
             return None
 
-    def __install_bundle(self, version: str, uninstall=True) -> None:
+    def __install_bundle(self, version: str, uninstall: bool = True) -> None:
         zip_file_path = os.path.join(self.temp_dir, f"{version}.zip")
         bundle_dir_path = os.path.join(self.temp_dir, f"chimerax-states-{version}")
         urllib.request.urlretrieve(ChimeraXManagerRaw.TOOL_URL(version), zip_file_path)
