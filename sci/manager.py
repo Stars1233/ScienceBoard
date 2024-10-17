@@ -1,9 +1,12 @@
+from typing import Self
+
 # abstract base class
-class Application:
+# 
+class Manager:
     def __init__(self) -> None:
         self.entered = False
 
-    def __enter__(self) -> "Application":
+    def __enter__(self) -> Self:
         self.entered = True
         return self
 

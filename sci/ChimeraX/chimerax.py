@@ -12,9 +12,9 @@ import urllib.request
 from typing import List, Dict, Optional, Callable
 
 sys.dont_write_bytecode
-from ..app import Application
+from ..manager import Manager
 
-class ChimeraX(Application):
+class ChimeraX(Manager):
     SORT_MAP: Dict[str, List[str]] = {
         "stable": [
             "chimerax"
