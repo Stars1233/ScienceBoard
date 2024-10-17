@@ -1,16 +1,24 @@
+import sys
 import os
 import json
+from typing import Callable, Any
 
-from typing import Callable
+sys.dont_write_bytecode = True
+from .agent import Agent
 
 class Task:
     CONFIG_RETRY = 5
 
-    def __init__(self, config_path: str) -> None:
+    def __init__(self, config_path: str, agent: Agent, manager: Any) -> None:
         assert os.path.exists(config_path)
         self.path = config_path
         self.config = json.load(open(self.path, mode="r", encoding="utf-8"))
         self._check_config()
+
+        assert isinstance(agent, Agent)
+        assert issubclass(type(agent), Agent)
+        self.agent = agent
+        self.manager = manager
 
     def _check_config(self) -> None:
         assert "type" in self.config
@@ -49,14 +57,12 @@ class Task:
 
     def __test(self) -> bool:
         self.exec_init()
-        input(self.instruction)
+        self.agent(self)
         return self.exec_eval()
 
     def __call__(self) -> bool:
-        assert hasattr(self, "manager")
-        manager = getattr(self, "manager")
-        if not manager.entered:
-            with manager:
+        if not self.manager.entered:
+            with self.manager:
                 return self.__test()
         else:
             return self.__test()

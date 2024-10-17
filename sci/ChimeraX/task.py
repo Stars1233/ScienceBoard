@@ -6,16 +6,22 @@ from typing import List, Tuple, Dict, Callable, Any
 
 sys.dont_write_bytecode = True
 from ..task import Task
+from .agent import ChimeraXAgent
 from .chimerax import ChimeraX
 
 class ChimeraXTask(Task):
     AgentType = ChimeraX
 
-    def __init__(self, config_path: str, manager: ChimeraX) -> None:
-        super().__init__(config_path)
-
+    def __init__(
+        self,
+        config_path: str,
+        agent: ChimeraXAgent,
+        manager: ChimeraX
+    ) -> None:
+        assert isinstance(agent, ChimeraXAgent)
         assert isinstance(manager, ChimeraX)
-        self.manager = manager
+
+        super().__init__(config_path, agent, manager)
         self.__check_config()
 
     def __check_config(self) -> None:

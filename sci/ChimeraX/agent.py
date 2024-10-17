@@ -7,7 +7,7 @@ class ChimeraXAgent(Agent):
     def _load_system_message(self):
         super()._load_system_message("You are a helpful assistant...")
 
-    def __call__(self) -> str:
+    def __call__(self, task: "ChimeraXTask") -> str:
         contents = [Content(
             type="text",
             text="Who won the world series in 2020?"

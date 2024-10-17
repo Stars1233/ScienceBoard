@@ -1,18 +1,11 @@
 import sys
+
 sys.dont_write_bytecode = True
+from sci.ChimeraX import ChimeraX, ChimeraXTask
+from sci import Model, Access, Overflow
+from sci.ChimeraX import ChimeraXAgent
 
-def debug_chimerax():
-    from sci.ChimeraX import ChimeraX, ChimeraXTask
-    with ChimeraX(sort="daily", port=8080, gui=True, version="0.4") as chimerax:
-        single_task = ChimeraXTask(
-            config_path="example.json",
-            manager=chimerax
-        )
-        print(single_task())
-
-def debug_agent():
-    from sci import Model, Access, Overflow
-    from sci.ChimeraX import ChimeraXAgent
+if __name__ == "__main__":
     model = Model(
         style="openai",
         base_url="http://server.ichinoe.xyz:500/v1/chat/completions",
@@ -25,7 +18,11 @@ def debug_agent():
         overflow_handler=Overflow.openai_lmdeploy,
         context_window_size=3
     )
-    print(agent())
 
-if __name__ == "__main__":
-    debug_chimerax()
+    with ChimeraX(sort="daily", port=8080, gui=True, version="0.4") as chimerax:
+        single_task = ChimeraXTask(
+            agent=agent,
+            config_path="example.json",
+            manager=chimerax
+        )
+        print(single_task())
