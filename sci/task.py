@@ -47,7 +47,7 @@ class Task:
     def exec_eval(self) -> bool:
         raise NotImplementedError
 
-    def _test(self) -> bool:
+    def __test(self) -> bool:
         self.exec_init()
         input(self.instruction)
         return self.exec_eval()
@@ -57,6 +57,6 @@ class Task:
         manager = getattr(self, "manager")
         if not manager.entered:
             with manager:
-                return self._test()
+                return self.__test()
         else:
-            return self._test()
+            return self.__test()

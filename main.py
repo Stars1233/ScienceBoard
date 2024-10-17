@@ -5,7 +5,7 @@ def debug_chimerax():
     from sci.ChimeraX import ChimeraX, ChimeraXTask
     with ChimeraX(sort="daily", port=8080, gui=True, version="0.4") as chimerax:
         single_task = ChimeraXTask(
-            config_path="sci/ChimeraX/tasks/example.json",
+            config_path="example.json",
             manager=chimerax
         )
         print(single_task())
@@ -28,4 +28,4 @@ def debug_agent():
     print(agent())
 
 if __name__ == "__main__":
-    debug_agent()
+    debug_chimerax()
