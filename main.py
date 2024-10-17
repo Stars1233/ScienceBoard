@@ -1,10 +1,8 @@
 import sys
 
 sys.dont_write_bytecode = True
-from sci.ChimeraX import ChimeraXManagerRaw, ChimeraXTask
-from sci import Model, Overflow
-from sci.ChimeraX import ChimeraXAgent
-from sci.tester import Tester
+from sci.ChimeraX import ChimeraXManagerRaw, ChimeraXAgent
+from sci import Model, Overflow, Tester
 
 if __name__ == "__main__":
     model = Model(

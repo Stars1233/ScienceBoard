@@ -12,7 +12,7 @@ import urllib.request
 from typing import List, Dict, Optional, Callable
 
 sys.dont_write_bytecode
-from ..manager import Manager
+from .. import Manager
 
 # raw: supposed that ChimeraX is pre-installed on Linux
 class ChimeraXManagerRaw(Manager):

@@ -5,7 +5,7 @@ import json
 from typing import List, Tuple, Dict, Callable, Any
 
 sys.dont_write_bytecode = True
-from ..task import Task
+from .. import Task
 from .agent import ChimeraXAgent
 from .chimerax import ChimeraXManagerRaw
 

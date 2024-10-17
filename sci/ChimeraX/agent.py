@@ -1,8 +1,8 @@
 import sys
 
 sys.dont_write_bytecode = True
-from ..agent import Agent, Content
-from ..task import Task
+from .. import Agent, Content
+from .. import Task
 
 class ChimeraXAgent(Agent):
     def _init_system_message(self):

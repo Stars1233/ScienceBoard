@@ -6,10 +6,10 @@ from dataclasses import dataclass
 from typing import List, Dict
 
 sys.dont_write_bytecode
-from .agent import Model, Agent
-from .manager import Manager
+from . import Model, Agent
+from . import Manager
+from . import Task
 
-from .task import Task
 from .ChimeraX.task import ChimeraXTask
 
 @dataclass
