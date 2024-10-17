@@ -6,4 +6,4 @@ from .base.manager import Manager
 from .base.task import Task
 
 from .log import Log
-from .tester import Tester
+from .tester import TaskInfo, Tester

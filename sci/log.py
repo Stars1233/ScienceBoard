@@ -64,4 +64,3 @@ class Log:
     # use log.info() directly instead of log.logger.info()
     def __getattr__(self, attr) -> Any:
         return getattr(self.logger, attr)
-
