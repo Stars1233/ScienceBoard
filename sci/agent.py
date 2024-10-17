@@ -173,7 +173,7 @@ class Agent:
 
         if is_overflow and not shorten:
             return self(contents, shorten)
-        assert not is_overflow, f"Failed to call {self.model.model_name}"
+        assert not is_overflow, f"Tokens overflow when calling {self.model.model_name}"
 
         response_message = self.access_handler(response)
         self.context_window.append(response_message)

@@ -123,7 +123,7 @@ class ChimeraXManagerRaw(Manager):
                 self.__prepare_env(self.version)
                 self.entered = True
                 return self
-            assert time.time() <= timeout, "Timeout when opening app"
+            assert time.time() <= timeout, "Timeout when opening ChimeraX"
 
     def __exit__(self, exc_type, exc_value, traceback) -> None:
         self.process.kill()
