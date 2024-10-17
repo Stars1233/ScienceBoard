@@ -14,9 +14,7 @@ if __name__ == "__main__":
 
     agent = ChimeraXAgent(
         model=model,
-        access_handler=Access.openai,
-        overflow_handler=Overflow.openai_lmdeploy,
-        context_window_size=3
+        overflow_handler=Overflow.openai_lmdeploy
     )
 
     with ChimeraX(sort="daily", port=8080, gui=True, version="0.4") as chimerax:

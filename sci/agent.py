@@ -115,14 +115,14 @@ class Agent:
     def __init__(
         self,
         model: Model,
-        access_handler: Optional[Callable] = None,
+        access_handler: Callable = Access.openai,
         overflow_handler: Optional[Callable] = None,
         context_window_size: int = 3
     ) -> None:
         assert isinstance(model, Model)
         self.model = model
 
-        assert access_handler is None or hasattr(access_handler, "__call__")
+        assert hasattr(access_handler, "__call__")
         self.access_handler = access_handler
 
         assert overflow_handler is None or hasattr(overflow_handler, "__call__")
@@ -169,10 +169,12 @@ class Agent:
         self.context_window.append(Message(role="user", content=contents))
         response = self.model(messages=self.dump_payload())
 
-        is_overflow = self.overflow_handler(response)
+        is_overflow = False if self.overflow_handler is None \
+            else self.overflow_handler(response)
+
         if is_overflow and not shorten:
             return self(contents, shorten)
-        assert not is_overflow, "Failed to call LLM"
+        assert not is_overflow, f"Failed to call {self.model.model_name}"
 
         response_message = self.access_handler(response)
         self.context_window.append(response_message)
