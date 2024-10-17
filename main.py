@@ -4,6 +4,7 @@ sys.dont_write_bytecode = True
 from sci.ChimeraX import ChimeraXManagerRaw, ChimeraXTask
 from sci import Model, Overflow
 from sci.ChimeraX import ChimeraXAgent
+from sci.tester import Tester
 
 if __name__ == "__main__":
     model = Model(
@@ -12,20 +13,27 @@ if __name__ == "__main__":
         model_name="/mnt/workspace/ichinoe/model/InternVL2-8B/snapshots/357996b2cba121dce8748498968e9fddcc62e386",
     )
 
-    agent = ChimeraXAgent(
-        model=model,
-        overflow_handler=Overflow.openai_lmdeploy
+    agent_dict = {
+        "ChimeraX": ChimeraXAgent(
+            model=model,
+            overflow_handler=Overflow.openai_lmdeploy
+        )
+    }
+
+    manager_dict = {
+        "ChimeraX": ChimeraXManagerRaw(
+            sort="daily",
+            port=8080,
+            gui=True,
+            version="0.4"
+        )
+    }
+
+    tester = Tester(
+        tasks_path="tasks",
+        agents=agent_dict,
+        managers=manager_dict
     )
 
-    with ChimeraXManagerRaw(
-        sort="daily",
-        port=8080,
-        gui=True,
-        version="0.4"
-    ) as chimerax:
-        single_task = ChimeraXTask(
-            agent=agent,
-            config_path="example.json",
-            manager=chimerax
-        )
-        print(single_task())
+    from pprint import pprint
+    pprint(tester.task_info)

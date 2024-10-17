@@ -2,10 +2,11 @@ import sys
 import os
 import json
 
-from typing import Callable, Any
+from typing import Callable
 
 sys.dont_write_bytecode = True
 from .agent import Agent
+from .manager import Manager
 
 # base class for all tasks, subclass should include
 # - init(): parse & execute init part of config
@@ -13,15 +14,16 @@ from .agent import Agent
 class Task:
     CONFIG_RETRY = 5
 
-    def __init__(self, config_path: str, agent: Agent, manager: Any) -> None:
+    def __init__(self, config_path: str, agent: Agent, manager: Manager) -> None:
         assert os.path.exists(config_path)
         self.path = config_path
         self.config = json.load(open(self.path, mode="r", encoding="utf-8"))
         self.__check_config()
 
         assert isinstance(agent, Agent)
-        assert issubclass(type(agent), Agent)
         self.agent = agent
+
+        assert isinstance(manager, Manager)
         self.manager = manager
 
     def __check_config(self) -> None:
