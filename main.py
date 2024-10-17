@@ -2,7 +2,7 @@ import sys
 
 sys.dont_write_bytecode = True
 from sci.ChimeraX import ChimeraX, ChimeraXTask
-from sci import Model, Access, Overflow
+from sci import Model, Overflow
 from sci.ChimeraX import ChimeraXAgent
 
 if __name__ == "__main__":

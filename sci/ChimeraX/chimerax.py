@@ -1,3 +1,4 @@
+import sys
 import os
 import re
 import time
@@ -10,7 +11,10 @@ import urllib.request
 
 from typing import List, Dict, Optional, Callable
 
-class ChimeraX:
+sys.dont_write_bytecode
+from ..app import Application
+
+class ChimeraX(Application):
     SORT_MAP: Dict[str, List[str]] = {
         "stable": [
             "chimerax"
@@ -36,6 +40,8 @@ class ChimeraX:
         gui: bool = False,
         version: str = "0.2"
     ) -> None:
+        super().__init__()
+
         assert sort in ChimeraX.SORT_MAP
         self.sort = sort
 
@@ -48,7 +54,6 @@ class ChimeraX:
         assert re.match(r'^\d+\.\d+$', version) is not None
         self.version = version
 
-        self.entered = False
         self.__temp_dir = tempfile.TemporaryDirectory()
         self.temp_dir = self.__temp_dir.name
 
