@@ -60,7 +60,7 @@ class Task:
         raise NotImplementedError
 
     def __call(self) -> bool:
-        self.init()
+        assert self.init()
         self.agent(self)
         return self.eval()
 

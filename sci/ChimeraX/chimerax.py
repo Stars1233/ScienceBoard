@@ -29,6 +29,7 @@ class ChimeraXManagerRaw(Manager):
             "edu.ucsf.rbvi.ChimeraX"
         ]
     }
+    TIMEOUT = 10
     REST_FLAG: str = "REST server started"
     BASE_URL: Callable[[int], str] = lambda port: f"http://localhost:{port}/run"
     TOOL_URL: Callable[[str], str] = lambda version: \
@@ -116,11 +117,13 @@ class ChimeraXManagerRaw(Manager):
             f"remotecontrol rest start json true port {self.port}",
         ], stdout=subprocess.PIPE, text=True)
 
+        timeout = time.time() + ChimeraXManagerRaw.TIMEOUT
         while True:
             if self.process.stdout.readline().startswith(ChimeraXManagerRaw.REST_FLAG):
                 self.__prepare_env(self.version)
                 self.entered = True
                 return self
+            assert time.time() <= timeout, "Timeout when opening app"
 
     def __exit__(self, exc_type, exc_value, traceback) -> None:
         self.process.kill()
