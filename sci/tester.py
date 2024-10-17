@@ -24,6 +24,7 @@ class Tester:
         agents: Dict[str, Agent],
         managers: Dict[str, Manager]
     ) -> None:
+        tasks_path = os.path.expanduser(tasks_path)
         assert os.path.exists(tasks_path)
         assert os.path.isdir(tasks_path)
         self.path = tasks_path

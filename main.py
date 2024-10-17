@@ -28,7 +28,7 @@ if __name__ == "__main__":
     }
 
     tester = Tester(
-        tasks_path="tasks",
+        tasks_path="~/Downloads/tasks",
         agents=agent_dict,
         managers=manager_dict
     )
