@@ -30,7 +30,8 @@ if __name__ == "__main__":
     tester = Tester(
         tasks_path="~/Downloads/tasks",
         agents=agent_dict,
-        managers=manager_dict
+        managers=manager_dict,
+        logs_path="~/Downloads/logs"
     )
 
     from pprint import pprint

@@ -6,9 +6,7 @@ from dataclasses import dataclass
 from typing import List, Dict
 
 sys.dont_write_bytecode
-from . import Model, Agent
-from . import Manager
-from . import Task
+from . import Model, Agent, Manager, Task
 from . import Log
 
 # DO NOT REMOVE THESE
@@ -25,12 +23,13 @@ class Tester:
         tasks_path: str,
         agents: Dict[str, Agent],
         managers: Dict[str, Manager],
-        log: Log
+        logs_path: str
     ) -> None:
+        assert isinstance(tasks_path, str)
         tasks_path = os.path.expanduser(tasks_path)
         assert os.path.exists(tasks_path)
         assert os.path.isdir(tasks_path)
-        self.path = tasks_path
+        self.tasks_path = tasks_path
 
         # agent in agents should not be Agent itself
         assert isinstance(agents, dict)
@@ -48,8 +47,13 @@ class Tester:
             assert type(manager) != Manager
         self.managers = managers
 
-        assert isinstance(log, Log)
-        self.log = log
+        assert isinstance(logs_path, str)
+        logs_path = os.path.expanduser(logs_path)
+        os.makedirs(logs_path, exist_ok=True)
+        self.logs_path = logs_path
+
+        self.log = Log()
+        self.log.switch(self.logs_path)
 
         self.tasks_info: List[TaskInfo] = []
         self.__traverse_tasks()
@@ -74,7 +78,7 @@ class Tester:
         )
 
     def __traverse_tasks(self, current_infix: str = "") -> None:
-        current_dir_path = os.path.join(self.path, current_infix)
+        current_dir_path = os.path.join(self.tasks_path, current_infix)
         for unknown_name in os.listdir(current_dir_path):
             unknown_path = os.path.join(current_dir_path, unknown_name)
             if os.path.isfile(unknown_path):
@@ -83,10 +87,12 @@ class Tester:
                         task=self.__load(unknown_path),
                         infix=current_infix
                     ))
-                except Exception as err:
-                    # TEMP: change to logger
-                    print(f"Skip failed loading config {unknown_path}")
-                    print(traceback.format_exc())
+                except Exception:
+                    self.log.error(
+                        f"Skip failed loading config {unknown_path}"
+                            + "\n"
+                            + traceback.format_exc()
+                    )
             else:
                 self.__traverse_tasks(os.path.join(current_infix, unknown_name))
 
