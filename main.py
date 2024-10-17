@@ -27,11 +27,9 @@ if __name__ == "__main__":
         )
     }
 
-    tester = Tester(
+    Tester(
         tasks_path="~/Downloads/tasks",
         agents=agent_dict,
         managers=manager_dict,
         logs_path="~/Downloads/logs"
-    )
-
-    tester()
+    )()

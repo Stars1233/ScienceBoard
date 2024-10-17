@@ -23,7 +23,8 @@ class Tester:
         tasks_path: str,
         agents: Dict[str, Agent],
         managers: Dict[str, Manager],
-        logs_path: str
+        logs_path: str,
+        sum_log_prefix: str = "SUM_"
     ) -> None:
         assert isinstance(tasks_path, str)
         tasks_path = os.path.expanduser(tasks_path)
@@ -52,8 +53,9 @@ class Tester:
         os.makedirs(logs_path, exist_ok=True)
         self.logs_path = logs_path
 
+        assert isinstance(sum_log_prefix, str)
         self.log = Log()
-        self.log.switch(self.logs_path)
+        self.log.new(self.logs_path, prefix=sum_log_prefix)
 
         self.tasks_info: List[TaskInfo] = []
         self.__traverse_tasks()

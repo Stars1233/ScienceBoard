@@ -74,6 +74,7 @@ class Log:
         self,
         log_path: str,
         log_name: str = "",
+        prefix: str = "",
         delete_old: bool = True
     ) -> None:
         assert isinstance(log_path, str)
@@ -84,15 +85,31 @@ class Log:
         if log_name == "":
             log_name = self.__timestamp
 
+        assert isinstance(prefix, str)
+
         if delete_old:
             self.__remove_file_handler()
-        self.__add_file_handler(log_path, log_name, record_new=delete_old)
+        self.__add_file_handler(
+            log_path,
+            prefix + log_name,
+            record_new=delete_old
+        )
 
-    def switch(self, log_path: str, log_name: str = "") -> None:
-        self.__file(log_path, log_name, delete_old=True)
+    def switch(
+        self,
+        log_path: str,
+        log_name: str = "",
+        prefix: str = ""
+    ) -> None:
+        self.__file(log_path, log_name, prefix, delete_old=True)
 
-    def new(self, log_path: str, log_name: str = "") -> None:
-        self.__file(log_path, log_name, delete_old=False)
+    def new(
+        self,
+        log_path: str,
+        log_name: str = "",
+        prefix: str = ""
+    ) -> None:
+        self.__file(log_path, log_name, prefix, delete_old=False)
 
     # use self.info() directly instead of self.logger.info()
     def __getattr__(self, attr) -> Any:
