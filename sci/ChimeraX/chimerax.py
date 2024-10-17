@@ -14,6 +14,7 @@ from typing import List, Dict, Optional, Callable
 sys.dont_write_bytecode
 from ..manager import Manager
 
+# raw: supposed that ChimeraX is pre-installed on Linux
 class ChimeraXManagerRaw(Manager):
     SORT_MAP: Dict[str, List[str]] = {
         "stable": [
@@ -141,3 +142,7 @@ class ChimeraXManagerRaw(Manager):
     def clear_history(self) -> bool:
         assert float(self.version) >= 0.4
         return self._run("clear")
+
+    # TODO
+    def screenshot(self) -> str:
+        return ""
