@@ -6,6 +6,13 @@ from datetime import datetime
 from typing import Any
 
 class Log:
+    # use self.PROPERTY instead of Log.PROPERTY
+    # to make it easier to change outside of the class
+    # e.g.
+    #   log = Log()
+    #   log.LOG_PATTERN = "%Y%m%d%H%M%S"
+    #   log.switch("~/Downloads")
+    #   log.info("TEST")
     FORMAT_STRING = (
         "\033[1;33m[%(asctime)s "
         "\033[1;31m%(levelname)s "
@@ -15,6 +22,10 @@ class Log:
     )
     ANSI_ESCAPE = r'\033(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])'
     LOG_PATTERN = "%Y%m%d@%H:%M:%S"
+
+    @property
+    def FILE_FORMAT_STRING(self) -> str:
+        return re.sub(self.ANSI_ESCAPE, "", self.FORMAT_STRING)
 
     def __init__(self, level: int = logging.INFO) -> None:
         assert isinstance(level, int)
@@ -26,21 +37,31 @@ class Log:
         self.__add_stream_handler()
         self.file_handler = None
 
+    @property
+    def __timestamp(self):
+        return datetime.now().strftime(self.LOG_PATTERN)
+
     def __add_stream_handler(self) -> None:
         stream_handler = logging.StreamHandler()
         stream_handler.setLevel(self.level)
-        stream_handler.setFormatter(logging.Formatter(Log.FORMAT_STRING))
+        stream_handler.setFormatter(logging.Formatter(self.FORMAT_STRING))
         self.logger.addHandler(stream_handler)
 
-    def __add_file_handler(self, log_path: str, log_name: str) -> None:
+    def __add_file_handler(
+        self,
+        log_path: str,
+        log_name: str,
+        record_new: bool = True
+    ) -> None:
         log_file_path = os.path.join(log_path, f"{log_name}.log")
-        log_fmt = logging.Formatter(re.sub(Log.ANSI_ESCAPE, "", Log.FORMAT_STRING))
+        log_fmt = logging.Formatter(self.FILE_FORMAT_STRING)
 
         file_handler = logging.FileHandler(log_file_path)
         file_handler.setLevel(self.level)
         file_handler.setFormatter(log_fmt)
         self.logger.addHandler(file_handler)
-        self.file_handler = file_handler
+        if record_new:
+            self.file_handler = file_handler
 
     def __remove_file_handler(self) -> None:
         if self.file_handler is None:
@@ -49,17 +70,29 @@ class Log:
         self.logger.removeHandler(self.file_handler)
         self.file_handler = None
 
-    def switch(self, log_path: str, log_name: str = "") -> None:
+    def __file(
+        self,
+        log_path: str,
+        log_name: str = "",
+        delete_old: bool = True
+    ) -> None:
         assert isinstance(log_path, str)
         log_path = os.path.expanduser(log_path)
         os.makedirs(log_path, exist_ok=True)
 
         assert isinstance(log_name, str)
         if log_name == "":
-            log_name = datetime.now().strftime(Log.LOG_PATTERN)
+            log_name = self.__timestamp
 
-        self.__remove_file_handler()
-        self.__add_file_handler(log_path, log_name)
+        if delete_old:
+            self.__remove_file_handler()
+        self.__add_file_handler(log_path, log_name, record_new=delete_old)
+
+    def switch(self, log_path: str, log_name: str = "") -> None:
+        self.__file(log_path, log_name, delete_old=True)
+
+    def new(self, log_path: str, log_name: str = "") -> None:
+        self.__file(log_path, log_name, delete_old=False)
 
     # use self.info() directly instead of self.logger.info()
     def __getattr__(self, attr) -> Any:
