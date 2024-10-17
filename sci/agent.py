@@ -1,7 +1,7 @@
 import requests
 
 from dataclasses import dataclass, asdict
-from typing import Any, Optional, List, Dict, Callable, Literal
+from typing import Optional, List, Dict, Callable, Literal
 
 # modify asdict() for class Content
 # ref: https://stackoverflow.com/a/78289335
@@ -131,10 +131,10 @@ class Agent:
         assert isinstance(context_window_size, int)
         self.context_window_size = context_window_size
 
-        self._load_system_message()
+        self._init_system_message()
         self.context_window: List[Message] = []
 
-    def _load_system_message(self, text="You are a helpful assistant."):
+    def _init_system_message(self, text="You are a helpful assistant."):
         self.system_message: Message = Message(
             role="system",
             content=[
