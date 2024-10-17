@@ -9,11 +9,10 @@ class ChimeraXAgent(Agent):
         super()._init_system_message("You are a helpful assistant...")
 
     def __call__(self, task: Task) -> None:
-        contents = [Content(
-            type="text",
-            text="Who won the world series in 2020?"
-        )]
+        contents = [Content.text_content("Who won the world series in 2020?")]
         response_message = super().__call__(contents)
         print(response_message.content[0].text)
 
+        import time
         task.manager.run("style ball")
+        time.sleep(2)

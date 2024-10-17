@@ -25,6 +25,10 @@ class Content:
     text: Optional[str] = None
     image_url: Optional[Dict[str, str]] = None
 
+    @staticmethod
+    def text_content(text: str):
+        return Content(type="text", text=text)
+
     def __dict_factory_override__(self):
         return {
             key: getattr(self, key)
@@ -93,10 +97,7 @@ class Access:
         message = response.json()["choices"][0]["message"]
         return Message(
             role=message["role"],
-            content=[Content(
-                type="text",
-                text=message["content"]
-            )]
+            content=[Content.text_content(message["content"])]
         )
 
 
@@ -137,12 +138,7 @@ class Agent:
     def _init_system_message(self, text="You are a helpful assistant."):
         self.system_message: Message = Message(
             role="system",
-            content=[
-                Content(
-                    type="text",
-                    text=text
-                )
-            ]
+            content=[Content.text_content(text)]
         )
 
     def __dump(self, context_count: int) -> Dict:
