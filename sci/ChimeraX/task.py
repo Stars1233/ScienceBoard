@@ -10,8 +10,6 @@ from .agent import ChimeraXAgent
 from .chimerax import ChimeraX
 
 class ChimeraXTask(Task):
-    AgentType = ChimeraX
-
     def __init__(
         self,
         config_path: str,
@@ -63,7 +61,7 @@ class ChimeraXTask(Task):
     def __exec(self, cmd: str) -> bool:
         return self.manager._run(cmd)
 
-    def exec_init(self) -> bool:
+    def init(self) -> bool:
         init = lambda func, **kwargs: getattr(self, f"_ChimeraXTask__{func}")(**kwargs)
         for round_index in range(Task.CONFIG_RETRY):
             self.__recover()
@@ -115,7 +113,7 @@ class ChimeraXTask(Task):
         info_list = self.manager.run(f"info {key}")[0].strip().split("\n")
         return set(info_list) == set(value)
 
-    def exec_eval(self) -> bool:
+    def eval(self) -> bool:
         current_states = self.manager.states_dump()
         for eval_item in self.evaluate:
             eval_func = getattr(self, f"_ChimeraXTask__eval_{eval_item['type']}")

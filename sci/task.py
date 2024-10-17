@@ -7,6 +7,10 @@ from typing import Callable, Any
 sys.dont_write_bytecode = True
 from .agent import Agent
 
+# base class for all tasks, subclass should include
+# - init(): parse & execute init part of config
+# - eval(): parse & execute eval part of config
+# _check_config() cannot be overrided, use __check_config() in subclass instead
 class Task:
     CONFIG_RETRY = 5
 
@@ -42,7 +46,7 @@ class Task:
         for eval_item in self.evaluate:
             assert isinstance(eval_item, dict)
 
-    def exec_init(self) -> bool:
+    def init(self) -> bool:
         raise NotImplementedError
 
     def _error_handler(method: Callable):
@@ -53,17 +57,17 @@ class Task:
                 return False
         return wrapper
 
-    def exec_eval(self) -> bool:
+    def eval(self) -> bool:
         raise NotImplementedError
 
-    def __test(self) -> bool:
-        self.exec_init()
+    def __call(self) -> bool:
+        self.init()
         self.agent(self)
-        return self.exec_eval()
+        return self.eval()
 
     def __call__(self) -> bool:
         if not self.manager.entered:
             with self.manager:
-                return self.__test()
+                return self.__call()
         else:
-            return self.__test()
+            return self.__call()
