@@ -57,7 +57,6 @@ class Tester:
 
         self.tasks_info: List[TaskInfo] = []
         self.__traverse_tasks()
-        self.__traverse_logs()
 
     def __load(self, config_path) -> Task:
         # using nil agent & manager only to load type field
@@ -96,6 +95,13 @@ class Tester:
             else:
                 self.__traverse_tasks(os.path.join(current_infix, unknown_name))
 
-    def __traverse_logs(self) -> None:
+    def __call__(self):
         for task_info in self.tasks_info:
-            ...
+            log_file_path = os.path.join(
+                self.logs_path,
+                task_info.infix,
+                task_info.task.name
+            )
+            os.makedirs(log_file_path, exist_ok=True)
+            self.log.switch(log_file_path)
+            self.log.info(f"PASS: {task_info.task()}")

@@ -19,6 +19,8 @@ class Task:
         config_path = os.path.expanduser(config_path)
         assert os.path.exists(config_path)
         self.path = config_path
+
+        self.name = os.path.split(self.path)[1].split(".")[0]
         self.config = json.load(open(self.path, mode="r", encoding="utf-8"))
         self.__check_config()
 

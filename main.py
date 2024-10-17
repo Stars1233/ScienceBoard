@@ -34,5 +34,4 @@ if __name__ == "__main__":
         logs_path="~/Downloads/logs"
     )
 
-    from pprint import pprint
-    pprint(tester.tasks_info)
+    tester()

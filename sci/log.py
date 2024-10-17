@@ -61,6 +61,6 @@ class Log:
         self.__remove_file_handler()
         self.__add_file_handler(log_path, log_name)
 
-    # use log.info() directly instead of log.logger.info()
+    # use self.info() directly instead of self.logger.info()
     def __getattr__(self, attr) -> Any:
         return getattr(self.logger, attr)
