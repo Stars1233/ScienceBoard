@@ -106,4 +106,4 @@ class Tester:
             )
             os.makedirs(log_file_path, exist_ok=True)
             self.log.switch(log_file_path)
-            self.log.info(f"PASS: {task_info.task()}")
+            self.log.info(f"PASS: {task_info.task(self.log)}")

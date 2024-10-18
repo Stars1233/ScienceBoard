@@ -5,6 +5,7 @@ import json
 from typing import Callable, Union, Optional, NoReturn
 
 sys.dont_write_bytecode = True
+from .log import Log
 from .agent import Agent, Primitive
 from .manager import Manager
 
@@ -132,7 +133,7 @@ class Task:
         stop_type = self.predict()
         return self.eval(stop_type)
 
-    def __call__(self, recover: Optional[bool] = None) -> bool:
+    def __call__(self, log: Log, recover: Optional[bool] = None) -> bool:
         default = lambda default: default if recover is None else recover
         if not self.manager.entered:
             with self.manager:

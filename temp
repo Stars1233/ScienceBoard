@@ -19,12 +19,12 @@ My computer's password is 'password', feel free to use it when you need sudo rig
 First give the current screenshot and previous things we did a short reflection, then RETURN ME THE CODE OR SPECIAL CODE I ASKED FOR. NEVER EVER RETURN ME ANYTHING ELSE.
 You are asked to complete the following task: Can you make my computer bring back the last tab I shut down?
 
-# TODO:
-# - writing traj.jsonl etc.
-#   - task(log)
-#   - @task.record() -> traverse manager.__dict__
-#     - task.manager.get_info()
-#     - log.write()
-# - capture screenshot
-# - skip result.out
-# - configs.json
+<!-- TODO -->
+- extract_antiquot: multi actions
+- writing traj via task(log)
+  - @task.record() -> traverse manager.__dict__
+    - task.manager.{asset}()
+    - log.save_{asset}()
+- skip result.out in tester
+- write prompts & add screenshots for CX-Agent
+- write 20 config.json
