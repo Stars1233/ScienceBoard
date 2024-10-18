@@ -10,6 +10,7 @@ import tempfile
 import urllib.request
 
 from typing import List, Dict, Tuple, Optional, Callable
+from PIL import Image
 
 sys.dont_write_bytecode
 from .. import Manager
@@ -43,6 +44,7 @@ class ChimeraXManagerRaw(Manager):
         gui: bool = False,
         version: str = "0.2"
     ) -> None:
+        assert sys.platform == "linux"
         super().__init__()
 
         assert sort in ChimeraXManagerRaw.SORT_MAP
@@ -153,6 +155,13 @@ class ChimeraXManagerRaw(Manager):
         self.process.kill()
         self.entered = False
 
-    # TODO
-    def screenshot(self) -> str:
-        return ""
+    def screenshot(self) -> Image:
+        import pyautogui
+        from wmctrl import Window
+        current_window = [
+            window for window in Window.list()
+            if window.pid == self.process.pid
+        ][0]
+        current_window.maximize()
+        time.sleep(1)
+        return pyautogui.screenshot()

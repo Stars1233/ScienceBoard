@@ -27,9 +27,18 @@ if __name__ == "__main__":
         )
     }
 
-    Tester(
-        tasks_path="~/Downloads/tasks",
-        agents=agent_dict,
-        managers=manager_dict,
-        logs_path="~/Downloads/logs"
-    )()
+    # Tester(
+    #     tasks_path="~/Downloads/tasks",
+    #     agents=agent_dict,
+    #     managers=manager_dict,
+    #     logs_path="~/Downloads/logs"
+    # )()
+
+    with manager_dict["ChimeraX"] as chimerax:
+        image = chimerax.screenshot()
+
+        import base64
+        from io import BytesIO
+        image.save(buffered := BytesIO(), format="JPEG")
+        image_base64 = base64.b64encode(buffered.getvalue())
+        print(image_base64)
