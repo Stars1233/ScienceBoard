@@ -103,8 +103,8 @@ class Model:
         ...
 
     def __call__(self, messages: Dict) -> Response:
-        call_func = getattr(self, f"_Model__style_{self.style}")
-        return call_func(messages)
+        full_name = f"_{self.__class__.__name__}__style_{self.style}"
+        return getattr(self, full_name)(messages)
 
 
 class Access:

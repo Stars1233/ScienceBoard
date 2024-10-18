@@ -8,6 +8,7 @@ import requests
 import subprocess
 import tempfile
 import urllib.request
+import pyautogui
 
 from typing import List, Dict, Tuple, Optional, Callable
 from PIL import Image
@@ -40,15 +41,18 @@ class ChimeraXManagerRaw(Manager):
     def __init__(
         self,
         sort: str = "stable",
+        path: Optional[str] = None,
         port: int = 8000,
         gui: bool = False,
         version: str = "0.2"
     ) -> None:
-        assert sys.platform == "linux"
         super().__init__()
 
         assert sort in ChimeraXManagerRaw.SORT_MAP
         self.sort = sort
+
+        assert path is None or os.path.exists(path)
+        self.path = path
 
         assert port in range(1024, 65536)
         self.port = port
@@ -136,8 +140,12 @@ class ChimeraXManagerRaw(Manager):
 
     def __enter__(self) -> "ChimeraXManagerRaw":
         nogui = [] if self.gui else ["--nogui"]
+        startup_commands = [self.path] \
+            if self.path is not None \
+            else ChimeraXManagerRaw.SORT_MAP[self.sort]
+
         self.process = subprocess.Popen([
-            *ChimeraXManagerRaw.SORT_MAP[self.sort],
+            *startup_commands,
             *nogui,
             "--cmd",
             f"remotecontrol rest start json true port {self.port}",
@@ -155,8 +163,7 @@ class ChimeraXManagerRaw(Manager):
         self.process.kill()
         self.entered = False
 
-    def screenshot(self) -> Image:
-        import pyautogui
+    def __linux_show_window(self):
         from wmctrl import Window
         current_window = [
             window for window in Window.list()
@@ -164,4 +171,16 @@ class ChimeraXManagerRaw(Manager):
         ][0]
         current_window.maximize()
         time.sleep(1)
+
+    def __win32_show_window(self):
+        import win32gui, win32con
+        hwnd = win32gui.FindWindow(None, "ChimeraX")
+        win32gui.ShowWindow(hwnd, win32con.SW_MINIMIZE)
+        time.sleep(1)
+        win32gui.ShowWindow(hwnd, win32con.SW_MAXIMIZE)
+        time.sleep(1)
+
+    def screenshot(self) -> Image:
+        full_name = f"_{self.__class__.__name__}__{sys.platform}_show_window"
+        getattr(self, full_name)()
         return pyautogui.screenshot()
