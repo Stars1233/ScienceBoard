@@ -14,7 +14,7 @@ if __name__ == "__main__":
     agent_dict = {
         "ChimeraX": ChimeraXAgent(
             model=model,
-            overflow_handler=Overflow.openai_lmdeploy
+            overflow_style="openai_lmdeploy"
         )
     }
 

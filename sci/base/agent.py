@@ -184,22 +184,30 @@ class Agent:
     def __init__(
         self,
         model: Model,
-        access_handler: Callable[[Response], Message] = Access.openai,
-        code_handler: Callable[[Content], CodeLike] = CodeLike.extract_antiquot,
-        overflow_handler: Optional[Callable[[Response], bool]] = None,
+        access_style: str = "openai",
+        code_style: str = "antiquot",
+        overflow_style: Optional[str] = None,
         context_window_size: int = 3
     ) -> None:
         assert isinstance(model, Model)
         self.model = model
 
-        assert hasattr(access_handler, "__call__")
-        self.access_handler = access_handler
+        assert hasattr(Access, access_style)
+        self.access_handler: Callable[
+            [Response],
+            Message
+        ] = getattr(Access, access_style)
 
-        assert hasattr(code_handler, "__call__")
-        self.code_handler = code_handler
+        assert hasattr(CodeLike, f"extract_{code_style}")
+        self.code_handler: Callable[
+            [Response],
+            Message
+        ] = getattr(CodeLike, f"extract_{code_style}")
 
-        assert overflow_handler is None or hasattr(overflow_handler, "__call__")
-        self.overflow_handler = overflow_handler
+        assert overflow_style is None or hasattr(Overflow, overflow_style)
+        self.overflow_handler: Optional[Callable[[Response], bool]] = None \
+            if overflow_style is None \
+            else getattr(Overflow, overflow_style)
 
         assert isinstance(context_window_size, int)
         self.context_window_size = context_window_size
