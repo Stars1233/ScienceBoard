@@ -1,6 +1,8 @@
+import logging
 import os
 import re
-import logging
+import random
+import string
 
 from datetime import datetime
 from typing import Any
@@ -27,12 +29,24 @@ class Log:
     def FILE_FORMAT_STRING(self) -> str:
         return re.sub(self.ANSI_ESCAPE, "", self.FORMAT_STRING)
 
-    def __init__(self, level: int = logging.INFO) -> None:
+    def __init__(
+        self,
+        level: int = logging.INFO,
+        disabled: bool = False
+    ) -> None:
         assert isinstance(level, int)
         self.level = level
 
-        self.logger = logging.getLogger()
+        # if two logs' name clashes
+        # you should buy yourself some lotteries
+        log_name = "".join(random.choice(
+            string.ascii_uppercase + string.digits
+        ) for _ in range(64))
+        self.logger = logging.getLogger(log_name)
         self.logger.setLevel(self.level)
+
+        assert isinstance(disabled, bool)
+        self.logger.disabled = disabled
 
         self.__add_stream_handler()
         self.file_handler = None
@@ -112,5 +126,18 @@ class Log:
         self.__file(log_path, log_name, prefix, delete_old=False)
 
     # use self.info() directly instead of self.logger.info()
-    def __getattr__(self, attr) -> Any:
+    def __getattr__(self, attr: str) -> Any:
         return getattr(self.logger, attr)
+
+
+class VirtualLog:
+    def __init__(self) -> None:
+        self.log = None
+
+    def set(self, log: Log):
+        assert isinstance(log, Log)
+        self.log = log
+
+    def __getattr__(self, attr: str) -> Any:
+        log = Log(disabled=True) if self.log is None else self.log
+        return getattr(log, attr)
