@@ -2,10 +2,10 @@ import sys
 import os
 import json
 
-from typing import Callable
+from typing import Callable, Literal
 
 sys.dont_write_bytecode = True
-from .agent import Agent
+from .agent import Agent, Primitive
 from .manager import Manager
 
 # base class for all tasks, subclass should include
@@ -66,22 +66,24 @@ class Task:
                 return False
         return wrapper
 
-    def predict(self) -> None:
-        for step_index in range(self.steps):
-            user_contents = self.agent._step_user_contents(self)
-            response_message = self.agent(user_contents)
-            response_code = self.agent.code_handler(response_message.content[0])
-            if response_code == "DONE":
-                break
-            self.manager(response_code.code)
+    def predict(self) -> staticmethod:
+        try:
+            for step_index in range(self.steps):
+                user_contents = self.agent._step_user_contents(self)
+                response_message = self.agent(user_contents)
+                response_code = self.agent.code_handler(response_message.content[0])
+                response_code(self.manager)
+        except Primitive.PlannedTermination as early_stop:
+            return early_stop.type
+        return Primitive.TIMEOUT
 
-    def eval(self) -> bool:
+    def eval(self, stop_type: staticmethod) -> bool:
         raise NotImplementedError
 
     def __call(self) -> bool:
         assert self.init(), "Fail to initialize task of {self.path}"
-        self.predict()
-        return self.eval()
+        stop_type = self.predict()
+        return self.eval(stop_type)
 
     def __call__(self) -> bool:
         if not self.manager.entered:

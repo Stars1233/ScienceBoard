@@ -5,7 +5,7 @@ import json
 from typing import List, Tuple, Dict, Callable, Any
 
 sys.dont_write_bytecode = True
-from .. import Task
+from .. import Task, Primitive
 from .agent import ChimeraXAgent
 from .chimerax import ChimeraXManagerRaw
 
@@ -126,7 +126,7 @@ class ChimeraXTask(Task):
         info_list = log_message[0].strip().split("\n")
         return set(info_list) == set(value)
 
-    def eval(self) -> bool:
+    def eval(self, stop_type: staticmethod) -> bool:
         current_states = self.manager.states_dump()
         for eval_item in self.evaluate:
             eval_func = getattr(self, f"_ChimeraXTask__eval_{eval_item['type']}")
