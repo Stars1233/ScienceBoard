@@ -53,12 +53,15 @@ class Tester:
         os.makedirs(logs_path, exist_ok=True)
         self.logs_path = logs_path
 
+        # log.error is only called in this file
+        # all run-time erro / assertion error
+        # should be caught in __traverse() & __call()
         assert isinstance(sum_log_prefix, str)
         self.log = Log()
         self.log.new(self.logs_path, prefix=sum_log_prefix)
 
         self.tasks_info: List[TaskInfo] = []
-        self.__traverse_tasks()
+        self.__traverse()
 
     def __load(self, config_path) -> Task:
         # using nil agent & manager only to load type field
@@ -78,7 +81,7 @@ class Tester:
             manager=self.managers[task_type]
         )
 
-    def __traverse_tasks(self, current_infix: str = "") -> None:
+    def __traverse(self, current_infix: str = "") -> None:
         current_dir_path = os.path.join(self.tasks_path, current_infix)
         for unknown_name in os.listdir(current_dir_path):
             unknown_path = os.path.join(current_dir_path, unknown_name)
@@ -90,12 +93,12 @@ class Tester:
                     ))
                 except Exception:
                     self.log.error(
-                        f"Skip failed loading config {unknown_path}"
+                        f"Skip failed config loading: {unknown_path}"
                             + "\n"
                             + traceback.format_exc()
                     )
             else:
-                self.__traverse_tasks(os.path.join(current_infix, unknown_name))
+                self.__traverse(os.path.join(current_infix, unknown_name))
 
     def __call__(self):
         for task_info in self.tasks_info:
@@ -106,4 +109,15 @@ class Tester:
             )
             os.makedirs(log_file_path, exist_ok=True)
             self.log.switch(log_file_path)
-            self.log.info(f"PASS: {task_info.task(self.log)}")
+
+            try:
+                passed = task_info.task(self.log)
+                # log.critical() here is not an error info
+                # only to distinguish importance from other loggers
+                self.log.critical(f"PASS of {task_info.task.name}: {passed}")
+            except Exception:
+                self.log.error(
+                    f"Skip failed task testing: {task_info.task.name}"
+                        + "\n"
+                        + traceback.format_exc()
+                )
