@@ -52,7 +52,7 @@ class ChimeraXTask(Task):
                 else:
                     assert isinstance(eval_item[key_name], str)
 
-    def __recover(self) -> bool:
+    def _init(self) -> bool:
         _, code = self.manager._call("close")
         return code and self.manager.clear_history()
 
@@ -63,15 +63,6 @@ class ChimeraXTask(Task):
     def __exec(self, cmd: str) -> bool:
         _, code = self.manager._call(cmd)
         return code
-
-    def init(self) -> bool:
-        init = lambda func, **kwargs: getattr(self, f"_ChimeraXTask__{func}")(**kwargs)
-        for round_index in range(Task.CONFIG_RETRY):
-            self.__recover()
-            success_list = [init(**init_item) for init_item in self.initialize]
-            if all(success_list):
-                return True
-        return False
 
     @Task._error_handler
     def __eval_states(

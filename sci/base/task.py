@@ -2,7 +2,7 @@ import sys
 import os
 import json
 
-from typing import Callable, Literal
+from typing import Callable, Optional
 
 sys.dont_write_bytecode = True
 from .agent import Agent, Primitive
@@ -55,8 +55,23 @@ class Task:
         for eval_item in self.evaluate:
             assert isinstance(eval_item, dict)
 
-    def init(self) -> bool:
-        raise NotImplementedError
+    def _init(self) -> bool:
+        self.manager.__exit__(None, None, None)
+        self.manager.__enter__()
+        return True
+
+    def init(self, recover: bool) -> bool:
+        init = lambda func, **kwargs: getattr(
+            self,
+            f"_{self.__class__.__name__}__{func}"
+        )(**kwargs)
+        for round_index in range(Task.CONFIG_RETRY):
+            if recover and not self._init():
+                continue
+            success_list = [init(**init_item) for init_item in self.initialize]
+            if all(success_list):
+                return True
+        return False
 
     def _error_handler(method: Callable) -> Callable:
         def wrapper(self, *args) -> bool:
@@ -80,14 +95,15 @@ class Task:
     def eval(self, stop_type: staticmethod) -> bool:
         raise NotImplementedError
 
-    def __call(self) -> bool:
-        assert self.init(), "Fail to initialize task of {self.path}"
+    def __call(self, recover: bool) -> bool:
+        assert self.init(recover=recover), "Fail to initialize task of {self.path}"
         stop_type = self.predict()
         return self.eval(stop_type)
 
-    def __call__(self) -> bool:
+    def __call__(self, recover: Optional[bool] = None) -> bool:
+        default = lambda default: default if recover is None else recover
         if not self.manager.entered:
             with self.manager:
-                return self.__call()
+                return self.__call(recover=default(True))
         else:
-            return self.__call()
+            return self.__call(recover=default(True))
