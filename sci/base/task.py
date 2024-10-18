@@ -2,7 +2,7 @@ import sys
 import os
 import json
 
-from typing import Callable, Optional
+from typing import Callable, Union, Optional, NoReturn
 
 sys.dont_write_bytecode = True
 from .agent import Agent, Primitive
@@ -13,6 +13,7 @@ from .manager import Manager
 # - eval(): parse & execute eval part of config
 class Task:
     CONFIG_RETRY = 5
+    EARLY_STOP = "stop"
 
     def __init__(self, config_path: str, agent: Agent, manager: Manager) -> None:
         assert isinstance(config_path, str)
@@ -48,12 +49,26 @@ class Task:
         assert isinstance(self.initialize, list)
         for init_item in self.initialize:
             assert isinstance(init_item, dict)
+            assert "func" in init_item
+            assert isinstance(init_item["func"], str)
 
         assert "evaluate" in self.config
         self.evaluate = self.config["evaluate"]
         assert isinstance(self.evaluate, list)
         for eval_item in self.evaluate:
             assert isinstance(eval_item, dict)
+            assert "type" in eval_item
+            if eval_item["type"] == Task.EARLY_STOP:
+                assert "value" in eval_item
+                assert isinstance(eval_item["value"], str)
+
+    def _error_handler(method: Callable) -> Callable:
+        def wrapper(self, *args) -> bool:
+            try:
+                return method(self, *args)
+            except:
+                return False
+        return wrapper
 
     def _init(self) -> bool:
         self.manager.__exit__(None, None, None)
@@ -68,18 +83,13 @@ class Task:
         for round_index in range(Task.CONFIG_RETRY):
             if recover and not self._init():
                 continue
-            success_list = [init(**init_item) for init_item in self.initialize]
+            success_list = [
+                init(**init_item)
+                for init_item in self.initialize
+            ]
             if all(success_list):
                 return True
         return False
-
-    def _error_handler(method: Callable) -> Callable:
-        def wrapper(self, *args) -> bool:
-            try:
-                return method(self, *args)
-            except:
-                return False
-        return wrapper
 
     def predict(self) -> staticmethod:
         try:
@@ -92,8 +102,26 @@ class Task:
             return early_stop.type
         return Primitive.TIMEOUT
 
-    def eval(self, stop_type: staticmethod) -> bool:
-        raise NotImplementedError
+    def _stop_handler(method: Callable) -> Callable:
+        def wrapper(self, stop_type: staticmethod) -> bool:
+            try:
+                return Task.eval(self, stop_type)
+            except NotImplementedError:
+                return method(self)
+        return wrapper
+
+    def eval(self, stop_type: staticmethod) -> Union[bool, NoReturn]:
+        for eval_index, eval_item in enumerate(self.evaluate):
+            if eval_item["type"] == Task.EARLY_STOP:
+                # eval_item won't be deleted in `for` for ref_count ≠ 0
+                del self.evaluate[eval_index]
+                if eval_item["value"] != stop_type.__name__:
+                    return False
+
+        if len(self.evaluate) > 0:
+            raise NotImplementedError
+        else:
+            return True
 
     def __call(self, recover: bool) -> bool:
         assert self.init(recover=recover), "Fail to initialize task of {self.path}"

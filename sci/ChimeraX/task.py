@@ -28,14 +28,11 @@ class ChimeraXTask(Task):
         assert isinstance(self.version, str)
         assert self.version == self.manager.version
 
-        for init_item in self.initialize:
-            assert "func" in init_item
-            assert isinstance(init_item["func"], str)
-
         for eval_item in self.evaluate:
-            assert "type" in eval_item
-            assert eval_item["type"] in ("states", "info")
+            if eval_item["type"] == Task.EARLY_STOP:
+                continue
 
+            assert eval_item["type"] in ("states", "info")
             assert "key" in eval_item
             assert "value" in eval_item
 
@@ -117,10 +114,12 @@ class ChimeraXTask(Task):
         info_list = log_message[0].strip().split("\n")
         return set(info_list) == set(value)
 
-    def eval(self, stop_type: staticmethod) -> bool:
+    @Task._stop_handler
+    def eval(self) -> bool:
         current_states = self.manager.states_dump()
         for eval_item in self.evaluate:
-            eval_func = getattr(self, f"_ChimeraXTask__eval_{eval_item['type']}")
+            method_name = f"_{self.__class__.__name__}__eval_{eval_item['type']}"
+            eval_func = getattr(self, method_name)
             if not eval_func(eval_item, current_states):
                 return False
         return True
