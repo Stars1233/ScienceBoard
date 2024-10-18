@@ -26,6 +26,7 @@ class Task:
 
         assert isinstance(agent, Agent)
         self.agent = agent
+        self.agent.max_steps = self.steps
 
         assert isinstance(manager, Manager)
         self.manager = manager
@@ -34,6 +35,10 @@ class Task:
         assert "type" in self.config
         self.type = self.config["type"]
         assert isinstance(self.type, str)
+
+        assert "steps" in self.config
+        self.steps = self.config["steps"]
+        assert isinstance(self.steps, int)
 
         assert "instruction" in self.config
         self.instruction = self.config["instruction"]

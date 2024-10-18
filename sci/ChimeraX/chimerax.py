@@ -15,6 +15,7 @@ sys.dont_write_bytecode
 from .. import Manager
 
 # raw: supposed that ChimeraX is pre-installed on Linux
+#      and one of commands in SORT_MAP is runnable
 class ChimeraXManagerRaw(Manager):
     SORT_MAP: Dict[str, List[str]] = {
         "stable": [

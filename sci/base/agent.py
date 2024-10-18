@@ -1,5 +1,6 @@
 import requests
 
+from requests import Response
 from dataclasses import dataclass, asdict
 from typing import Optional, List, Dict, Callable, Literal, Any, Self
 
@@ -29,6 +30,13 @@ class Content:
     def text_content(text: str) -> Self:
         return Content(type="text", text=text)
 
+    @staticmethod
+    def image_content(url: str) -> Self:
+        return Content(
+            type="image_url",
+            image_url={"url": url, "detail": "high"}
+        )
+
     def __dict_factory_override__(self) -> dict[str, Any]:
         return {
             key: getattr(self, key)
@@ -54,7 +62,7 @@ class Model:
     top_p: float = 0.9
     temperature: float = 0.5
 
-    def __style_openai(self, messages: Dict) -> requests.Response:
+    def __style_openai(self, messages: Dict) -> Response:
         headers = {
             "Content-Type": "application/json",
         }
@@ -83,17 +91,17 @@ class Model:
         )
 
     # TODO
-    def __style_anthropic(self, messages: Dict) -> requests.Response:
+    def __style_anthropic(self, messages: Dict) -> Response:
         ...
 
-    def __call__(self, messages: Dict) -> requests.Response:
+    def __call__(self, messages: Dict) -> Response:
         call_func = getattr(self, f"_Model__style_{self.style}")
         return call_func(messages)
 
 
 class Access:
     @staticmethod
-    def openai(response: requests.Response) -> Message:
+    def openai(response: Response) -> Message:
         message = response.json()["choices"][0]["message"]
         return Message(
             role=message["role"],
@@ -103,12 +111,12 @@ class Access:
 
 class Overflow:
     @staticmethod
-    def openai_gpt(response: requests.Response) -> bool:
+    def openai_gpt(response: Response) -> bool:
         return response.status_code != 200 \
             and response.json()["error"]["code"] == "context_length_exceeded"
 
     @staticmethod
-    def openai_lmdeploy(response: requests.Response) -> bool:
+    def openai_lmdeploy(response: Response) -> bool:
         return Access.openai(response).content == ""
 
 
@@ -119,8 +127,9 @@ class Agent:
     def __init__(
         self,
         model: Model,
-        access_handler: Callable = Access.openai,
-        overflow_handler: Optional[Callable] = None,
+        access_handler: Callable[[Response], Message] = Access.openai,
+        overflow_handler: Optional[Callable[[Response], bool]] = None,
+        max_steps: int = 15,
         context_window_size: int = 3
     ) -> None:
         assert isinstance(model, Model)
@@ -133,6 +142,9 @@ class Agent:
         self.overflow_handler = overflow_handler
 
         assert isinstance(context_window_size, int)
+        self.max_steps = max_steps
+
+        assert isinstance(context_window_size, int)
         self.context_window_size = context_window_size
 
         self._init_system_message()
@@ -140,7 +152,7 @@ class Agent:
 
     def _init_system_message(
         self,
-        text = "You are a helpful assistant."
+        text: str = "You are a helpful assistant."
     ) -> None:
         self.system_message: Message = Message(
             role="system",
