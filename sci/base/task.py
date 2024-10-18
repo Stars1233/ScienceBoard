@@ -8,9 +8,13 @@ sys.dont_write_bytecode = True
 from .agent import Agent, Primitive
 from .manager import Manager
 
-# base class for all tasks, subclass should include
-# - init(): parse & execute init part of config
-# - eval(): parse & execute eval part of config
+# base class for all tasks
+# - subclass should include:
+#   - __{func}(): functions used by init()
+#   - @Task._stop_handler eval(): evaluation of non-stop
+# - subclass can also include:
+#   - __check_config(): more assertion of config.json
+#   - _init(): recover to init states of app
 class Task:
     CONFIG_RETRY = 5
     EARLY_STOP = "stop"

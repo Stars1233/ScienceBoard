@@ -174,9 +174,10 @@ class Overflow:
         return Access.openai(response).content == ""
 
 
-# base class for all agents, subclass should include
-# - _init_system_message(): fill system prompts by super()._init_system_message()
-# - __call__(): policy of agents; call llm by super().__call__()
+# base class for all agents
+# - subclass should include:
+#   - _init_system_message(): fill system prompts by super()._init_system_message()
+#   - _step_user_contents(): fill user propmts used by Task.predict()
 class Agent:
     WAIT_TIME = 5
 
