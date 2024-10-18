@@ -1,4 +1,9 @@
+import sys
+
 from typing import Self
+
+sys.dont_write_bytecode = True
+from .log import VirtualLog
 
 # abstract base class of all apps
 # - subclass should include
@@ -8,6 +13,7 @@ from typing import Self
 class Manager:
     def __init__(self) -> None:
         self.entered = False
+        self.vlog = VirtualLog()
 
     def __call__(self) -> None:
         raise NotImplementedError

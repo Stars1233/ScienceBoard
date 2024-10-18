@@ -8,6 +8,7 @@ sys.dont_write_bytecode = True
 from .log import Log
 from .agent import Agent, Primitive
 from .manager import Manager
+from .log import VirtualLog
 
 # base class for all tasks
 # - subclass should include:
@@ -35,6 +36,8 @@ class Task:
 
         assert isinstance(manager, Manager)
         self.manager = manager
+
+        self.vlog = VirtualLog()
 
     def __check_config(self) -> None:
         assert "type" in self.config

@@ -11,6 +11,7 @@ from typing import Optional, List, Dict, Callable, Literal, Any, Self
 
 sys.dont_write_bytecode = True
 from .manager import Manager
+from .log import VirtualLog
 
 # modify asdict() for class Content
 # ref: https://stackoverflow.com/a/78289335
@@ -214,6 +215,8 @@ class Agent:
 
         self._init_system_message()
         self.context_window: List[Message] = []
+
+        self.vlog = VirtualLog()
 
     def _init_system_message(
         self,

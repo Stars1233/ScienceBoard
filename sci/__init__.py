@@ -10,6 +10,7 @@ from .base.agent import Agent
 from .base.manager import Manager
 from .base.task import Task
 from .base.log import Log
+from .base.log import VirtualLog
 
 from .tester import TaskInfo
 from .tester import Tester
