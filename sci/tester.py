@@ -32,22 +32,7 @@ class Tester:
         assert os.path.isdir(tasks_path)
         self.tasks_path = tasks_path
 
-        # agent in agents should not be Agent itself
-        assert isinstance(agents, dict)
-        for key in agents:
-            agent = agents[key]
-            assert issubclass(type(agent), Agent)
-            assert type(agent) != Agent
-        self.agents = agents
-
-        # manager in managers should not be Manager itself
-        assert isinstance(managers, dict)
-        for key in managers:
-            manager = managers[key]
-            assert issubclass(type(manager), Manager)
-            assert type(manager) != Manager
-        self.managers = managers
-
+        # process log first
         assert isinstance(logs_path, str)
         logs_path = os.path.expanduser(logs_path)
         os.makedirs(logs_path, exist_ok=True)
@@ -59,6 +44,24 @@ class Tester:
         assert isinstance(sum_log_prefix, str)
         self.log = Log()
         self.log.new(self.logs_path, prefix=sum_log_prefix)
+
+        # agent in agents should not be Agent itself
+        assert isinstance(agents, dict)
+        for key in agents:
+            agent = agents[key]
+            assert issubclass(type(agent), Agent)
+            assert type(agent) != Agent
+            agent.vlog.set(self.log)
+        self.agents = agents
+
+        # manager in managers should not be Manager itself
+        assert isinstance(managers, dict)
+        for key in managers:
+            manager = managers[key]
+            assert issubclass(type(manager), Manager)
+            assert type(manager) != Manager
+            manager.vlog.set(self.log)
+        self.managers = managers
 
         self.tasks_info: List[TaskInfo] = []
         self.__traverse()
@@ -87,8 +90,10 @@ class Tester:
             unknown_path = os.path.join(current_dir_path, unknown_name)
             if os.path.isfile(unknown_path):
                 try:
+                    new_task = self.__load(unknown_path)
+                    new_task.vlog.set(self.log)
                     self.tasks_info.append(TaskInfo(
-                        task=self.__load(unknown_path),
+                        task=new_task,
                         infix=current_infix
                     ))
                 except Exception:
@@ -111,7 +116,7 @@ class Tester:
             self.log.switch(log_file_path)
 
             try:
-                passed = task_info.task(self.log)
+                passed = task_info.task()
                 # log.critical() here is not an error info
                 # only to distinguish importance from other loggers
                 self.log.critical(f"PASS of {task_info.task.name}: {passed}")

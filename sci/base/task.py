@@ -136,7 +136,7 @@ class Task:
         stop_type = self.predict()
         return self.eval(stop_type)
 
-    def __call__(self, log: Log, recover: Optional[bool] = None) -> bool:
+    def __call__(self, recover: Optional[bool] = None) -> bool:
         default = lambda default: default if recover is None else recover
         if not self.manager.entered:
             with self.manager:
