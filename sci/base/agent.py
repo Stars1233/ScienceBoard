@@ -1,8 +1,14 @@
+import re
 import requests
 
-from requests import Response
+from enum import Enum
 from dataclasses import dataclass, asdict
+from requests import Response
+
 from typing import Optional, List, Dict, Callable, Literal, Any, Self
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING: from .task import Task
 
 # modify asdict() for class Content
 # ref: https://stackoverflow.com/a/78289335
@@ -120,6 +126,26 @@ class Overflow:
         return Access.openai(response).content == ""
 
 
+@dataclass
+class CodeLike:
+    code: str
+    class PRIMITIVE(Enum):
+        DONE = 1
+        FAIL = 0
+        WAIT = -1
+        EXEC = -2
+
+    @staticmethod
+    def extract_antiquot(content: Content) -> Self:
+        match_obj = re.search(r'```(?:\w+\s+)?([\w\W]*?)```', content.text)
+        code = match_obj[1].strip() if match_obj is not None else ""
+        return CodeLike(code=code)
+
+    def __call__(self, task: "Task") -> None:
+        if not self.code in CodeLike.PRIMITIVE._member_names_:
+            task.manager(self.code)
+
+
 # base class for all agents, subclass should include
 # - _init_system_message(): fill system prompts by super()._init_system_message()
 # - __call__(): policy of agents; call llm by super().__call__()
@@ -128,8 +154,8 @@ class Agent:
         self,
         model: Model,
         access_handler: Callable[[Response], Message] = Access.openai,
+        code_handler: Callable[[Content], CodeLike] = CodeLike.extract_antiquot,
         overflow_handler: Optional[Callable[[Response], bool]] = None,
-        max_steps: int = 15,
         context_window_size: int = 3
     ) -> None:
         assert isinstance(model, Model)
@@ -138,11 +164,11 @@ class Agent:
         assert hasattr(access_handler, "__call__")
         self.access_handler = access_handler
 
+        assert hasattr(code_handler, "__call__")
+        self.code_handler = code_handler
+
         assert overflow_handler is None or hasattr(overflow_handler, "__call__")
         self.overflow_handler = overflow_handler
-
-        assert isinstance(context_window_size, int)
-        self.max_steps = max_steps
 
         assert isinstance(context_window_size, int)
         self.context_window_size = context_window_size
@@ -158,6 +184,10 @@ class Agent:
             role="system",
             content=[Content.text_content(text)]
         )
+
+    def _step_user_contents(self, task) -> List[Content]:
+        inst = "What's the next step that you will do to help with the task?"
+        return [Content.text_content(inst)]
 
     def __dump(self, context_count: int) -> Dict:
         return [asdict(message) for message in [

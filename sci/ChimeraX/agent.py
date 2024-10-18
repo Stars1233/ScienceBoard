@@ -1,7 +1,9 @@
 import sys
 
+from typing import List
+
 sys.dont_write_bytecode = True
-from .. import Agent, Content, Message
+from .. import Agent, Content
 from .. import Task
 
 class ChimeraXAgent(Agent):
@@ -18,17 +20,6 @@ When you think the task is done, just return ```DONE```.
 You are asked to complete the following task: Change the display of atoms to ball and stick style in ChimeraX.
 """)
 
-    def __extract_antiquot(self, response_message: Message) -> str:
-        import re
-        response_text = response_message.content[0].text
-        match = re.search(r'```(?:\w+\s+)?([\w\W]*?)```', response_text)
-        return match[1].strip() if match is not None else ""
-
-    def __call__(self, task: Task) -> None:
-        for step_index in range(self.max_steps):
-            inst = "What's the next step that you will do to help with the task?"
-            response_message = super().__call__([Content.text_content(inst)])
-            response_code = self.__extract_antiquot(response_message)
-            if response_code == "DONE":
-                break
-            task.manager.run(response_code)
+    def _step_user_contents(self, task: Task) -> List[Content]:
+        inst = "What's the next step that you will do to help with the task?"
+        return [Content.text_content(inst)]

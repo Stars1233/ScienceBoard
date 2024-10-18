@@ -26,7 +26,6 @@ class Task:
 
         assert isinstance(agent, Agent)
         self.agent = agent
-        self.agent.max_steps = self.steps
 
         assert isinstance(manager, Manager)
         self.manager = manager
@@ -67,12 +66,21 @@ class Task:
                 return False
         return wrapper
 
+    def predict(self) -> None:
+        for step_index in range(self.steps):
+            user_contents = self.agent._step_user_contents(self)
+            response_message = self.agent(user_contents)
+            response_code = self.agent.code_handler(response_message.content[0])
+            if response_code == "DONE":
+                break
+            self.manager(response_code.code)
+
     def eval(self) -> bool:
         raise NotImplementedError
 
     def __call(self) -> bool:
         assert self.init(), "Fail to initialize task of {self.path}"
-        self.agent(self)
+        self.predict()
         return self.eval()
 
     def __call__(self) -> bool:

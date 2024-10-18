@@ -53,13 +53,16 @@ class ChimeraXTask(Task):
                     assert isinstance(eval_item[key_name], str)
 
     def __recover(self) -> bool:
-        return self.manager._run("close") and self.manager.clear_history()
+        _, code = self.manager._call("close")
+        return code and self.manager.clear_history()
 
     def __open(self, name: str) -> bool:
-        return self.manager._run(f"open {name}")
+        _, code = self.manager._call(f"open {name}")
+        return code
 
     def __exec(self, cmd: str) -> bool:
-        return self.manager._run(cmd)
+        _, code = self.manager._call(cmd)
+        return code
 
     def init(self) -> bool:
         init = lambda func, **kwargs: getattr(self, f"_ChimeraXTask__{func}")(**kwargs)
@@ -118,7 +121,9 @@ class ChimeraXTask(Task):
     ) -> bool:
         key = eval_item["key"]
         value = eval_item["value"]
-        info_list = self.manager.run(f"info {key}")[0].strip().split("\n")
+
+        log_message, _ = self.manager._call(f"info {key}")
+        info_list = log_message[0].strip().split("\n")
         return set(info_list) == set(value)
 
     def eval(self) -> bool:

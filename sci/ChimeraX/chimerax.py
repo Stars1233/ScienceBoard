@@ -9,7 +9,7 @@ import subprocess
 import tempfile
 import urllib.request
 
-from typing import List, Dict, Optional, Callable
+from typing import List, Dict, Tuple, Optional, Callable
 
 sys.dont_write_bytecode
 from .. import Manager
@@ -63,24 +63,47 @@ class ChimeraXManagerRaw(Manager):
     def __del__(self) -> None:
         self.__temp_dir.cleanup()
 
-    def __run(self, command: str) -> Dict:
+    def __call(self, command: str) -> Dict:
         return requests.get(
             ChimeraXManagerRaw.BASE_URL(self.port),
             params={"command": command}
         ).json()
 
-    def _run(self, command: str) -> bool:
-        response = self.__run(command)
-        return response["error"] is None
+    def _call(self, command: str) -> Tuple[List[str], bool]:
+        response = self.__call(command)
+        return (
+            response["log messages"]["note"],
+            response["error"] is None
+        )
 
-    def run(self, command: str) -> List[str]:
-        return self.__run(command)["log messages"]["note"]
+    def __call__(self, command: str) -> None:
+        self.__call(command)
+
+    def states_dump(self) -> dict:
+        timestamp = str(int(time.time() * 1000))
+        self(f"states {self.temp_dir} {timestamp}")
+        return json.load(open(
+            os.path.join(self.temp_dir, timestamp + ".json"),
+            mode="r",
+            encoding="utf-8"
+        ))
+
+    def destroy_cli(self) -> bool:
+        assert float(self.version) >= 0.3
+        _, code = self._call("destroy")
+        return code
+
+    def clear_history(self) -> bool:
+        assert float(self.version) >= 0.4
+        _, code = self._call("clear")
+        return code
 
     def __check_version(self) -> Optional[str]:
         version_pattern = r'[.\d]+'
         target_pattern = fr'SessionStates(\*\*)? \({version_pattern}\)'
 
-        bundle_list = self.run("toolshed list")[1].split("\n")
+        log_message, _ = self._call("toolshed list")
+        bundle_list = log_message[1].split("\n")
         target_matched = [
             re.search(version_pattern, item)[0]
             for item in bundle_list
@@ -101,8 +124,8 @@ class ChimeraXManagerRaw(Manager):
             zip_ref.extractall(self.temp_dir)
 
         if uninstall:
-            self.run("toolshed uninstall SessionStates")
-        self.run(f"devel install {bundle_dir_path}")
+            self("toolshed uninstall SessionStates")
+        self(f"devel install {bundle_dir_path}")
 
     def __prepare_env(self, desired_version: str) -> None:
         current_version = self.__check_version()
@@ -129,23 +152,6 @@ class ChimeraXManagerRaw(Manager):
     def __exit__(self, exc_type, exc_value, traceback) -> None:
         self.process.kill()
         self.entered = False
-
-    def states_dump(self) -> dict:
-        timestamp = str(int(time.time() * 1000))
-        self.run(f"states {self.temp_dir} {timestamp}")
-        return json.load(open(
-            os.path.join(self.temp_dir, timestamp + ".json"),
-            mode="r",
-            encoding="utf-8"
-        ))
-
-    def destroy_cli(self) -> bool:
-        assert float(self.version) >= 0.3
-        return self._run("destroy")
-
-    def clear_history(self) -> bool:
-        assert float(self.version) >= 0.4
-        return self._run("clear")
 
     # TODO
     def screenshot(self) -> str:
