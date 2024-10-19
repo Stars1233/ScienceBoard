@@ -21,24 +21,24 @@ if __name__ == "__main__":
     manager_dict = {
         "ChimeraX": ChimeraXManagerRaw(
             sort="daily",
+            path="C:/Program Files/ChimeraX 1.8/bin/ChimeraX-console.exe",
             port=8080,
             gui=True,
             version="0.4"
         )
     }
 
-    # Tester(
-    #     tasks_path="~/Downloads/tasks",
-    #     agents=agent_dict,
-    #     managers=manager_dict,
-    #     logs_path="~/Downloads/logs"
-    # )()
+    Tester(
+        tasks_path="~/Downloads/tasks",
+        agents=agent_dict,
+        managers=manager_dict,
+        logs_path="~/Downloads/logs"
+    )()
 
-    with manager_dict["ChimeraX"] as chimerax:
-        image = chimerax.screenshot()
-
-        import base64
-        from io import BytesIO
-        image.save(buffered := BytesIO(), format="JPEG")
-        image_base64 = base64.b64encode(buffered.getvalue())
-        print(image_base64)
+    # with manager_dict["ChimeraX"] as chimerax:
+    #     image = chimerax.screenshot()
+    #     import base64
+    #     from io import BytesIO
+    #     image.save(buffered := BytesIO(), format="JPEG")
+    #     image_base64 = base64.b64encode(buffered.getvalue())
+    #     print(image_base64)
