@@ -17,6 +17,13 @@ class TaskInfo:
     task: Task
     infix: str
 
+    @property
+    def ident(self):
+        identifier = os.path.join(self.infix, self.task.name)
+        if sys.platform == "win32":
+            identifier.replace("\\", "/")
+        return identifier
+
 class Tester:
     def __init__(
         self,
@@ -41,6 +48,8 @@ class Tester:
         # log.error is only called in this file
         # all run-time erro / assertion error
         # should be caught in __traverse() & __call()
+        # in fact, self.log call inside of tester.__call()
+        # should be converted into the form of vlog.info()
         assert isinstance(sum_log_prefix, str)
         self.log = Log()
         self.log.new(self.logs_path, prefix=sum_log_prefix)
@@ -119,10 +128,10 @@ class Tester:
                 passed = task_info.task()
                 # log.critical() here is not an error info
                 # only to distinguish importance from other loggers
-                self.log.critical(f"PASS of {task_info.task.name}: {passed}")
+                self.log.critical(f"PASS of {task_info.ident}: {passed}")
             except Exception:
                 self.log.error(
-                    f"Skip failed task testing: {task_info.task.name}"
+                    f"Skip failed task testing: {task_info.ident}"
                         + "\n"
                         + traceback.format_exc()
                 )

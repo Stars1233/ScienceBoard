@@ -20,6 +20,9 @@ from .log import VirtualLog
 class Task:
     CONFIG_RETRY = 5
     EARLY_STOP = "stop"
+    class PlannedNotImplemented(Exception):
+        def __init__(self) -> None:
+            ...
 
     def __init__(self, config_path: str, agent: Agent, manager: Manager) -> None:
         assert isinstance(config_path, str)
@@ -114,7 +117,7 @@ class Task:
         def wrapper(self, stop_type: staticmethod) -> bool:
             try:
                 return Task.eval(self, stop_type)
-            except NotImplementedError:
+            except Task.PlannedNotImplemented:
                 return method(self)
         return wrapper
 
@@ -127,7 +130,7 @@ class Task:
                     return False
 
         if len(self.evaluate) > 0:
-            raise NotImplementedError
+            raise Task.PlannedNotImplemented()
         else:
             return True
 

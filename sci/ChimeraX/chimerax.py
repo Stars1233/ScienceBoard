@@ -32,7 +32,7 @@ class ChimeraXManagerRaw(Manager):
             "edu.ucsf.rbvi.ChimeraX"
         ]
     }
-    TIMEOUT = 10
+    TIMEOUT = 15
     REST_FLAG: str = "REST server started"
     BASE_URL: Callable[[int], str] = lambda port: f"http://localhost:{port}/run"
     TOOL_URL: Callable[[str], str] = lambda version: \
@@ -87,6 +87,8 @@ class ChimeraXManagerRaw(Manager):
 
     def states_dump(self) -> dict:
         timestamp = str(int(time.time() * 1000))
+        if sys.platform == "win32":
+            self.temp_dir = self.temp_dir.replace("\\", "/")
         self(f"states {self.temp_dir} {timestamp}")
         return json.load(open(
             os.path.join(self.temp_dir, timestamp + ".json"),

@@ -23,7 +23,7 @@ class Log:
         "\033[0m%(message)s"
     )
     ANSI_ESCAPE = r'\033(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])'
-    LOG_PATTERN = "%Y%m%d@%H:%M:%S"
+    LOG_PATTERN = "%Y%m%d@%H%M%S"
 
     @property
     def FILE_FORMAT_STRING(self) -> str:
