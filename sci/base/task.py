@@ -5,7 +5,6 @@ import json
 from typing import Callable, Union, Optional, NoReturn
 
 sys.dont_write_bytecode = True
-from .log import Log
 from .agent import Agent, Primitive
 from .manager import Manager
 from .log import VirtualLog
@@ -107,8 +106,12 @@ class Task:
             for step_index in range(self.steps):
                 user_contents = self.agent._step_user_contents(self)
                 response_message = self.agent(user_contents)
-                response_code = self.agent.code_handler(response_message.content[0])
-                response_code(self.manager)
+                assert len(response_message.content) == 1
+
+                response_content = response_message.content[0]
+                response_codes = self.agent.code_handler(response_content)
+                for code_like in response_codes:
+                    code_like(self.manager)
         except Primitive.PlannedTermination as early_stop:
             return early_stop.type
         return Primitive.TIMEOUT

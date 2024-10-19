@@ -145,10 +145,15 @@ class CodeLike:
     code: str
 
     @staticmethod
-    def extract_antiquot(content: Content) -> Self:
-        match_obj = re.search(r'```(?:\w+\s+)?([\w\W]*?)```', content.text)
-        code = match_obj[1].strip() if match_obj is not None else ""
-        return CodeLike(code=code)
+    def extract_antiquot(content: Content) -> List[Self]:
+        occurence = [
+            match.group(1).strip()
+            for match in re.finditer(
+                r'```(?:\w+\s+)?([\w\W]*?)```',
+                content.text
+            )
+        ]
+        return [CodeLike(code=code) for code in occurence]
 
     @property
     def PRIMITIVE(self):
@@ -201,8 +206,8 @@ class Agent:
 
         assert hasattr(CodeLike, f"extract_{code_style}")
         self.code_handler: Callable[
-            [Response],
-            Message
+            [Content],
+            List[CodeLike]
         ] = getattr(CodeLike, f"extract_{code_style}")
 
         assert overflow_style is None or hasattr(Overflow, overflow_style)
