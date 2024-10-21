@@ -118,7 +118,8 @@ class ChimeraXTask(Task):
     def eval(self) -> bool:
         current_states = self.manager.states_dump()
         for eval_item in self.evaluate:
-            method_name = f"_{self.__class__.__name__}__eval_{eval_item['type']}"
+            eval_type = eval_item["type"]
+            method_name = f"_{self.__class__.__name__}__eval_{eval_type}"
             eval_func = getattr(self, method_name)
             if not eval_func(eval_item, current_states):
                 return False

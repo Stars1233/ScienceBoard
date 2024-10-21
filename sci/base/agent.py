@@ -1,13 +1,16 @@
 import sys
 import re
 import time
+import base64
 import requests
 
-from enum import Enum
 from dataclasses import dataclass, asdict
 from requests import Response
+from io import BytesIO
 
-from typing import Optional, List, Dict, Callable, Literal, Any, Self
+from typing import Optional, List, Dict
+from typing import Callable, Literal, Any, Self
+from PIL import Image
 
 sys.dont_write_bytecode = True
 from .manager import Manager
@@ -40,10 +43,16 @@ class Content:
         return Content(type="text", text=text)
 
     @staticmethod
-    def image_content(url: str) -> Self:
+    def image_content(image: Image.Image) -> Self:
+        image.save(buffered:=BytesIO(), format="JPEG")
+        image_base64 = base64.b64encode(buffered.getvalue())
+
         return Content(
             type="image_url",
-            image_url={"url": url, "detail": "high"}
+            image_url={
+                "url": f"data:image/png;base64, {image_base64.decode()}",
+                "detail": "high"
+            }
         )
 
     def __dict_factory_override__(self) -> dict[str, Any]:
@@ -183,9 +192,15 @@ class Overflow:
 # base class for all agents
 # - subclass should include:
 #   - _init_system_message(): fill system prompts by super()._init_system_message()
+# - subclass can also include:
 #   - _step_user_contents(): fill user propmts used by Task.predict()
 class Agent:
     WAIT_TIME = 5
+
+    SYSTEM_INST   = "You are a helpful assistant."
+    USER_SOM      = "Given the tagged screenshot as below. "
+    USER_A11Y     = "Given the info from accessibility tree as below:\n{}\n"
+    USER_FLATTERY = "What's the next step that you will do to help with the task?"
 
     def __init__(
         self,
@@ -223,18 +238,35 @@ class Agent:
 
         self.vlog = VirtualLog()
 
-    def _init_system_message(
-        self,
-        text: str = "You are a helpful assistant."
-    ) -> None:
+    def _init_system_message(self) -> None:
         self.system_message: Message = Message(
             role="system",
-            content=[Content.text_content(text)]
+            content=[Content.text_content(Agent.SYSTEM_INST)]
         )
 
-    def _step_user_contents(self) -> List[Content]:
-        inst = "What's the next step that you will do to help with the task?"
-        return [Content.text_content(inst)]
+    def _step_user_contents(self, obs: Dict[str, Any]) -> List[Content]:
+        screenshot = Manager.screenshot.__name__
+        a11y_tree = Manager.a11y_tree.__name__
+        set_of_marks = Manager.set_of_marks.__name__
+
+        for obs_type in obs:
+            assert obs_type in (screenshot, a11y_tree, set_of_marks)
+
+        # SoM has the highest priority
+        if set_of_marks in obs:
+            assert len(obs) == 1
+
+        text_info = ""
+        if set_of_marks in obs:
+            text_info = Agent.USER_SOM
+        elif a11y_tree in obs:
+            text_info = Agent.USER_A11Y.format(obs[a11y_tree])
+        contents = [Content.text_content(text_info + Agent.USER_FLATTERY)]
+
+        images = [item for _, item in obs.items() if isinstance(item, Image.Image)]
+        contents += [Content.image_content(image) for image in images]
+
+        return contents
 
     def __dump(self, context_count: int) -> Dict:
         return [asdict(message) for message in [

@@ -23,7 +23,12 @@ class Task:
         def __init__(self) -> None:
             ...
 
-    def __init__(self, config_path: str, agent: Agent, manager: Manager) -> None:
+    def __init__(
+        self,
+        config_path: str,
+        agent: Agent,
+        manager: Manager
+    ) -> None:
         assert isinstance(config_path, str)
         config_path = os.path.expanduser(config_path)
         assert os.path.exists(config_path)
