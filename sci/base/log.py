@@ -25,10 +25,10 @@ class Log:
     #   log.info("TEST")
     ANSI_ESCAPE = r'\033(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])'
     LOG_PATTERN = (
-        "\033[1;33m[%(asctime)s "
-        "\033[1;31m%(levelname)s "
-        "\033[1;32m%(module)s::%(funcName)s@%(filename)s:%(lineno)d"
-        "\033[1;33m] "
+        "\033[1;91m[%(asctime)s "
+        "\033[1;91m%(levelname)s "
+        "\033[1;92m%(module)s::%(funcName)s@%(filename)s:%(lineno)d"
+        "\033[1;91m] "
         "\033[0m%(message)s"
     )
     TIMESTAMP_PATTERN = "%y%m%d%H%M%S"
