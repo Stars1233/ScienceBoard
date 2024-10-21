@@ -8,7 +8,7 @@ from dataclasses import dataclass, asdict
 from requests import Response
 from io import BytesIO
 
-from typing import Optional, List, Dict
+from typing import Optional, List, Dict, Set
 from typing import Callable, Literal, Any, Self
 from PIL import Image
 
@@ -197,10 +197,14 @@ class Overflow:
 class Agent:
     WAIT_TIME = 5
 
-    SYSTEM_INST   = "You are a helpful assistant."
-    USER_SOM      = "Given the tagged screenshot as below. "
-    USER_A11Y     = "Given the info from accessibility tree as below:\n{}\n"
+    SYSTEM_INST = "You are a helpful assistant."
     USER_FLATTERY = "What's the next step that you will do to help with the task?"
+    USER_OPENING: Dict[Set[str], str] = {
+        {Manager.screenshot.__name__}: "Given the screenshot as below. ",
+        {Manager.a11y_tree.__name__}: "Given the info from accessibility tree as below:\n{a11y_tree}\n",
+        {Manager.set_of_marks.__name__}: "Given the tagged screenshot as below. ",
+        {Manager.screenshot__name__, Manager.a11y_tree.__name__}: "Given the screenshot and info from accessibility tree as below:\n{a11y_tree}\n"
+    }
 
     def __init__(
         self,
@@ -249,12 +253,10 @@ class Agent:
         )
 
     def step_user_contents(self, obs: Dict[str, Any]) -> List[Content]:
-        text_info = ""
-        if Manager.set_of_marks.__name__ in obs:
-            text_info = Agent.USER_SOM
-        elif Manager.a11y_tree.__name__ in obs:
-            text_info = Agent.USER_A11Y.format(obs[Manager.a11y_tree.__name__])
-        contents = [Content.text_content(text_info + Agent.USER_FLATTERY)]
+        a11y_tree = obs[Manager.a11y_tree.__name__] \
+            if Manager.a11y_tree.__name__ in obs else None
+        opening = self.USER_OPENING[set(obs.keys())].format(a11y_tree=a11y_tree)
+        contents = [Content.text_content(opening + Agent.USER_FLATTERY)]
 
         images = [item for _, item in obs.items() if isinstance(item, Image.Image)]
         contents += [Content.image_content(image) for image in images]

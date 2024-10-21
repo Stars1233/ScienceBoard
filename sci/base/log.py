@@ -31,7 +31,7 @@ class Log:
         "\033[1;33m] "
         "\033[0m%(message)s"
     )
-    TIMESTEMP_PATTERN = "%y%m%d%H%M%S"
+    TIMESTAMP_PATTERN = "%y%m%d%H%M%S"
 
     TRAJ_FILENAME   = "traj.jsonl"
     IMAGE_FILENAME  = "step_{index}@{timestamp}.png"
@@ -72,7 +72,7 @@ class Log:
 
     @property
     def __timestamp(self):
-        return datetime.now().strftime(self.LOG_PATTERN)
+        return datetime.now().strftime(self.TIMESTAMP_PATTERN)
 
     def __add_stream_handler(self) -> None:
         stream_handler = logging.StreamHandler()
