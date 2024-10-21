@@ -8,10 +8,10 @@ import requests
 import subprocess
 import tempfile
 import urllib.request
-import pyautogui
 
 from typing import List, Dict, Tuple, Optional, Callable
 from PIL import Image
+from PIL import ImageGrab
 
 sys.dont_write_bytecode
 from .. import Manager
@@ -186,7 +186,7 @@ class ChimeraXManagerRaw(Manager):
         win32gui.ShowWindow(hwnd, win32con.SW_MAXIMIZE)
         time.sleep(1)
 
-    def screenshot(self) -> Image:
+    def screenshot(self) -> Image.Image:
         full_name = f"_{self.__class__.__name__}__{sys.platform}_show_window"
         getattr(self, full_name)()
-        return pyautogui.screenshot()
+        return ImageGrab.grab()

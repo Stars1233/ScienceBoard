@@ -1,4 +1,4 @@
 requests==2.22.0
 wmctrl==0.5
-pyautogui==0.9.54
+pillow==11.0.0
 pywin32==306

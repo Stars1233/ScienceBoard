@@ -20,7 +20,7 @@ First give the current screenshot and previous things we did a short reflection,
 You are asked to complete the following task: Can you make my computer bring back the last tab I shut down?
 
 <!-- TODO -->
-- writing traj via task(log)
+- writing traj via task()
   - @task.record() -> traverse manager.__dict__
     - task.manager.{asset}()
     - log.save_{asset}()

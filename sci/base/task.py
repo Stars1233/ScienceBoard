@@ -138,7 +138,7 @@ class Task:
             return True
 
     def __call(self, recover: bool) -> bool:
-        assert self.init(recover=recover), "Fail to initialize task of {self.path}"
+        assert self.init(recover=recover), "Fail to initialize the task"
         stop_type = self.predict()
         return self.eval(stop_type)
 
