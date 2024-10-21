@@ -120,7 +120,8 @@ class Tester:
                 task_info.task.name
             )
             os.makedirs(log_file_path, exist_ok=True)
-            self.log.switch(log_file_path)
+            if self.log.switch(log_file_path, clear=True) is False:
+                continue
 
             try:
                 passed = task_info.task()

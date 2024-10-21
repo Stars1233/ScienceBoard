@@ -44,6 +44,14 @@ class Log:
     def FILE_LOG_PATTERN(self) -> str:
         return re.sub(self.ANSI_ESCAPE, "", self.LOG_PATTERN)
 
+    @property
+    def result_file_path(self):
+        return os.path.join(self.save_path, self.RESULT_FILENAME)
+
+    @property
+    def record_file_path(self):
+        return os.path.join(self.save_path, self.RECORD_FILENAME)
+
     def __init__(
         self,
         level: int = logging.INFO,
@@ -128,14 +136,29 @@ class Log:
             record_new=delete_old
         )
 
+    def __clear(self) -> bool:
+        if os.path.exists(self.result_file_path):
+            return False
+
+        for filename in os.listdir(self.save_path):
+            file_path = os.path.join(self.save_path, filename)
+            # the org of tasks dir is never assumed
+            # so there might be dirs in extreme cases
+            if os.path.isfile(file_path) and not filename.endswith(".log"):
+                os.remove(file_path)
+        return True
+
     def switch(
         self,
         log_path: str,
         log_name: str = "",
-        prefix: str = ""
-    ) -> None:
+        prefix: str = "",
+        clear: bool = False
+    ) -> Optional[bool]:
         self.save_path = log_path
         self.__file(log_path, log_name, prefix, delete_old=True)
+        if clear:
+            return self.__clear()
 
     def new(
         self,
@@ -198,25 +221,21 @@ class Log:
 
     def result_handler(method: Callable) -> Callable:
         def wrapper(self: "Task", stop_type: staticmethod) -> bool:
-            result_file_path = os.path.join(
-                self.vlog.save_path,
-                self.vlog.RESULT_FILENAME
-            )
             return_value = method(self, stop_type)
-            with open(result_file_path, mode="w", encoding="utf-8") as writable:
+            with open(
+                self.vlog.result_file_path,
+                mode="w",
+                encoding="utf-8"
+            ) as writable:
                 writable.write(str(int(return_value)))
             return return_value
         return wrapper
 
     def record_handler(method: Callable) -> Callable:
         def wrapper(self: "Task") -> bool:
-            record_file_path = os.path.join(
-                self.vlog.save_path,
-                self.vlog.RECORD_FILENAME
-            )
             self.manager.record_start()
             return_value = method(self)
-            self.manager.record_stop(record_file_path)
+            self.manager.record_stop(self.vlog.record_file_path)
             return return_value
         return wrapper
 

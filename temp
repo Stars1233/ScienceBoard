@@ -20,6 +20,5 @@ First give the current screenshot and previous things we did a short reflection,
 You are asked to complete the following task: Can you make my computer bring back the last tab I shut down?
 
 <!-- TODO -->
-- skip result.out in tester
 - write prompts for CX-Agent
 - write 20 config.json
