@@ -20,10 +20,6 @@ First give the current screenshot and previous things we did a short reflection,
 You are asked to complete the following task: Can you make my computer bring back the last tab I shut down?
 
 <!-- TODO -->
-- writing traj via task()
-  - @task.record() -> traverse manager.__dict__
-    - task.manager.{asset}()
-    - log.save_{asset}()
 - skip result.out in tester
-- write prompts & add screenshots for CX-Agent
+- write prompts for CX-Agent
 - write 20 config.json
