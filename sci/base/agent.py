@@ -249,27 +249,15 @@ class Agent:
         )
 
     def step_user_contents(self, obs: Dict[str, Any]) -> List[Content]:
-        screenshot = Manager.screenshot.__name__
-        a11y_tree = Manager.a11y_tree.__name__
-        set_of_marks = Manager.set_of_marks.__name__
-
-        for obs_type in obs:
-            assert obs_type in (screenshot, a11y_tree, set_of_marks)
-
-        # SoM has the highest priority
-        if set_of_marks in obs:
-            assert len(obs) == 1
-
         text_info = ""
-        if set_of_marks in obs:
+        if Manager.set_of_marks.__name__ in obs:
             text_info = Agent.USER_SOM
-        elif a11y_tree in obs:
-            text_info = Agent.USER_A11Y.format(obs[a11y_tree])
+        elif Manager.a11y_tree.__name__ in obs:
+            text_info = Agent.USER_A11Y.format(obs[Manager.a11y_tree.__name__])
         contents = [Content.text_content(text_info + Agent.USER_FLATTERY)]
 
         images = [item for _, item in obs.items() if isinstance(item, Image.Image)]
         contents += [Content.image_content(image) for image in images]
-
         return contents
 
     def __dump(self, context_count: int) -> Dict:

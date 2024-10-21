@@ -2,7 +2,8 @@ import sys
 import os
 import json
 
-from typing import Callable, Union, Optional, NoReturn
+from typing import Set, Union, Optional
+from typing import Callable, NoReturn
 
 sys.dont_write_bytecode = True
 from .agent import Agent, Primitive
@@ -19,6 +20,7 @@ from .log import VirtualLog
 class Task:
     CONFIG_RETRY = 5
     EARLY_STOP = "stop"
+
     class PlannedNotImplemented(Exception):
         def __init__(self) -> None:
             ...
@@ -27,7 +29,8 @@ class Task:
         self,
         config_path: str,
         agent: Agent,
-        manager: Manager
+        manager: Manager,
+        obs_types: Set[str] = {"screenshot"}
     ) -> None:
         assert isinstance(config_path, str)
         config_path = os.path.expanduser(config_path)
@@ -43,6 +46,18 @@ class Task:
 
         assert isinstance(manager, Manager)
         self.manager = manager
+
+        for obs_type in obs_types:
+            assert obs_type in (
+                Manager.screenshot.__name__,
+                Manager.a11y_tree.__name__,
+                Manager.set_of_marks.__name__
+            )
+
+        # SoM has the highest priority
+        if Manager.set_of_marks.__name__ in obs_types:
+            assert len(obs_types) == 1
+        self.obs_types = obs_types
 
         self.vlog = VirtualLog()
 
@@ -109,7 +124,11 @@ class Task:
     def predict(self) -> staticmethod:
         try:
             for step_index in range(self.steps):
-                user_contents = self.agent.step_user_contents()
+                obs = {
+                    obs_type: getattr(self.manager, obs_type)()
+                    for obs_type in self.obs_types
+                }
+                user_contents = self.agent.step_user_contents(obs)
                 response_message = self.agent(user_contents)
                 assert len(response_message.content) == 1
 
