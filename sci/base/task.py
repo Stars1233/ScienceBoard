@@ -30,9 +30,10 @@ class Task:
     def __init__(
         self,
         config_path: str,
-        agent: Agent,
         manager: Manager,
-        obs_types: Set[str] = {"screenshot"}
+        agent: Agent,
+        obs_types: Set[str] = {"screenshot"},
+        infix: str = ""
     ) -> None:
         assert isinstance(config_path, str)
         config_path = os.path.expanduser(config_path)
@@ -43,11 +44,11 @@ class Task:
         self.config = json.load(open(self.path, mode="r", encoding="utf-8"))
         self.__check_config()
 
-        assert isinstance(agent, Agent)
-        self.agent = agent
-
         assert isinstance(manager, Manager)
         self.manager = manager
+
+        assert isinstance(agent, Agent)
+        self.agent = agent
 
         for obs_type in obs_types:
             assert obs_type in (
@@ -60,6 +61,9 @@ class Task:
         if Manager.set_of_marks.__name__ in obs_types:
             assert len(obs_types) == 1
         self.obs_types = obs_types
+
+        assert isinstance(infix, str)
+        self.infix = infix
 
         self.vlog = VirtualLog()
 
@@ -93,6 +97,13 @@ class Task:
             if eval_item["type"] == Task.EARLY_STOP:
                 assert "value" in eval_item
                 assert isinstance(eval_item["value"], str)
+
+    @property
+    def ident(self):
+        identifier = os.path.join(self.infix, self.name)
+        if sys.platform == "win32":
+            identifier.replace("\\", "/")
+        return identifier
 
     def _init(self) -> bool:
         self.manager.__exit__(None, None, None)

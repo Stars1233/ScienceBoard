@@ -12,13 +12,12 @@ class ChimeraXTask(Task):
     def __init__(
         self,
         config_path: str,
-        agent: Agent,
-        manager: ChimeraXManagerRaw
+        manager: ChimeraXManagerRaw,
+        *args,
+        **kwargs
     ) -> None:
-        assert isinstance(agent, Agent)
         assert isinstance(manager, ChimeraXManagerRaw)
-
-        super().__init__(config_path, agent, manager)
+        super().__init__(config_path, manager, *args, **kwargs)
         self.__check_config()
 
     def __check_config(self) -> None:

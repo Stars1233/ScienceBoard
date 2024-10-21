@@ -12,18 +12,6 @@ from . import Log
 # DO NOT REMOVE THESE
 from .ChimeraX.task import ChimeraXTask
 
-@dataclass
-class TaskInfo:
-    task: Task
-    infix: str
-
-    @property
-    def ident(self):
-        identifier = os.path.join(self.infix, self.task.name)
-        if sys.platform == "win32":
-            identifier.replace("\\", "/")
-        return identifier
-
 class Tester:
     def __init__(
         self,
@@ -71,10 +59,10 @@ class Tester:
             manager.vlog.set(self.log)
         self.managers = managers
 
-        self.tasks_info: List[TaskInfo] = []
+        self.tasks: List[Task] = []
         self.__traverse()
 
-    def __load(self, config_path) -> Task:
+    def __load(self, config_path: str, infix: str) -> Task:
         # using nil agent & manager only to load type field
         task_type = Task(
             config_path=config_path,
@@ -89,7 +77,8 @@ class Tester:
         return task_class(
             config_path=config_path,
             agent=self.agents[task_type],
-            manager=self.managers[task_type]
+            manager=self.managers[task_type],
+            infix=infix
         )
 
     def __traverse(self, current_infix: str = "") -> None:
@@ -98,12 +87,9 @@ class Tester:
             unknown_path = os.path.join(current_dir_path, unknown_name)
             if os.path.isfile(unknown_path):
                 try:
-                    new_task = self.__load(unknown_path)
+                    new_task = self.__load(unknown_path, current_infix)
                     new_task.vlog.set(self.log)
-                    self.tasks_info.append(TaskInfo(
-                        task=new_task,
-                        infix=current_infix
-                    ))
+                    self.tasks.append(new_task)
                 except Exception:
                     self.log.error(
                         f"Skip failed loading of config {unknown_path}: \n"
@@ -113,24 +99,24 @@ class Tester:
                 self.__traverse(os.path.join(current_infix, unknown_name))
 
     def __call__(self):
-        for task_info in self.tasks_info:
+        for task in self.tasks:
             log_file_path = os.path.join(
                 self.logs_path,
-                task_info.infix,
-                task_info.task.name
+                task.infix,
+                task.name
             )
             os.makedirs(log_file_path, exist_ok=True)
             if self.log.switch(log_file_path, clear=True) is False:
                 continue
 
             try:
-                passed = task_info.task()
+                passed = task()
                 # log.critical() here is not an error info
                 # only to distinguish importance from other loggers
-                self.log.critical(f"PASS of {task_info.ident}: {passed}")
+                self.log.critical(f"PASS of {task.ident}: {passed}")
 
             except Exception:
                 self.log.error(
-                    f"Skip failed testing of task {task_info.ident}: \n"
+                    f"Skip failed testing of task {task.ident}: \n"
                         + traceback.format_exc()
                 )
