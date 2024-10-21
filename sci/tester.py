@@ -100,11 +100,7 @@ class Tester:
 
     def __call__(self):
         for task in self.tasks:
-            log_file_path = os.path.join(
-                self.logs_path,
-                task.infix,
-                task.name
-            )
+            log_file_path = os.path.join(self.logs_path, task.infix, task.name)
             os.makedirs(log_file_path, exist_ok=True)
             if self.log.switch(log_file_path, clear=True) is False:
                 continue
