@@ -58,8 +58,7 @@ class Tester:
         assert isinstance(agents, dict)
         for key in agents:
             agent = agents[key]
-            assert issubclass(type(agent), Agent)
-            assert type(agent) != Agent
+            assert isinstance(agent, Agent)
             agent.vlog.set(self.log)
         self.agents = agents
 

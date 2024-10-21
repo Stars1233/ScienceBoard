@@ -1,8 +1,8 @@
 import sys
 
 sys.dont_write_bytecode = True
-from sci import Model, Tester
-from sci.ChimeraX import ChimeraXManagerRaw, ChimeraXAgent
+from sci import Model, Agent, Tester
+from sci.ChimeraX import ChimeraXManagerRaw
 
 if __name__ == "__main__":
     model = Model(
@@ -12,7 +12,7 @@ if __name__ == "__main__":
     )
 
     agent_dict = {
-        "ChimeraX": ChimeraXAgent(
+        "ChimeraX": Agent(
             model=model,
             overflow_style="openai_lmdeploy"
         )

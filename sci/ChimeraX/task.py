@@ -5,18 +5,17 @@ import json
 from typing import List, Tuple, Dict, Callable, Any
 
 sys.dont_write_bytecode = True
-from .. import Task
-from .agent import ChimeraXAgent
+from .. import Task, Agent
 from .chimerax import ChimeraXManagerRaw
 
 class ChimeraXTask(Task):
     def __init__(
         self,
         config_path: str,
-        agent: ChimeraXAgent,
+        agent: Agent,
         manager: ChimeraXManagerRaw
     ) -> None:
-        assert isinstance(agent, ChimeraXAgent)
+        assert isinstance(agent, Agent)
         assert isinstance(manager, ChimeraXManagerRaw)
 
         super().__init__(config_path, agent, manager)

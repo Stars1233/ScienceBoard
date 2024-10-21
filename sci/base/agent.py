@@ -208,6 +208,7 @@ class Agent:
         access_style: str = "openai",
         code_style: str = "antiquot",
         overflow_style: Optional[str] = None,
+        system_inst: Optional[str] = None,
         context_window_size: int = 3
     ) -> None:
         assert isinstance(model, Model)
@@ -230,21 +231,24 @@ class Agent:
             if overflow_style is None \
             else getattr(Overflow, overflow_style)
 
+        assert system_inst is None or isinstance(system_inst, str)
+        if system_inst is not None:
+            self.SYSTEM_INST = system_inst
+        self.init_system_message()
+
         assert isinstance(context_window_size, int)
         self.context_window_size = context_window_size
-
-        self._init_system_message()
         self.context_window: List[Message] = []
 
         self.vlog = VirtualLog()
 
-    def _init_system_message(self) -> None:
+    def init_system_message(self) -> None:
         self.system_message: Message = Message(
             role="system",
-            content=[Content.text_content(Agent.SYSTEM_INST)]
+            content=[Content.text_content(self.SYSTEM_INST)]
         )
 
-    def _step_user_contents(self, obs: Dict[str, Any]) -> List[Content]:
+    def step_user_contents(self, obs: Dict[str, Any]) -> List[Content]:
         screenshot = Manager.screenshot.__name__
         a11y_tree = Manager.a11y_tree.__name__
         set_of_marks = Manager.set_of_marks.__name__

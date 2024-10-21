@@ -109,7 +109,7 @@ class Task:
     def predict(self) -> staticmethod:
         try:
             for step_index in range(self.steps):
-                user_contents = self.agent._step_user_contents()
+                user_contents = self.agent.step_user_contents()
                 response_message = self.agent(user_contents)
                 assert len(response_message.content) == 1
 
