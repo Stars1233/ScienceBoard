@@ -1,6 +1,7 @@
 import sys
 import os
 import json
+import time
 
 from typing import Set, Union, Optional
 from typing import Callable, NoReturn
@@ -19,6 +20,7 @@ from .log import Log, VirtualLog
 #   - _init(): recover to init states of app
 class Task:
     CONFIG_RETRY = 5
+    CONFIG_INTERVAL = 1
     EARLY_STOP = "stop"
 
     class PlannedNotImplemented(Exception):
@@ -94,23 +96,28 @@ class Task:
 
     def _init(self) -> bool:
         self.manager.__exit__(None, None, None)
+        time.sleep(Task.CONFIG_INTERVAL)
         self.manager.__enter__()
         return True
 
     def init(self, recover: bool) -> bool:
-        init = lambda func, **kwargs: getattr(
-            self,
-            f"_{self.__class__.__name__}__{func}"
-        )(**kwargs)
+        name = lambda func: f"_{self.__class__.__name__}__{func}"
+        func = lambda func, **kwargs: getattr(self, name(func))(**kwargs)
+
         for round_index in range(Task.CONFIG_RETRY):
+            feedback = True
             if recover and not self._init():
                 continue
-            success_list = [
-                init(**init_item)
-                for init_item in self.initialize
-            ]
-            if all(success_list):
+            for init_item in self.initialize:
+                time.sleep(Task.CONFIG_INTERVAL)
+                if not func(**init_item):
+                    feedback = False
+                    break
+
+            if feedback:
                 return True
+            else:
+                continue
         return False
 
     def _step(self, step_index: int) -> None:

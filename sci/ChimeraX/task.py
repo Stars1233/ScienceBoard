@@ -57,7 +57,7 @@ class ChimeraXTask(Task):
         return code
 
     def __turn(self, axis: str, angle: int) -> bool:
-        _, code = self.manager._call(f"turn {axis}, {angle}")
+        _, code = self.manager._call(f"turn {axis} {angle}")
         return code
 
     @Task._error_handler
