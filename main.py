@@ -21,7 +21,6 @@ if __name__ == "__main__":
     manager_dict = {
         "ChimeraX": ChimeraXManagerRaw(
             sort="daily",
-            path="C:/Program Files/ChimeraX 1.8/bin/ChimeraX-console.exe",
             port=8080,
             gui=True,
             version="0.4"

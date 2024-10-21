@@ -166,6 +166,8 @@ class ChimeraXManagerRaw(Manager):
         self.entered = False
 
     def __linux_show_window(self):
+        # to disable Pylance syntax checker
+        assert sys.platform == "linux"
         from wmctrl import Window
         current_window = [
             window for window in Window.list()
@@ -175,6 +177,8 @@ class ChimeraXManagerRaw(Manager):
         time.sleep(1)
 
     def __win32_show_window(self):
+        # to disable Pylance syntax checker
+        assert sys.platform == "win32"
         import win32gui, win32con
         hwnd = win32gui.FindWindow(None, "ChimeraX")
         win32gui.ShowWindow(hwnd, win32con.SW_MINIMIZE)
