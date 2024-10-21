@@ -27,7 +27,7 @@ class Log:
     LOG_PATTERN = (
         "\033[1;33m[%(asctime)s "
         "\033[1;31m%(levelname)s "
-        "\033[1;32m%(module)s/%(lineno)d-%(processName)s"
+        "\033[1;32m%(module)s::%(funcName)s@%(filename)s:%(lineno)d"
         "\033[1;33m] "
         "\033[0m%(message)s"
     )
