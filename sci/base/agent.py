@@ -232,7 +232,7 @@ class Agent:
             content=[Content.text_content(text)]
         )
 
-    def _step_user_contents(self, task: Any) -> List[Content]:
+    def _step_user_contents(self) -> List[Content]:
         inst = "What's the next step that you will do to help with the task?"
         return [Content.text_content(inst)]
 

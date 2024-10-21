@@ -1,6 +1,7 @@
 import sys
 
 from typing import Self
+from PIL import Image
 
 sys.dont_write_bytecode = True
 from .log import VirtualLog
@@ -24,3 +25,12 @@ class Manager:
 
     def __exit__(self, exc_type, exc_value, traceback) -> None:
         self.entered = False
+
+    def screenshot(self) -> Image.Image:
+        raise NotImplementedError
+
+    def a11y_tree(self) -> str:
+        raise NotImplementedError
+
+    def set_of_marks(self) -> Image.Image:
+        raise NotImplemented

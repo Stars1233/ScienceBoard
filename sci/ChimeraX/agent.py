@@ -20,6 +20,6 @@ When you think the task is done, just return ```DONE```.
 You are asked to complete the following task: Change the display of atoms to ball and stick style in ChimeraX.
 """)
 
-    def _step_user_contents(self, task: Task) -> List[Content]:
+    def _step_user_contents(self) -> List[Content]:
         inst = "What's the next step that you will do to help with the task?"
         return [Content.text_content(inst)]
