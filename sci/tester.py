@@ -100,19 +100,20 @@ class Tester:
 
     def __call__(self):
         for task in self.tasks:
-            log_file_path = os.path.join(self.logs_path, task.infix, task.name)
-            os.makedirs(log_file_path, exist_ok=True)
-            if self.log.switch(log_file_path, clear=True) is False:
-                continue
+            with self.log(domain=task.ident):
+                log_file_path = os.path.join(self.logs_path, task.infix, task.name)
+                os.makedirs(log_file_path, exist_ok=True)
+                if self.log.switch(log_file_path, clear=True) is False:
+                    continue
 
-            try:
-                passed = task()
-                # log.critical() here is not an error info
-                # only to distinguish importance from other loggers
-                self.log.critical(f"PASS of {task.ident}: {passed}")
+                try:
+                    passed = task()
+                    # log.critical() here is not an error info
+                    # only to distinguish importance from other loggers
+                    self.log.critical(f"PASS of {task.ident}: {passed}")
 
-            except Exception:
-                self.log.error(
-                    f"Skip failed testing of task {task.ident}: \n"
-                        + traceback.format_exc()
-                )
+                except Exception:
+                    self.log.error(
+                        f"Skip failed testing of task {task.ident}: \n"
+                            + traceback.format_exc()
+                    )

@@ -9,7 +9,7 @@ from datetime import datetime
 from PIL import Image
 
 from typing import Optional, List, Dict, Any
-from typing import Callable, TYPE_CHECKING
+from typing import Callable, Self, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from .task import Task
@@ -27,10 +27,13 @@ class Log:
     LOG_PATTERN = (
         "\033[1;91m[%(asctime)s "
         "\033[1;91m%(levelname)s "
-        "\033[1;92m%(module)s::%(funcName)s@%(filename)s:%(lineno)d"
+        "\033[1;92m%(module)s::%(funcName)s@%(filename)s:%(lineno)d "
+        "\033[1;94m%(domain)s"
         "\033[1;91m] "
         "\033[0m%(message)s"
     )
+
+    DEFAULT_DOMAIN = "GLOBAL"
     TIMESTAMP_PATTERN = "%y%m%d%H%M%S"
 
     TRAJ_FILENAME   = "traj.jsonl"
@@ -67,6 +70,10 @@ class Log:
         ) for _ in range(64))
         self.logger = logging.getLogger(log_name)
         self.logger.setLevel(self.level)
+
+        self.extra = {"domain": Log.DEFAULT_DOMAIN}
+        self.adapter = logging.LoggerAdapter(self.logger, self.extra)
+        self.logger = self.adapter.logger
 
         assert isinstance(disabled, bool)
         self.logger.disabled = disabled
@@ -110,6 +117,19 @@ class Log:
 
         self.logger.removeHandler(self.file_handler)
         self.file_handler = None
+
+    def __call__(self, domain: str = "") -> Self:
+        assert isinstance(domain, str)
+        if domain == "":
+            domain = Log.DEFAULT_DOMAIN
+        self.extra["domain"] = domain
+        return self
+
+    def __enter__(self) -> Self:
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback) -> None:
+        self()
 
     def __file(
         self,
@@ -239,9 +259,13 @@ class Log:
             return return_value
         return wrapper
 
-    # use self.info() directly instead of self.logger.info()
+    # use log.info() directly instead of self.adapter.info()
+    # WARNING:
+    #   __getattr__ will not be called if property can be found directly
+    #   in these functions, self.logger (:= self.adapter.logger) is used, while
+    #   in __getattr__, self.adapter is used (to fill domain formatter)
     def __getattr__(self, attr: str) -> Any:
-        return getattr(self.logger, attr)
+        return getattr(self.adapter, attr)
 
 
 class VirtualLog:
@@ -252,6 +276,7 @@ class VirtualLog:
         assert isinstance(log, Log)
         self.log = log
 
+    # use vlog.info() directly instead of vlog.log.adapter.info()
     def __getattr__(self, attr: str) -> Any:
         log = Log(disabled=True) if self.log is None else self.log
         return getattr(log, attr)
