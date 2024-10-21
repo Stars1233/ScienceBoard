@@ -56,8 +56,8 @@ class ChimeraXTask(Task):
         _, code = self.manager._call(f"open {name}")
         return code
 
-    def __exec(self, cmd: str) -> bool:
-        _, code = self.manager._call(cmd)
+    def __turn(self, axis: str, angle: int) -> bool:
+        _, code = self.manager._call(f"turn {axis}, {angle}")
         return code
 
     @Task._error_handler

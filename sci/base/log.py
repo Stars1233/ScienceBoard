@@ -194,7 +194,7 @@ class Log:
 
         # save trajetories
         with open(traj_file_path, mode="a", encoding="utf-8") as appendable:
-            appendable.write(json.dumps(traj_obj))
+            appendable.write(json.dumps(traj_obj) + "\n")
 
     def result_handler(method: Callable) -> Callable:
         def wrapper(self: "Task", stop_type: staticmethod) -> bool:
@@ -204,7 +204,7 @@ class Log:
             )
             return_value = method(self, stop_type)
             with open(result_file_path, mode="w", encoding="utf-8") as writable:
-                writable.write(int(return_value))
+                writable.write(str(int(return_value)))
             return return_value
         return wrapper
 
