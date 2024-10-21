@@ -204,7 +204,7 @@ class Log:
             )
             return_value = method(self, stop_type)
             with open(result_file_path, mode="w", encoding="utf-8") as writable:
-                writable.writable(int(return_value))
+                writable.write(int(return_value))
             return return_value
         return wrapper
 

@@ -138,6 +138,7 @@ class Task:
         return Primitive.TIMEOUT
 
     def _stop_handler(method: Callable) -> Callable:
+        @Log.result_handler
         def wrapper(self, stop_type: staticmethod) -> bool:
             try:
                 return Task.eval(self, stop_type)
@@ -153,6 +154,9 @@ class Task:
                 return False
         return wrapper
 
+    # in case Task().eval() is derectly called
+    # if eval() of Task's subclass is called
+    # result output will be written twice sometimes
     @Log.result_handler
     def eval(self, stop_type: staticmethod) -> Union[bool, NoReturn]:
         for eval_index, eval_item in enumerate(self.evaluate):

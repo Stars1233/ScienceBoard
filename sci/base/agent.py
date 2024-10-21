@@ -200,10 +200,19 @@ class Agent:
     SYSTEM_INST = "You are a helpful assistant."
     USER_FLATTERY = "What's the next step that you will do to help with the task?"
     USER_OPENING: Dict[Set[str], str] = {
-        {Manager.screenshot.__name__}: "Given the screenshot as below. ",
-        {Manager.a11y_tree.__name__}: "Given the info from accessibility tree as below:\n{a11y_tree}\n",
-        {Manager.set_of_marks.__name__}: "Given the tagged screenshot as below. ",
-        {Manager.screenshot__name__, Manager.a11y_tree.__name__}: "Given the screenshot and info from accessibility tree as below:\n{a11y_tree}\n"
+        frozenset({
+            Manager.screenshot.__name__
+        }): "Given the screenshot as below. ",
+        frozenset({
+            Manager.a11y_tree.__name__
+        }): "Given the info from accessibility tree as below:\n{a11y_tree}\n",
+        frozenset({
+            Manager.set_of_marks.__name__
+        }): "Given the tagged screenshot as below. ",
+        frozenset({
+            Manager.screenshot.__name__,
+            Manager.a11y_tree.__name__
+        }): "Given the screenshot and info from accessibility tree as below:\n{a11y_tree}\n"
     }
 
     def __init__(
@@ -255,7 +264,7 @@ class Agent:
     def step_user_contents(self, obs: Dict[str, Any]) -> List[Content]:
         a11y_tree = obs[Manager.a11y_tree.__name__] \
             if Manager.a11y_tree.__name__ in obs else None
-        opening = self.USER_OPENING[set(obs.keys())].format(a11y_tree=a11y_tree)
+        opening = self.USER_OPENING[frozenset(obs.keys())].format(a11y_tree=a11y_tree)
         contents = [Content.text_content(opening + Agent.USER_FLATTERY)]
 
         images = [item for _, item in obs.items() if isinstance(item, Image.Image)]
@@ -285,6 +294,9 @@ class Agent:
 
         self.context_window.append(Message(role="user", content=contents))
         response = self.model(messages=self.dump_payload())
+
+        if response.status_code != 200:
+            self.vlog.warning(f"Getting response code of {response.status_code}")
 
         is_overflow = False if self.overflow_handler is None \
             else self.overflow_handler(response)
