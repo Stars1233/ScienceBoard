@@ -106,8 +106,7 @@ class Tester:
                     ))
                 except Exception:
                     self.log.error(
-                        f"Skip failed config loading: {unknown_path}"
-                            + "\n"
+                        f"Skip failed loading of config {unknown_path}: \n"
                             + traceback.format_exc()
                     )
             else:
@@ -130,7 +129,6 @@ class Tester:
                 self.log.critical(f"PASS of {task_info.ident}: {passed}")
             except Exception:
                 self.log.error(
-                    f"Skip failed task testing: {task_info.ident}"
-                        + "\n"
+                    f"Skip failed testing of task {task_info.ident}: \n"
                         + traceback.format_exc()
                 )

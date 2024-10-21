@@ -121,21 +121,25 @@ class Task:
                 return True
         return False
 
+    def _step(self) -> None:
+        obs = {
+            obs_type: getattr(self.manager, obs_type)()
+            for obs_type in self.obs_types
+        }
+        user_contents = self.agent.step_user_contents(obs)
+        response_message = self.agent(user_contents)
+        assert len(response_message.content) == 1
+
+        response_content = response_message.content[0]
+        response_codes = self.agent.code_handler(response_content)
+        for code_like in response_codes:
+            code_like(self.manager)
+        self.vlog.save(obs, response_codes)
+
     def predict(self) -> staticmethod:
         try:
             for step_index in range(self.steps):
-                obs = {
-                    obs_type: getattr(self.manager, obs_type)()
-                    for obs_type in self.obs_types
-                }
-                user_contents = self.agent.step_user_contents(obs)
-                response_message = self.agent(user_contents)
-                assert len(response_message.content) == 1
-
-                response_content = response_message.content[0]
-                response_codes = self.agent.code_handler(response_content)
-                for code_like in response_codes:
-                    code_like(self.manager)
+                self._step()
         except Primitive.PlannedTermination as early_stop:
             return early_stop.type
         return Primitive.TIMEOUT

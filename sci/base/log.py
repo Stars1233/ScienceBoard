@@ -5,7 +5,7 @@ import random
 import string
 
 from datetime import datetime
-from typing import Any
+from typing import List, Dict, Any
 
 class Log:
     # use self.PROPERTY instead of Log.PROPERTY
@@ -124,6 +124,9 @@ class Log:
         prefix: str = ""
     ) -> None:
         self.__file(log_path, log_name, prefix, delete_old=False)
+
+    def save(self, obs: Dict[str, Any], codes: List["CodeLike"]) -> None:
+        ...
 
     # use self.info() directly instead of self.logger.info()
     def __getattr__(self, attr: str) -> Any:
