@@ -1,6 +1,6 @@
 import sys
 
-from typing import Self
+from typing import Optional, Any, Self
 from PIL import Image
 
 sys.dont_write_bytecode = True
@@ -33,4 +33,10 @@ class Manager:
         raise NotImplementedError
 
     def set_of_marks(self) -> Image.Image:
-        raise NotImplemented
+        raise NotImplementedError
+
+    def record_start(self) -> None:
+        self.vlog.error("record_start() is not implemented")
+
+    def record_stop(self, dest_path: str) -> None:
+        self.vlog.error("record_stop() is not implemented")

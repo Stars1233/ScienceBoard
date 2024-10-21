@@ -31,7 +31,7 @@ class Tester:
         agents: Dict[str, Agent],
         managers: Dict[str, Manager],
         logs_path: str,
-        sum_log_prefix: str = "SUM_"
+        sum_log_prefix: str = "SUM@"
     ) -> None:
         assert isinstance(tasks_path, str)
         tasks_path = os.path.expanduser(tasks_path)
@@ -127,6 +127,7 @@ class Tester:
                 # log.critical() here is not an error info
                 # only to distinguish importance from other loggers
                 self.log.critical(f"PASS of {task_info.ident}: {passed}")
+
             except Exception:
                 self.log.error(
                     f"Skip failed testing of task {task_info.ident}: \n"

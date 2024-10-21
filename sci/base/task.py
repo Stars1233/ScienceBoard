@@ -8,7 +8,7 @@ from typing import Callable, NoReturn
 sys.dont_write_bytecode = True
 from .agent import Agent, Primitive
 from .manager import Manager
-from .log import VirtualLog
+from .log import Log, VirtualLog
 
 # base class for all tasks
 # - subclass should include:
@@ -92,14 +92,6 @@ class Task:
                 assert "value" in eval_item
                 assert isinstance(eval_item["value"], str)
 
-    def _error_handler(method: Callable) -> Callable:
-        def wrapper(self, *args) -> bool:
-            try:
-                return method(self, *args)
-            except:
-                return False
-        return wrapper
-
     def _init(self) -> bool:
         self.manager.__exit__(None, None, None)
         self.manager.__enter__()
@@ -121,7 +113,7 @@ class Task:
                 return True
         return False
 
-    def _step(self) -> None:
+    def _step(self, step_index: int) -> None:
         obs = {
             obs_type: getattr(self.manager, obs_type)()
             for obs_type in self.obs_types
@@ -134,12 +126,13 @@ class Task:
         response_codes = self.agent.code_handler(response_content)
         for code_like in response_codes:
             code_like(self.manager)
-        self.vlog.save(obs, response_codes)
+        self.vlog.save(step_index, obs, response_codes)
 
+    @Log.record_handler
     def predict(self) -> staticmethod:
         try:
             for step_index in range(self.steps):
-                self._step()
+                self._step(step_index)
         except Primitive.PlannedTermination as early_stop:
             return early_stop.type
         return Primitive.TIMEOUT
@@ -152,6 +145,15 @@ class Task:
                 return method(self)
         return wrapper
 
+    def _error_handler(method: Callable) -> Callable:
+        def wrapper(self, *args) -> bool:
+            try:
+                return method(self, *args)
+            except:
+                return False
+        return wrapper
+
+    @Log.result_handler
     def eval(self, stop_type: staticmethod) -> Union[bool, NoReturn]:
         for eval_index, eval_item in enumerate(self.evaluate):
             if eval_item["type"] == Task.EARLY_STOP:
