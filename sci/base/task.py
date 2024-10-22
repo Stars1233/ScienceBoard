@@ -149,6 +149,8 @@ class Task:
 
         response_content = response_message.content[0]
         response_codes = self.agent.code_handler(response_content)
+        self.vlog.codes(f"Response {step_index}/{self.steps}: {response_content.text}")
+
         for code_like in response_codes:
             time.sleep(Task.ACTION_INTERVAL)
             code_like(self.manager)
