@@ -149,7 +149,7 @@ class Task:
 
         response_content = response_message.content[0]
         response_codes = self.agent.code_handler(response_content)
-        self.vlog.codes(f"Response {step_index}/{self.steps}: {response_content.text}")
+        self.vlog.info(f"Response {step_index + 1}/{self.steps}: {response_content.text}")
 
         for code_like in response_codes:
             time.sleep(Task.ACTION_INTERVAL)
@@ -222,7 +222,7 @@ class Task:
         else:
             self.vlog.info("Starting prediction.")
             stop_type = self.predict()
-        self.vlog.info("Starting evaluation with stop type of {stop_type.__name__}")
+        self.vlog.info(f"Starting evaluation with stop type of {stop_type.__name__}.")
         return self.eval(stop_type)
 
     def __call__(self, recover: Optional[bool] = None) -> bool:

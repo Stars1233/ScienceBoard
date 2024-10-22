@@ -32,5 +32,6 @@ if __name__ == "__main__":
         tasks_path="~/Downloads/tasks",
         logs_path="~/Downloads/logs",
         agents=agent_dict,
-        managers=manager_dict
+        managers=manager_dict,
+        debug=True
     )()
