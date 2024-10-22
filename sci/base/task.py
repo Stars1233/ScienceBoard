@@ -207,7 +207,14 @@ class Task:
 
     def __call(self, recover: bool) -> bool:
         assert self.init(recover=recover), "Fail to initialize the task"
-        stop_type = self.predict()
+        if self.debug:
+            primitive_text = self.vlog.input(
+                f"Finish task manually: {self.instruction}",
+                end=""
+            ) or Primitive.TIMEOUT.__name__
+            stop_type = getattr(Primitive, primitive_text)
+        else:
+            stop_type = self.predict()
         return self.eval(stop_type)
 
     def __call__(self, recover: Optional[bool] = None) -> bool:

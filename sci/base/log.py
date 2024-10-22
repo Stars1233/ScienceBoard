@@ -103,6 +103,7 @@ class Log:
         stream_handler.setLevel(self.level)
         stream_handler.setFormatter(logging.Formatter(self.LOG_PATTERN))
         self.logger.addHandler(stream_handler)
+        self.stream_handler = stream_handler
 
     def __add_file_handler(
         self,
@@ -127,6 +128,8 @@ class Log:
         self.logger.removeHandler(self.file_handler)
         self.file_handler = None
 
+    # tricks of passing args to `with` block
+    # ref: https://stackoverflow.com/a/10252925
     def __call__(self, domain: str = "") -> Self:
         assert isinstance(domain, str)
         if domain == "":
@@ -278,8 +281,23 @@ class Log:
     #   in these functions, self.logger (:= self.adapter.logger) is used, while
     #   in __getattr__, self.adapter is used (to fill domain formatter)
     def __getattr__(self, attr: str) -> Any:
+        logging.info
         return getattr(self.adapter, attr)
 
+    # to be a hint for user input
+    # we suggested setting level to CRITICAL
+    # although there is no error occurred
+    def input(
+        self,
+        msg: str,
+        level: int = logging.CRITICAL,
+        end: str ="\n"
+    ) -> str:
+        stored_end = self.stream_handler.terminator
+        self.stream_handler.terminator = end
+        self.adapter.log(level=level, msg=msg)
+        self.stream_handler.terminator = stored_end
+        return input()
 
 class VirtualLog:
     def __init__(self) -> None:

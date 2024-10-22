@@ -33,7 +33,7 @@ class Tester:
         self.logs_path = logs_path
 
         # log.error is only called in this file
-        # all run-time erro / assertion error
+        # all run-time error / assertion error
         # should be caught in __traverse() & __call()
         # in fact, self.log call inside of tester.__call()
         # should be converted into the form of vlog.info()
