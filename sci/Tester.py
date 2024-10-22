@@ -47,8 +47,7 @@ class Tester:
         managers: Dict[str, Manager],
         obs_types: Set[str] = {"screenshot"},
         ignore: bool = True,
-        debug: bool = False,
-        sum_log_prefix: str = "SUM@"
+        debug: bool = False
     ) -> None:
         assert isinstance(tasks_path, str)
         tasks_path = os.path.expanduser(tasks_path)
@@ -67,9 +66,8 @@ class Tester:
         # should be caught in __traverse() & __call()
         # in fact, self.log call inside of tester.__call()
         # should be converted into the form of vlog.info()
-        assert isinstance(sum_log_prefix, str)
         self.log = Log()
-        self.log.new(self.logs_path, prefix=sum_log_prefix)
+        self.log.new(self.logs_path, prefix=Log.SUM_LOG_PREFIX)
 
         # agent in agents should not be Agent itself
         assert isinstance(agents, dict)

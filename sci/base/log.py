@@ -38,6 +38,7 @@ class Log:
         return re.sub(self.ANSI_ESCAPE, "", self.LOG_PATTERN)
 
     LEGACY_MARKER = "LAGACY@"
+    SUM_LOG_PREFIX = "SUM@"
     DEFAULT_DOMAIN = "GLOBAL"
     TIMESTAMP_PATTERN = "%y%m%d%H%M%S"
 
