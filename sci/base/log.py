@@ -169,8 +169,8 @@ class Log:
             record_new=delete_old
         )
 
-    def __clear(self) -> bool:
-        if os.path.exists(self.result_file_path):
+    def __clear(self, ignore: bool) -> bool:
+        if os.path.exists(self.result_file_path) and ignore:
             return False
 
         for filename in os.listdir(self.save_path):
@@ -195,12 +195,13 @@ class Log:
         log_path: str,
         log_name: str = "",
         prefix: str = "",
-        clear: bool = False
+        clear: bool = False,
+        ignore: bool = True
     ) -> Optional[bool]:
         self.save_path = log_path
         self.__file(log_path, log_name, prefix, delete_old=True)
         if clear:
-            return self.__clear()
+            return self.__clear(ignore)
 
     def new(
         self,

@@ -33,5 +33,6 @@ if __name__ == "__main__":
         logs_path="~/Downloads/logs",
         agents=agent_dict,
         managers=manager_dict,
+        ignore=False,
         debug=True
     )()

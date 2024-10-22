@@ -46,6 +46,7 @@ class Tester:
         agents: Dict[str, Agent],
         managers: Dict[str, Manager],
         obs_types: Set[str] = {"screenshot"},
+        ignore: bool = True,
         debug: bool = False,
         sum_log_prefix: str = "SUM@"
     ) -> None:
@@ -89,6 +90,9 @@ class Tester:
 
         assert isinstance(obs_types, Iterable)
         self.obs_types = obs_types
+
+        assert isinstance(ignore, bool)
+        self.ignore = ignore
 
         assert isinstance(debug, bool)
         self.debug = debug
@@ -142,7 +146,7 @@ class Tester:
             with self.log(domain=task.ident):
                 log_file_path = os.path.join(self.logs_path, task.infix, task.name)
                 os.makedirs(log_file_path, exist_ok=True)
-                if self.log.switch(log_file_path, clear=True) is False:
+                if not self.log.switch(log_file_path, clear=True, ignore=self.ignore):
                     local_counter._ignore()
                     self.log.critical("Task already finished, ignored.")
                     continue
