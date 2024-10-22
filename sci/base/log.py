@@ -37,6 +37,7 @@ class Log:
     def FILE_LOG_PATTERN(self) -> str:
         return re.sub(self.ANSI_ESCAPE, "", self.LOG_PATTERN)
 
+    LEGACY_MARKER = "LAGACY@"
     DEFAULT_DOMAIN = "GLOBAL"
     TIMESTAMP_PATTERN = "%y%m%d%H%M%S"
 
@@ -178,6 +179,15 @@ class Log:
             # so there might be dirs in extreme cases
             if os.path.isfile(file_path) and not filename.endswith(".log"):
                 os.remove(file_path)
+            # automatically add LEGACY_MARKER to old log file
+            elif os.path.isfile(file_path) \
+                and not filename.startswith(Log.LEGACY_MARKER) \
+                and filename != os.path.split(self.file_handler.baseFilename)[1]:
+                new_file_path = os.path.join(
+                    self.save_path,
+                    Log.LEGACY_MARKER + filename
+                )
+                os.rename(file_path, new_file_path)
         return True
 
     def switch(
