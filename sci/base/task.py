@@ -35,7 +35,8 @@ class Task:
         manager: Manager,
         agent: Agent,
         obs_types: Set[str] = {"screenshot"},
-        infix: str = ""
+        infix: str = "",
+        debug: bool = False
     ) -> None:
         assert isinstance(config_path, str)
         config_path = os.path.expanduser(config_path)
@@ -66,6 +67,9 @@ class Task:
 
         assert isinstance(infix, str)
         self.infix = infix
+
+        assert isinstance(debug, bool)
+        self.debug = debug
 
         self.vlog = VirtualLog()
 
@@ -147,7 +151,12 @@ class Task:
         for code_like in response_codes:
             time.sleep(Task.ACTION_INTERVAL)
             code_like(self.manager)
-        self.vlog.save(step_index, obs, response_codes)
+        self.vlog.save(
+            step_index,
+            obs,
+            response_codes,
+            self.agent.dump_history()
+        )
 
     @Log.record_handler
     def predict(self) -> staticmethod:

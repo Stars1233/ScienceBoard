@@ -33,19 +33,24 @@ class Log:
         "\033[0m%(message)s"
     )
 
-    DEFAULT_DOMAIN = "GLOBAL"
-    TIMESTAMP_PATTERN = "%y%m%d%H%M%S"
-
-    TRAJ_FILENAME   = "traj.jsonl"
-    IMAGE_FILENAME  = "step_{index}@{timestamp}.png"
-    TEXT_FILENAME   = "step_{index}@{timestamp}.txt"
-
-    RESULT_FILENAME = ".out"
-    RECORD_FILENAME = "record.mp4"
-
     @property
     def FILE_LOG_PATTERN(self) -> str:
         return re.sub(self.ANSI_ESCAPE, "", self.LOG_PATTERN)
+
+    DEFAULT_DOMAIN = "GLOBAL"
+    TIMESTAMP_PATTERN = "%y%m%d%H%M%S"
+
+    IMAGE_FILENAME   = "step_{index}@{timestamp}.png"
+    TEXT_FILENAME    = "step_{index}@{timestamp}.txt"
+
+    TRAJ_FILENAME    = "traj.jsonl"
+    RESULT_FILENAME  = "result.out"
+    RECORD_FILENAME  = "record.mp4"
+    REQUEST_FILENAME = "request.json"
+
+    @property
+    def traj_file_path(self):
+        return os.path.join(self.save_path, self.TRAJ_FILENAME)
 
     @property
     def result_file_path(self):
@@ -54,6 +59,10 @@ class Log:
     @property
     def record_file_path(self):
         return os.path.join(self.save_path, self.RECORD_FILENAME)
+
+    @property
+    def request_file_path(self):
+        return os.path.join(self.save_path, self.REQUEST_FILENAME)
 
     def __init__(
         self,
@@ -192,12 +201,12 @@ class Log:
         self,
         step_index: int,
         obs: Dict[str, Any],
-        codes: List["CodeLike"]
+        codes: List["CodeLike"],
+        request: Dict[str, Any]
     ) -> None:
         assert self.save_path is not None, "Call switch() first"
 
         timestamp = self.__timestamp
-        traj_file_path = os.path.join(self.save_path, self.TRAJ_FILENAME)
         traj_obj = {
             "step_index": step_index,
             "timestamp": self.__timestamp,
@@ -216,7 +225,7 @@ class Log:
         )
         image_file_path = os.path.join(self.save_path, image_filename)
 
-        # save a11y_tree
+        # save a11y_tree to new file
         filtered_text = [
             item for _, item in obs.items()
             if isinstance(item, str)
@@ -226,7 +235,7 @@ class Log:
             with open(text_file_path, mode="r", encoding="utf-8") as writable:
                 writable.write(filtered_text[0])
 
-        # save screenshot (or SoM screenshot)
+        # save screenshot (or SoM screenshot) to new file
         filtered_image = [
             item for _, item in obs.items()
             if isinstance(item, Image.Image)
@@ -235,9 +244,13 @@ class Log:
             traj_obj["a11y_tree"] = image_filename
             filtered_image[0].save(image_file_path)
 
-        # save trajetories
-        with open(traj_file_path, mode="a", encoding="utf-8") as appendable:
-            appendable.write(json.dumps(traj_obj) + "\n")
+        # save trajetories by appending previous records
+        with open(self.traj_file_path, mode="a", encoding="utf-8") as appendable:
+            appendable.write(json.dumps(traj_obj, ensure_ascii=False) + "\n")
+
+        # save requests by overwriting previous record
+        with open(self.request_file_path, mode="w", encoding="utf-8") as writable:
+            json.dump(request, writable, ensure_ascii=False, indent=2)
 
     def result_handler(method: Callable) -> Callable:
         def wrapper(self: "Task", stop_type: staticmethod) -> bool:
