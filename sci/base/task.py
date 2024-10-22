@@ -207,18 +207,24 @@ class Task:
             return True
 
     def __call(self, recover: bool) -> bool:
+        self.vlog.info("Starting initialization.")
         assert self.init(recover=recover), "Fail to initialize the task"
         if self.debug:
+            # input value will be converted to stop_type
+            # default to TIMEOUT
             primitive_text = self.vlog.input(
-                f"Finish task manually: {self.instruction}",
+                f"Finish task manually: ",
                 end=""
             ) or Primitive.TIMEOUT.__name__
-            stop_type = getattr(Primitive, primitive_text)
+            stop_type = getattr(Primitive, primitive_text, Primitive.TIMEOUT)
         else:
+            self.vlog.info("Starting prediction.")
             stop_type = self.predict()
+        self.vlog.info("Starting evaluation with stop type of {stop_type.__name__}")
         return self.eval(stop_type)
 
     def __call__(self, recover: Optional[bool] = None) -> bool:
+        self.vlog.info(f"Task: {self.instruction}")
         default = lambda default: default if recover is None else recover
         if not self.manager.entered:
             with self.manager:

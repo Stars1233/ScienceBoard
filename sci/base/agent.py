@@ -293,7 +293,7 @@ class Agent:
         response = self.model(messages=self.dump_payload())
 
         if response.status_code != 200:
-            self.vlog.warning(f"Getting response code of {response.status_code}")
+            self.vlog.warning(f"Getting response code of {response.status_code}.")
 
         is_overflow = False if self.overflow_handler is None \
             else self.overflow_handler(response)

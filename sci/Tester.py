@@ -35,7 +35,7 @@ class Counter:
             f"{self.passed} passed, "
             f"{self.failed} failed, "
             f"{self.skipped} skipped, "
-            f"{self.ignored} ignored"
+            f"{self.ignored} ignored."
         )
 
 class Tester:
@@ -61,7 +61,7 @@ class Tester:
         os.makedirs(logs_path, exist_ok=True)
         self.logs_path = logs_path
 
-        # log.error is only called in this file
+        # log.critical is only called in this file
         # all run-time error / assertion error
         # should be caught in __traverse() & __call()
         # in fact, self.log call inside of tester.__call()
@@ -144,13 +144,13 @@ class Tester:
                 os.makedirs(log_file_path, exist_ok=True)
                 if self.log.switch(log_file_path, clear=True) is False:
                     local_counter._ignore()
-                    self.log.critical("Task already finished, ignored")
+                    self.log.critical("Task already finished, ignored.")
                     continue
 
                 try:
                     passed = task()
                     local_counter._pass() if passed else local_counter._fail()
-                    self.log.critical(f"Task finished, pass={passed}")
+                    self.log.critical(f"Task finished, pass={passed}.")
 
                 except Exception:
                     local_counter._skip()

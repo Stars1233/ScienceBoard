@@ -43,7 +43,7 @@ class Manager:
         raise NotImplementedError
 
     def record_start(self) -> None:
-        self.vlog.warning("record_start() is not implemented")
+        self.vlog.warning("record_start() is not implemented.")
 
     def record_stop(self, dest_path: str) -> None:
-        self.vlog.warning("record_stop() is not implemented")
+        self.vlog.warning("record_stop() is not implemented.")
