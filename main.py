@@ -12,7 +12,7 @@ if __name__ == "__main__":
     )
 
     agent_dict = {
-        "ChimeraX": Agent(
+        "ChimeraXRaw": Agent(
             model=model,
             overflow_style="openai_lmdeploy",
             system_inst=Prompts.SYSTEM_INST_CHIMERAX_RAW
@@ -20,7 +20,7 @@ if __name__ == "__main__":
     }
 
     manager_dict = {
-        "ChimeraX": ChimeraXManagerRaw(
+        "ChimeraXRaw": ChimeraXManagerRaw(
             sort="daily",
             port=8080,
             gui=True,
