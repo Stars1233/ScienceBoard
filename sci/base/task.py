@@ -149,6 +149,7 @@ class Task:
     @Log.record_handler
     def predict(self) -> staticmethod:
         try:
+            self.agent.init(self.instruction)
             for step_index in range(self.steps):
                 self._step(step_index)
         except Primitive.PlannedTermination as early_stop:

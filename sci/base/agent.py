@@ -217,7 +217,7 @@ class Agent:
         code_style: str = "antiquot",
         overflow_style: Optional[str] = None,
         system_inst: Optional[Callable[[str], str]] = None,
-        context_window_size: int = 3
+        context_window: int = 3
     ) -> None:
         assert isinstance(model, Model)
         self.model = model
@@ -243,19 +243,18 @@ class Agent:
             system_inst = Agent.SYSTEM_INST
         assert hasattr(system_inst, "__call__")
         self.SYSTEM_INST: Callable[[str], str] = system_inst
-        self.init()
 
-        assert isinstance(context_window_size, int)
-        self.context_window_size = context_window_size
-        self.context_window: List[Message] = []
+        assert isinstance(context_window, int)
+        self.context_window = context_window
 
         self.vlog = VirtualLog()
 
     def init(self, inst: str) -> None:
         self.system_message: Message = Message(
             role="system",
-            content=[Content.text_content(self.SYSTEM_INST)]
+            content=[Content.text_content(self.SYSTEM_INST(inst))]
         )
+        self.context: List[Message] = []
 
     def step(self, obs: Dict[str, Any]) -> List[Content]:
         a11y_tree = obs[Manager.a11y_tree.__name__] \
@@ -270,25 +269,27 @@ class Agent:
     def __dump(self, context_count: int) -> Dict:
         return [asdict(message) for message in [
             self.system_message,
-            *self.context_window[-context_count:]
+            *self.context[-context_count:]
         ]]
 
     def dump_payload(self) -> Dict:
-        return self.__dump(self.context_window_size * 2 + 1)
+        return self.__dump(self.context_window * 2 + 1)
 
     def dump_history(self) -> Dict:
-        return self.__dump(len(self.context_window))
+        return self.__dump(len(self.context))
 
     def __call__(
         self,
         contents: List[Content],
         shorten: bool = False
     ) -> Message:
+        assert hasattr(self, "context"), "Call Agent.init() first"
+
         assert isinstance(contents, list)
         for content in contents:
             assert isinstance(content, Content)
 
-        self.context_window.append(Message(role="user", content=contents))
+        self.context.append(Message(role="user", content=contents))
         response = self.model(messages=self.dump_payload())
 
         if response.status_code != 200:
@@ -302,5 +303,5 @@ class Agent:
         assert not is_overflow, f"Tokens overflow when calling {self.model.model_name}"
 
         response_message = self.access_handler(response)
-        self.context_window.append(response_message)
+        self.context.append(response_message)
         return response_message
