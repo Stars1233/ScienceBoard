@@ -2,7 +2,6 @@ import sys
 import os
 import traceback
 
-from dataclasses import dataclass
 from typing import List, Dict
 
 sys.dont_write_bytecode

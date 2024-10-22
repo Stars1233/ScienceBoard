@@ -1,9 +1,8 @@
 import sys
 
 sys.dont_write_bytecode = True
-from sci import Model, Agent, Tester
+from sci import Tester, Model, Agent, Prompts
 from sci.ChimeraX import ChimeraXManagerRaw
-from sci.prompts import SYSTEM_INST_CHIMERAX_RAW
 
 if __name__ == "__main__":
     model = Model(
@@ -16,7 +15,7 @@ if __name__ == "__main__":
         "ChimeraX": Agent(
             model=model,
             overflow_style="openai_lmdeploy",
-            system_inst=SYSTEM_INST_CHIMERAX_RAW
+            system_inst=Prompts.SYSTEM_INST_CHIMERAX_RAW
         )
     }
 
