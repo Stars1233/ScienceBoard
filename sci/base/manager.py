@@ -8,9 +8,16 @@ from .log import VirtualLog
 
 # abstract base class of all apps
 # - subclass should include
-#   - __call__(): execute code, no feedback expected
+#   - __init__(): super().__init__() is required
+#     - entered: whether app is opened
+#     - vlog: virtual global log
+#   - __call__(): execute code with no feedback expected
 #   - __enter__() / __exit__(): open / close app
-#   - entered: whether app is opened
+# - subclass can also include
+#   - screenshot(): take screenshot of app
+#   - a11y_tree(): get a11y tree of app
+#   - set_of_marks(): get som of app
+#   - record_start() / record_stop(): record video for log
 class Manager:
     def __init__(self) -> None:
         self.entered = False
