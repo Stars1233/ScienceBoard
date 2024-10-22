@@ -189,15 +189,10 @@ class Overflow:
         return Access.openai(response).content == ""
 
 
-# base class for all agents
-# - subclass should include:
-#   - _init_system_message(): fill system prompts by super()._init_system_message()
-# - subclass can also include:
-#   - _step_user_contents(): fill user propmts used by Task.predict()
 class Agent:
     WAIT_TIME = 5
 
-    SYSTEM_INST = "You are a helpful assistant."
+    SYSTEM_INST = lambda inst: f"You are asked to complete the following task: {inst}"
     USER_FLATTERY = "What's the next step that you will do to help with the task?"
     USER_OPENING: Dict[Set[str], str] = {
         frozenset({
@@ -221,7 +216,7 @@ class Agent:
         access_style: str = "openai",
         code_style: str = "antiquot",
         overflow_style: Optional[str] = None,
-        system_inst: Optional[str] = None,
+        system_inst: Optional[Callable[[str], str]] = None,
         context_window_size: int = 3
     ) -> None:
         assert isinstance(model, Model)
