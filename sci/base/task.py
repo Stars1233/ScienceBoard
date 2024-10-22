@@ -191,7 +191,7 @@ class Task:
     @Log.result_handler
     def eval(self, stop_type: staticmethod) -> Union[bool, NoReturn]:
         eval_index = 0
-        while eval_index <= len(self.evaluate):
+        while eval_index < len(self.evaluate):
             eval_item = self.evaluate[eval_index]
             if eval_item["type"] != Task.EARLY_STOP:
                 eval_index += 1
