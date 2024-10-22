@@ -181,12 +181,15 @@ class Task:
     # result output will be written twice sometimes
     @Log.result_handler
     def eval(self, stop_type: staticmethod) -> Union[bool, NoReturn]:
-        for eval_index, eval_item in enumerate(self.evaluate):
-            if eval_item["type"] == Task.EARLY_STOP:
-                # eval_item won't be deleted in `for` for ref_count ≠ 0
+        eval_index = 0
+        while eval_index <= len(self.evaluate):
+            eval_item = self.evaluate[eval_index]
+            if eval_item["type"] != Task.EARLY_STOP:
+                eval_index += 1
+            elif eval_item["value"] != stop_type.__name__:
+                return False
+            else:
                 del self.evaluate[eval_index]
-                if eval_item["value"] != stop_type.__name__:
-                    return False
 
         if len(self.evaluate) > 0:
             raise Task.PlannedNotImplemented()
