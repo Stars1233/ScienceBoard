@@ -4,7 +4,7 @@ import json
 import time
 
 from typing import Set, Union, Optional
-from typing import Callable, NoReturn
+from typing import Iterable, Callable, NoReturn
 
 sys.dont_write_bytecode = True
 from .agent import Agent, Primitive
@@ -35,8 +35,8 @@ class Task:
         manager: Manager,
         agent: Agent,
         obs_types: Set[str] = {"screenshot"},
-        infix: str = "",
-        debug: bool = False
+        debug: bool = False,
+        infix: str = ""
     ) -> None:
         assert isinstance(config_path, str)
         config_path = os.path.expanduser(config_path)
@@ -53,6 +53,7 @@ class Task:
         assert isinstance(agent, Agent)
         self.agent = agent
 
+        assert isinstance(obs_types, Iterable)
         for obs_type in obs_types:
             assert obs_type in (
                 Manager.screenshot.__name__,

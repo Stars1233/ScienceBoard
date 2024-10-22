@@ -2,22 +2,25 @@ import sys
 import os
 import traceback
 
-from typing import List, Dict
+from typing import List, Dict, Set, Iterable
 
 sys.dont_write_bytecode
 from . import Model, Agent, Manager, Task
 from . import Log
 
+# THESE WILL BE LOOKED-UP BY `globals()`
 # DO NOT REMOVE THESE
-from .ChimeraX.task import ChimeraXRawTask
+from .ChimeraX import ChimeraXRawTask
 
 class Tester:
     def __init__(
         self,
         tasks_path: str,
+        logs_path: str,
         agents: Dict[str, Agent],
         managers: Dict[str, Manager],
-        logs_path: str,
+        obs_types: Set[str] = {"screenshot"},
+        debug: bool = False,
         sum_log_prefix: str = "SUM@"
     ) -> None:
         assert isinstance(tasks_path, str)
@@ -58,10 +61,16 @@ class Tester:
             manager.vlog.set(self.log)
         self.managers = managers
 
+        assert isinstance(obs_types, Iterable)
+        self.obs_types = obs_types
+
+        assert isinstance(debug, bool)
+        self.debug = debug
+
         self.tasks: List[Task] = []
         self.__traverse()
 
-    def __load(self, config_path: str, infix: str) -> Task:
+    def __load(self, config_path: str) -> Task:
         # using nil agent & manager only to load type field
         task_type = Task(
             config_path=config_path,
@@ -75,9 +84,10 @@ class Tester:
         # assert task_type in self.managers
         return task_class(
             config_path=config_path,
-            agent=self.agents[task_type],
             manager=self.managers[task_type],
-            infix=infix
+            agent=self.agents[task_type],
+            obs_types=self.obs_types,
+            debug=self.debug
         )
 
     def __traverse(self, current_infix: str = "") -> None:
@@ -86,7 +96,8 @@ class Tester:
             unknown_path = os.path.join(current_dir_path, unknown_name)
             if os.path.isfile(unknown_path):
                 try:
-                    new_task = self.__load(unknown_path, current_infix)
+                    new_task = self.__load(unknown_path)
+                    new_task.infix = current_infix
                     new_task.vlog.set(self.log)
                     self.tasks.append(new_task)
                 except Exception:

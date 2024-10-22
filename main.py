@@ -30,7 +30,7 @@ if __name__ == "__main__":
 
     Tester(
         tasks_path="~/Downloads/tasks",
+        logs_path="~/Downloads/logs",
         agents=agent_dict,
-        managers=manager_dict,
-        logs_path="~/Downloads/logs"
+        managers=manager_dict
     )()
