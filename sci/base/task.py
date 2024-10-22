@@ -136,7 +136,7 @@ class Task:
             obs_type: getattr(self.manager, obs_type)()
             for obs_type in self.obs_types
         }
-        user_contents = self.agent.step_user_contents(obs)
+        user_contents = self.agent.step(obs)
         response_message = self.agent(user_contents)
         assert len(response_message.content) == 1
 

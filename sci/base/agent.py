@@ -239,10 +239,11 @@ class Agent:
             if overflow_style is None \
             else getattr(Overflow, overflow_style)
 
-        assert system_inst is None or isinstance(system_inst, str)
-        if system_inst is not None:
-            self.SYSTEM_INST = system_inst
-        self.init_system_message()
+        if system_inst is None:
+            system_inst = Agent.SYSTEM_INST
+        assert hasattr(system_inst, "__call__")
+        self.SYSTEM_INST: Callable[[str], str] = system_inst
+        self.init()
 
         assert isinstance(context_window_size, int)
         self.context_window_size = context_window_size
@@ -250,13 +251,13 @@ class Agent:
 
         self.vlog = VirtualLog()
 
-    def init_system_message(self) -> None:
+    def init(self, inst: str) -> None:
         self.system_message: Message = Message(
             role="system",
             content=[Content.text_content(self.SYSTEM_INST)]
         )
 
-    def step_user_contents(self, obs: Dict[str, Any]) -> List[Content]:
+    def step(self, obs: Dict[str, Any]) -> List[Content]:
         a11y_tree = obs[Manager.a11y_tree.__name__] \
             if Manager.a11y_tree.__name__ in obs else None
         opening = self.USER_OPENING[frozenset(obs.keys())].format(a11y_tree=a11y_tree)
