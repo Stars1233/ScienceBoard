@@ -9,7 +9,7 @@ from . import Model, Agent, Manager, Task
 from . import Log
 
 # DO NOT REMOVE THESE
-from .ChimeraX.task import ChimeraXTask
+from .ChimeraX.task import ChimeraXRawTask
 
 class Tester:
     def __init__(

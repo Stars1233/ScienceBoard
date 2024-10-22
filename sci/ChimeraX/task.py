@@ -8,7 +8,7 @@ sys.dont_write_bytecode = True
 from .. import Task
 from .chimerax import ChimeraXManagerRaw
 
-class ChimeraXTask(Task):
+class ChimeraXRawTask(Task):
     def __init__(
         self,
         config_path: str,
