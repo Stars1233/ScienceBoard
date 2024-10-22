@@ -2,6 +2,7 @@ import sys
 import os
 import traceback
 
+from dataclasses import dataclass
 from typing import List, Dict, Set, Iterable
 
 sys.dont_write_bytecode
@@ -11,6 +12,31 @@ from . import Log
 # THESE WILL BE LOOKED-UP BY `globals()`
 # DO NOT REMOVE THESE
 from .ChimeraX import ChimeraXRawTask
+
+@dataclass
+class Counter:
+    passed: int = 0
+    failed: int = 0
+    skipped: int = 0
+    ignored: int = 0
+
+    def __getattr__(self, attr: str) -> None:
+        for field in self.__dataclass_fields__:
+            if attr[0] == "_" and field.startswith(attr[1:]):
+                def func(self):
+                    setattr(self, field, getattr(self, field) + 1)
+                return func.__get__(self)
+        return None
+
+    def __str__(self) -> str:
+        total = self.passed + self.failed + self.skipped + self.ignored
+        return (
+            f"{total} total tested: "
+            f"{self.passed} passed, "
+            f"{self.failed} failed, "
+            f"{self.skipped} skipped, "
+            f"{self.ignored} ignored"
+        )
 
 class Tester:
     def __init__(
@@ -101,29 +127,34 @@ class Tester:
                     new_task.vlog.set(self.log)
                     self.tasks.append(new_task)
                 except Exception:
-                    self.log.error(
-                        f"Skip failed loading of config {unknown_path}: \n"
+                    self.log.critical(
+                        f"Config loading failed; skipped: {unknown_path}\n"
                             + traceback.format_exc()
                     )
             else:
                 self.__traverse(os.path.join(current_infix, unknown_name))
 
+    # log.critical() here is not an error info
+    # only to distinguish importance from other loggers
     def __call__(self):
+        local_counter = Counter()
         for task in self.tasks:
             with self.log(domain=task.ident):
                 log_file_path = os.path.join(self.logs_path, task.infix, task.name)
                 os.makedirs(log_file_path, exist_ok=True)
                 if self.log.switch(log_file_path, clear=True) is False:
+                    local_counter._ignore()
+                    self.log.critical("Task already finished, ignored")
                     continue
 
                 try:
                     passed = task()
-                    # log.critical() here is not an error info
-                    # only to distinguish importance from other loggers
-                    self.log.critical(f"PASS of {task.ident}: {passed}")
+                    local_counter._pass() if passed else local_counter._fail()
+                    self.log.critical(f"Task finished, pass={passed}")
 
                 except Exception:
-                    self.log.error(
-                        f"Skip failed testing of task {task.ident}: \n"
-                            + traceback.format_exc()
+                    local_counter._skip()
+                    self.log.critical(
+                        f"Task testing failed; skipped\n" + traceback.format_exc()
                     )
+        self.log.critical(local_counter)

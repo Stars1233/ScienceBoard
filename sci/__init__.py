@@ -12,4 +12,5 @@ from .base.task import Task
 from .base.log import Log
 from .base.log import VirtualLog
 
+from .Tester import Counter
 from .Tester import Tester
