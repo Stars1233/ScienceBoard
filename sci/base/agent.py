@@ -249,14 +249,14 @@ class Agent:
 
         self.vlog = VirtualLog()
 
-    def init(self, inst: str) -> None:
+    def _init(self, inst: str) -> None:
         self.system_message: Message = Message(
             role="system",
             content=[Content.text_content(self.SYSTEM_INST(inst))]
         )
         self.context: List[Message] = []
 
-    def step(self, obs: Dict[str, Any]) -> List[Content]:
+    def _step(self, obs: Dict[str, Any]) -> List[Content]:
         a11y_tree = obs[Manager.a11y_tree.__name__] \
             if Manager.a11y_tree.__name__ in obs else None
         opening = self.USER_OPENING[frozenset(obs.keys())].format(a11y_tree=a11y_tree)

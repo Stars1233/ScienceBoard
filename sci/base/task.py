@@ -22,7 +22,7 @@ from .log import Log, VirtualLog
 #   - _init(): recover to init states of app
 class Task:
     CONFIG_RETRY = 5
-    CONFIG_INTERVAL = 1
+    ACTION_INTERVAL = 1
     EARLY_STOP = "stop"
 
     class PlannedNotImplemented(Exception):
@@ -109,7 +109,7 @@ class Task:
 
     def _init(self) -> bool:
         self.manager.__exit__(None, None, None)
-        time.sleep(Task.CONFIG_INTERVAL)
+        time.sleep(Task.ACTION_INTERVAL)
         self.manager.__enter__()
         return True
 
@@ -122,7 +122,7 @@ class Task:
             if recover and not self._init():
                 continue
             for init_item in self.initialize:
-                time.sleep(Task.CONFIG_INTERVAL)
+                time.sleep(Task.ACTION_INTERVAL)
                 if not func(**init_item):
                     feedback = False
                     break
@@ -138,20 +138,21 @@ class Task:
             obs_type: getattr(self.manager, obs_type)()
             for obs_type in self.obs_types
         }
-        user_contents = self.agent.step(obs)
+        user_contents = self.agent._step(obs)
         response_message = self.agent(user_contents)
         assert len(response_message.content) == 1
 
         response_content = response_message.content[0]
         response_codes = self.agent.code_handler(response_content)
         for code_like in response_codes:
+            time.sleep(Task.ACTION_INTERVAL)
             code_like(self.manager)
         self.vlog.save(step_index, obs, response_codes)
 
     @Log.record_handler
     def predict(self) -> staticmethod:
         try:
-            self.agent.init(self.instruction)
+            self.agent._init(self.instruction)
             for step_index in range(self.steps):
                 self._step(step_index)
         except Primitive.PlannedTermination as early_stop:
