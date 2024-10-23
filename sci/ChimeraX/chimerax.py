@@ -14,7 +14,7 @@ from PIL import Image
 from PIL import ImageGrab
 
 sys.dont_write_bytecode
-from .. import Manager
+from ..base import Manager
 
 # raw: supposed that ChimeraX is pre-installed on Linux
 #      and one of commands in SORT_MAP is runnable

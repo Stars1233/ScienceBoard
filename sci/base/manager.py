@@ -1,6 +1,6 @@
 import sys
 
-from typing import Optional, Any, Self
+from typing import Self
 from PIL import Image
 
 sys.dont_write_bytecode = True

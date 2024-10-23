@@ -7,7 +7,7 @@ from typing import List, Dict, Set, Optional
 from typing import Iterable, Callable
 
 sys.dont_write_bytecode
-from . import Model, Agent, Manager, Task
+from . import Agent, Manager, Task
 from . import Log
 
 # THESE WILL BE LOOKED-UP BY `globals()`
