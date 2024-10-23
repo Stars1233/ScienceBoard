@@ -3,7 +3,8 @@ import os
 import traceback
 
 from dataclasses import dataclass
-from typing import List, Dict, Set, Iterable
+from typing import List, Dict, Set, Optional
+from typing import Iterable, Callable
 
 sys.dont_write_bytecode
 from . import Model, Agent, Manager, Task
@@ -20,7 +21,12 @@ class Counter:
     skipped: int = 0
     ignored: int = 0
 
-    def __getattr__(self, attr: str) -> None:
+    # suggested functions usage:
+    # counter._pass()
+    # counter._fail()
+    # counter._skip()
+    # counter._ignore()
+    def __getattr__(self, attr: str) -> Optional[Callable]:
         for field in self.__dataclass_fields__:
             if attr[0] == "_" and field.startswith(attr[1:]):
                 def func(self):
@@ -142,9 +148,9 @@ class Tester:
         local_counter = Counter()
         for task in self.tasks:
             with self.log(domain=task.ident):
-                log_file_path = os.path.join(self.logs_path, task.infix, task.name)
+                log_file_path = os.path.join(self.logs_path, task.ident)
                 os.makedirs(log_file_path, exist_ok=True)
-                if not self.log.switch(log_file_path, clear=True, ignore=self.ignore):
+                if not self.log.switch(log_file_path, ignore=self.ignore):
                     local_counter._ignore()
                     self.log.critical("Task already finished; ignored.")
                     continue
@@ -157,6 +163,7 @@ class Tester:
                 except Exception:
                     local_counter._skip()
                     self.log.critical(
-                        f"Task testing failed; skipped\n" + traceback.format_exc()
+                        f"Task testing failed; skipped\n"
+                            + traceback.format_exc()
                     )
         self.log.critical(local_counter)

@@ -22,7 +22,7 @@ class Log:
     #   log = Log()
     #   log.LOG_PATTERN = "%Y%m%d%H%M%S"
     #   log.switch("~/Downloads")
-    #   log.info("TEST")
+    #   log.info("Test")
     ANSI_ESCAPE = r'\033(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])'
     LOG_PATTERN = (
         "\033[1;91m[%(asctime)s "
@@ -201,7 +201,7 @@ class Log:
         log_path: str,
         log_name: str = "",
         prefix: str = "",
-        clear: bool = False,
+        clear: bool = True,
         ignore: bool = True
     ) -> Optional[bool]:
         self.save_path = log_path
