@@ -97,8 +97,13 @@ class Log:
         self.save_path: Optional[str] = None
 
     @property
-    def __timestamp(self):
+    def __timestamp(self) -> str:
         return datetime.now().strftime(self.TIMESTAMP_PATTERN)
+
+    @property
+    def __handler_name(self) -> str:
+        assert self.file_handler is not None
+        return os.path.split(self.file_handler.baseFilename)[1]
 
     def __add_stream_handler(self) -> None:
         stream_handler = logging.StreamHandler()
@@ -183,7 +188,7 @@ class Log:
             # automatically add LEGACY_MARKER to old log file
             elif os.path.isfile(file_path) \
                 and not filename.startswith(Log.LEGACY_MARKER) \
-                and filename != os.path.split(self.file_handler.baseFilename)[1]:
+                and filename != self.__handler_name:
                 new_file_path = os.path.join(
                     self.save_path,
                     Log.LEGACY_MARKER + filename

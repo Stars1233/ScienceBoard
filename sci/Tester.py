@@ -146,13 +146,13 @@ class Tester:
                 os.makedirs(log_file_path, exist_ok=True)
                 if not self.log.switch(log_file_path, clear=True, ignore=self.ignore):
                     local_counter._ignore()
-                    self.log.critical("Task already finished, ignored.")
+                    self.log.critical("Task already finished; ignored.")
                     continue
 
                 try:
                     passed = task()
                     local_counter._pass() if passed else local_counter._fail()
-                    self.log.critical(f"Task finished, pass={passed}.")
+                    self.log.critical(f"Task finished with passed={passed}.")
 
                 except Exception:
                     local_counter._skip()
