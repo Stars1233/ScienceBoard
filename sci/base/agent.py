@@ -71,7 +71,7 @@ class Message:
 
 @dataclass
 class Model:
-    style: str
+    model_style: str
     base_url: str
     model_name: str
     api_key: Optional[str] = None
@@ -113,7 +113,7 @@ class Model:
         ...
 
     def __call__(self, messages: Dict) -> Response:
-        full_name = f"_{self.__class__.__name__}__style_{self.style}"
+        full_name = f"_{self.__class__.__name__}__style_{self.model_style}"
         return getattr(self, full_name)(messages)
 
 

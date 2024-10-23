@@ -7,8 +7,8 @@ from typing import List, Dict, Set, Optional
 from typing import Iterable, Callable
 
 sys.dont_write_bytecode
-from . import Agent, Manager, Task
-from . import Log
+from . import Agent, Manager, Task, Log
+from . import Presets
 
 # THESE WILL BE LOOKED-UP BY `globals()`
 # DO NOT REMOVE THESE
@@ -49,8 +49,8 @@ class Tester:
         self,
         tasks_path: str,
         logs_path: str,
-        managers: Dict[str, Manager],
         agents: Dict[str, Agent],
+        managers: Dict[str, Manager] = Presets.spawn_managers(),
         obs_types: Set[str] = {"screenshot"},
         ignore: bool = True,
         debug: bool = False
