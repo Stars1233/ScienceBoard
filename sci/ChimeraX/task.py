@@ -30,21 +30,18 @@ class RawTask(Task):
             if eval_item["type"] == Task.EARLY_STOP:
                 continue
 
-            assert eval_item["type"] in ("states", "info")
+            assert eval_item["type"] in ("info", "states")
             assert "key" in eval_item
-            assert "value" in eval_item
+            if eval_item["type"] == "info":
+                assert "value" in eval_item
+                assert isinstance(eval_item["value"], list)
+                for sub_item in eval_item["value"]:
+                    assert isinstance(sub_item, str)
+            elif eval_item["type"] == "states":
+                assert "value" in eval_item or "pattern" in eval_item
 
             for key_name in eval_item:
-                assert key_name in ("type", "find", "key", "value")
-
-                if key_name == "find":
-                    assert eval_item["type"] == "states"
-
-                if key_name == "value" and eval_item["type"] == "info":
-                    assert isinstance(eval_item[key_name], list)
-                    for sub_item in eval_item[key_name]:
-                        assert isinstance(sub_item, str)
-                else:
+                if eval_item["type"] != "info" or key_name != "value":
                     assert isinstance(eval_item[key_name], str)
 
     def _init(self) -> bool:
@@ -65,9 +62,11 @@ class RawTask(Task):
         eval_item: Dict[str, Any],
         current_states: Dict[str, Any]
     ) -> bool:
+        getitem = lambda obj, key, default: obj[key] if key in obj else default
         find: str = eval_item["find"] if "find" in eval_item else None
         key: str = eval_item["key"]
-        value: str = eval_item["value"]
+        value: str = getitem(eval_item, "value", None)
+        pattern: str = getitem(eval_item, "pattern", None)
 
         raw_key = None
         if key.startswith("lambda"):
@@ -97,7 +96,12 @@ class RawTask(Task):
         raw_value: Any = current_states[raw_key]
         if not isinstance(raw_value, str):
             raw_value: str = json.dumps(raw_value)
-        return re.search(value, raw_value) is not None
+
+        if pattern is not None:
+            return re.search(pattern, raw_value) is not None
+        elif value is not None:
+            return value == raw_value
+        return False
 
     @Task._error_handler
     def __eval_info(
