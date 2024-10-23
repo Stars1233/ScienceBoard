@@ -4,7 +4,7 @@ sys.dont_write_bytecode = True
 from sci import Presets, Tester
 
 if __name__ == "__main__":
-    # Presets.spawn_agents() only receive keyword args
+    # spawn_agents() only receive keyword args from Model and Agent
     agents = Presets.spawn_agents(
         model_style="openai",
         base_url="http://server.ichinoe.xyz:500/v1/chat/completions",

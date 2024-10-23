@@ -44,6 +44,9 @@ class Counter:
             f"{self.ignored} ignored."
         )
 
+    def __repr__(self) -> str:
+        return "\033[1m" + self.__str__() + "\033[0m"
+
 class Tester:
     def __init__(
         self,
@@ -156,7 +159,7 @@ class Tester:
                 try:
                     passed = task()
                     local_counter._pass() if passed else local_counter._fail()
-                    self.log.critical(f"Task finished with passed={passed}.")
+                    self.log.critical(f"\033[1mTask finished with passed={str(passed).upper()}.\033[0m")
 
                 except Exception:
                     local_counter._skip()
@@ -164,4 +167,4 @@ class Tester:
                         f"Task testing failed; skipped\n"
                             + traceback.format_exc()
                     )
-        self.log.critical(local_counter)
+        self.log.critical(local_counter.__repr__())

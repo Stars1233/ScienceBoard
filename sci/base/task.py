@@ -246,7 +246,7 @@ class Task:
 
     def __call__(self) -> bool:
         assert self.available
-        self.vlog.info(f"Task: {self.instruction}")
+        self.vlog.info(f"\033[1mTask: {self.instruction}\033[0m")
 
         if not self.manager.entered:
             with self.manager:
