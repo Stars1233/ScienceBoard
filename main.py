@@ -4,7 +4,6 @@ sys.dont_write_bytecode = True
 from sci import Presets, Tester
 
 if __name__ == "__main__":
-    managers = Presets.spawn_managers()
     agents = Presets.spawn_agents(
         model_style="openai",
         base_url="http://server.ichinoe.xyz:500/v1/chat/completions",
@@ -15,8 +14,8 @@ if __name__ == "__main__":
     Tester(
         tasks_path="~/Downloads/tasks",
         logs_path="~/Downloads/logs",
+        managers=Presets.spawn_managers(),
         agents=agents,
-        managers=managers,
         ignore=False,
         debug=True
     )()

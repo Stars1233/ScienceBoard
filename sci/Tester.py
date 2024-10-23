@@ -49,8 +49,8 @@ class Tester:
         self,
         tasks_path: str,
         logs_path: str,
-        agents: Dict[str, Agent],
         managers: Dict[str, Manager],
+        agents: Dict[str, Agent],
         obs_types: Set[str] = {"screenshot"},
         ignore: bool = True,
         debug: bool = False
