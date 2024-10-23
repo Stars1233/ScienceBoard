@@ -125,5 +125,6 @@ class RawTask(Task):
             method_name = f"_{self.__class__.__name__}__eval_{eval_type}"
             eval_func = getattr(self, method_name)
             if not eval_func(eval_item, current_states):
+                self.vlog.info(f"Evaluation failed at key of {eval_item['key']}.")
                 return False
         return True

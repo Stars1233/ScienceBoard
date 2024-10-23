@@ -218,6 +218,7 @@ class Task:
             if eval_item["type"] != Task.EARLY_STOP:
                 eval_index += 1
             elif eval_item["value"] != stop_type.__name__:
+                self.vlog.info(f"Evaluation failed at stop type.")
                 return False
             else:
                 del self.evaluate[eval_index]
