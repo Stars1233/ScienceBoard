@@ -227,17 +227,20 @@ class Agent:
             [Response],
             Message
         ] = getattr(Access, access_style)
+        self.access_style = access_style
 
         assert hasattr(CodeLike, f"extract_{code_style}")
         self.code_handler: Callable[
             [Content],
             List[CodeLike]
         ] = getattr(CodeLike, f"extract_{code_style}")
+        self.code_style = code_style
 
         assert overflow_style is None or hasattr(Overflow, overflow_style)
         self.overflow_handler: Optional[Callable[[Response], bool]] = None \
             if overflow_style is None \
             else getattr(Overflow, overflow_style)
+        self.overflow_style = overflow_style
 
         if system_inst is None:
             system_inst = Agent.SYSTEM_INST

@@ -1,6 +1,6 @@
 import sys
 
-from typing import Optional, Dict
+from typing import Optional, Dict, Callable
 
 sys.dont_write_bytecode = True
 from . import Manager, Model, Agent
@@ -8,6 +8,17 @@ from . import Prompts
 
 from . import ChimeraX
 
+def load_system_inst(spawner: Callable) -> Callable:
+    def wrapper(*args, **kwargs):
+        result_dict: Dict[str, Agent] = spawner(*args, **kwargs)
+        for key, value in result_dict.items():
+            code_prompt = value.code_style.upper()
+            type_sort = key.replace(":", "_").upper()
+            value.system_inst = getattr(Prompts, f"{code_prompt}_{type_sort}")
+        return result_dict
+    return wrapper
+
+@load_system_inst
 def spawn_agents(
     model_style: str,
     base_url: str,
@@ -31,8 +42,7 @@ def spawn_agents(
             model=model,
             access_style=access_style,
             code_style=code_style,
-            overflow_style=overflow_style,
-            system_inst=Prompts.SYSTEM_INST_CHIMERAX_RAW
+            overflow_style=overflow_style
         )
     }
 
