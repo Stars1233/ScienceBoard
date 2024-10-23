@@ -12,7 +12,7 @@ from . import Log
 
 # THESE WILL BE LOOKED-UP BY `globals()`
 # DO NOT REMOVE THESE
-from .ChimeraX import RawTask as ChimeraXRawTask
+from . import ChimeraX
 
 @dataclass
 class Counter:
@@ -106,20 +106,18 @@ class Tester:
 
     def __load(self, config_path: str) -> Task:
         # using nil agent & manager only to load type field
-        task_type = Task(
-            config_path=config_path,
-            agent=Agent(Model("", "", "")),
-            manager=Manager()
-        ).type
+        nil_task = Task(config_path=config_path)
+        task_type = nil_task.type
+        task_sort = nil_task.sort
 
-        task_class = globals()[f"{task_type}Task"]
+        task_class = getattr(globals()[task_type], task_sort + "Task")
 
         # assert task_type in self.agents
         # assert task_type in self.managers
         return task_class(
             config_path=config_path,
-            manager=self.managers[task_type],
-            agent=self.agents[task_type],
+            manager=self.managers[f"{task_type}:{task_sort}"],
+            agent=self.agents[f"{task_type}:{task_sort}"],
             obs_types=self.obs_types,
             debug=self.debug
         )

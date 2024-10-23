@@ -8,7 +8,7 @@ from . import Prompts
 
 from . import ChimeraX
 
-def agents_spawner(
+def spawn_agents(
     model_style: str,
     base_url: str,
     model_name: str,
@@ -27,7 +27,7 @@ def agents_spawner(
     )
 
     return {
-        "ChimeraXRaw": Agent(
+        "ChimeraX:Raw": Agent(
             model=model,
             access_style=access_style,
             code_style=code_style,
@@ -36,9 +36,9 @@ def agents_spawner(
         )
     }
 
-def managers_spawner() -> Dict[str, Manager]:
+def spawn_managers() -> Dict[str, Manager]:
     return{
-        "ChimeraXRaw": ChimeraX.RawManager(
+        "ChimeraX:Raw": ChimeraX.RawManager(
             sort="daily",
             port=8000,
             gui=True,

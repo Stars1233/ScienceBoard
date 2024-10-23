@@ -24,6 +24,7 @@ class Task:
     CONFIG_RETRY = 5
     ACTION_INTERVAL = 1
     EARLY_STOP = "stop"
+    SORTS = {"Raw", "VM"}
 
     class PlannedNotImplemented(Exception):
         def __init__(self) -> None:
@@ -32,11 +33,11 @@ class Task:
     def __init__(
         self,
         config_path: str,
-        manager: Manager,
-        agent: Agent,
+        manager: Optional[Manager] = None,
+        agent: Optional[Agent] = None,
         obs_types: Set[str] = {"screenshot"},
         debug: bool = False,
-        infix: str = ""
+        infix: str = "",
     ) -> None:
         assert isinstance(config_path, str)
         config_path = os.path.expanduser(config_path)
@@ -47,11 +48,14 @@ class Task:
         self.config = json.load(open(self.path, mode="r", encoding="utf-8"))
         self.__check_config()
 
-        assert isinstance(manager, Manager)
+        assert manager is None or isinstance(manager, Manager)
         self.manager = manager
 
-        assert isinstance(agent, Agent)
+        assert agent is None or isinstance(agent, Agent)
         self.agent = agent
+
+        if self.available:
+            assert self.__class__.__name__.startswith(self.sort)
 
         assert isinstance(obs_types, Iterable)
         for obs_type in obs_types:
@@ -74,10 +78,20 @@ class Task:
 
         self.vlog = VirtualLog()
 
+    @property
+    def available(self) -> bool:
+        manager = getattr(self, "manager", None)
+        agent = getattr(self, "agent", None)
+        return manager is not None and agent is not None
+
     def __check_config(self) -> None:
         assert "type" in self.config
         self.type = self.config["type"]
         assert isinstance(self.type, str)
+
+        assert "sort" in self.config
+        self.sort = self.config["sort"]
+        assert self.sort in Task.SORTS
 
         assert "steps" in self.config
         self.steps = self.config["steps"]
@@ -119,6 +133,8 @@ class Task:
         return True
 
     def init(self, recover: bool) -> bool:
+        assert self.available
+
         name = lambda func: f"_{self.__class__.__name__}__{func}"
         func = lambda func, **kwargs: getattr(self, name(func))(**kwargs)
 
@@ -163,6 +179,8 @@ class Task:
 
     @Log.record_handler
     def predict(self) -> staticmethod:
+        assert self.available
+
         try:
             self.agent._init(self.instruction)
             for step_index in range(self.steps):
@@ -193,6 +211,8 @@ class Task:
     # result output will be written twice sometimes
     @Log.result_handler
     def eval(self, stop_type: staticmethod) -> Union[bool, NoReturn]:
+        assert self.available
+
         eval_index = 0
         while eval_index < len(self.evaluate):
             eval_item = self.evaluate[eval_index]
@@ -226,6 +246,8 @@ class Task:
         return self.eval(stop_type)
 
     def __call__(self, recover: Optional[bool] = None) -> bool:
+        assert self.available
+
         self.vlog.info(f"Task: {self.instruction}")
         default = lambda default: default if recover is None else recover
         if not self.manager.entered:
