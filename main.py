@@ -2,7 +2,7 @@ import sys
 
 sys.dont_write_bytecode = True
 from sci import Tester, Model, Agent, Prompts
-from sci.ChimeraX import ChimeraXManagerRaw
+from sci import ChimeraX
 
 if __name__ == "__main__":
     model = Model(
@@ -20,7 +20,7 @@ if __name__ == "__main__":
     }
 
     manager_dict = {
-        "ChimeraXRaw": ChimeraXManagerRaw(
+        "ChimeraXRaw": ChimeraX.RawManager(
             sort="daily",
             port=8080,
             gui=True,

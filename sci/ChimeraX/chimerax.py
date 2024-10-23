@@ -18,7 +18,7 @@ from .. import Manager
 
 # raw: supposed that ChimeraX is pre-installed on Linux
 #      and one of commands in SORT_MAP is runnable
-class ChimeraXManagerRaw(Manager):
+class RawManager(Manager):
     SORT_MAP: Dict[str, List[str]] = {
         "stable": [
             "chimerax"
@@ -48,7 +48,7 @@ class ChimeraXManagerRaw(Manager):
     ) -> None:
         super().__init__()
 
-        assert sort in ChimeraXManagerRaw.SORT_MAP
+        assert sort in RawManager.SORT_MAP
         self.sort = sort
 
         assert path is None or os.path.exists(path)
@@ -71,7 +71,7 @@ class ChimeraXManagerRaw(Manager):
 
     def __call(self, command: str) -> Dict:
         return requests.get(
-            ChimeraXManagerRaw.BASE_URL(self.port),
+            RawManager.BASE_URL(self.port),
             params={"command": command}
         ).json()
 
@@ -126,7 +126,7 @@ class ChimeraXManagerRaw(Manager):
     def __install_bundle(self, version: str, uninstall: bool = True) -> None:
         zip_file_path = os.path.join(self.temp_dir, f"{version}.zip")
         bundle_dir_path = os.path.join(self.temp_dir, f"chimerax-states-{version}")
-        urllib.request.urlretrieve(ChimeraXManagerRaw.TOOL_URL(version), zip_file_path)
+        urllib.request.urlretrieve(RawManager.TOOL_URL(version), zip_file_path)
 
         with zipfile.ZipFile(zip_file_path, "r") as zip_ref:
             zip_ref.extractall(self.temp_dir)
@@ -140,11 +140,11 @@ class ChimeraXManagerRaw(Manager):
         if current_version != desired_version:
             self.__install_bundle(desired_version, current_version is not None)
 
-    def __enter__(self) -> "ChimeraXManagerRaw":
+    def __enter__(self) -> "RawManager":
         nogui = [] if self.gui else ["--nogui"]
         startup_commands = [self.path] \
             if self.path is not None \
-            else ChimeraXManagerRaw.SORT_MAP[self.sort]
+            else RawManager.SORT_MAP[self.sort]
 
         self.process = subprocess.Popen([
             *startup_commands,
@@ -153,9 +153,9 @@ class ChimeraXManagerRaw(Manager):
             f"remotecontrol rest start json true port {self.port}",
         ], stdout=subprocess.PIPE, text=True)
 
-        timeout = time.time() + ChimeraXManagerRaw.TIMEOUT
+        timeout = time.time() + RawManager.TIMEOUT
         while True:
-            if self.process.stdout.readline().startswith(ChimeraXManagerRaw.REST_FLAG):
+            if self.process.stdout.readline().startswith(RawManager.REST_FLAG):
                 self.__prepare_env(self.version)
                 self.entered = True
                 return self

@@ -1,2 +1,2 @@
-from .chimerax import ChimeraXManagerRaw
-from .task import ChimeraXRawTask
+from .chimerax import RawManager
+from .task import RawTask

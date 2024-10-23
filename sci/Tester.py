@@ -12,7 +12,7 @@ from . import Log
 
 # THESE WILL BE LOOKED-UP BY `globals()`
 # DO NOT REMOVE THESE
-from .ChimeraX import ChimeraXRawTask
+from .ChimeraX import RawTask as ChimeraXRawTask
 
 @dataclass
 class Counter:
