@@ -132,15 +132,14 @@ class Task:
         self.manager.__enter__()
         return True
 
-    def init(self, recover: bool) -> bool:
+    def init(self) -> bool:
         assert self.available
-
         name = lambda func: f"_{self.__class__.__name__}__{func}"
         func = lambda func, **kwargs: getattr(self, name(func))(**kwargs)
 
         for round_index in range(Task.CONFIG_RETRY):
             feedback = True
-            if recover and not self._init():
+            if round_index > 0 and not self._init():
                 continue
             for init_item in self.initialize:
                 time.sleep(Task.ACTION_INTERVAL)
@@ -228,9 +227,9 @@ class Task:
         else:
             return True
 
-    def __call(self, recover: bool) -> bool:
+    def __call(self) -> bool:
         self.vlog.info("Starting initialization.")
-        assert self.init(recover=recover), "Fail to initialize the task"
+        assert self.init(), "Fail to initialize the task"
         if self.debug:
             # input value will be converted to stop_type
             # default to TIMEOUT
@@ -245,13 +244,12 @@ class Task:
         self.vlog.info(f"Starting evaluation with stop type of {stop_type.__name__}.")
         return self.eval(stop_type)
 
-    def __call__(self, recover: Optional[bool] = None) -> bool:
+    def __call__(self) -> bool:
         assert self.available
-
         self.vlog.info(f"Task: {self.instruction}")
-        default = lambda default: default if recover is None else recover
+
         if not self.manager.entered:
             with self.manager:
-                return self.__call(recover=default(True))
+                return self.__call()
         else:
-            return self.__call(recover=default(True))
+            return self.__call()
