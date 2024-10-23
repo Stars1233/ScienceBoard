@@ -25,16 +25,23 @@ def spawn_agents(
     model_name: str,
     api_key: Optional[str] = None,
     proxy: Optional[str] = None,
+    max_tokens: int = 1500,
+    top_p: float = 0.9,
+    temperature: float = 0.5,
     access_style: str = "openai",
     code_style: str = "antiquot",
     overflow_style: Optional[str] = None,
+    context_window: int = 3
 ) -> Dict[str, Agent]:
     model = Model(
         style=model_style,
         base_url=base_url,
         model_name=model_name,
         api_key=api_key,
-        proxy=proxy
+        proxy=proxy,
+        max_tokens=max_tokens,
+        top_p=top_p,
+        temperature=temperature
     )
 
     return {
@@ -42,7 +49,8 @@ def spawn_agents(
             model=model,
             access_style=access_style,
             code_style=code_style,
-            overflow_style=overflow_style
+            overflow_style=overflow_style,
+            context_window=context_window
         )
     }
 
