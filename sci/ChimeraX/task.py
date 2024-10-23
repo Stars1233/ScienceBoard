@@ -109,7 +109,8 @@ class RawTask(Task):
         value = eval_item["value"]
 
         log_message, _ = self.manager._call(f"info {key}")
-        info_list = log_message[0].strip().split("\n")
+        nested_logs = [log.strip().split("\n") for log in log_message]
+        info_list = [log for logs in nested_logs for log in logs if log != ""]
         return set(info_list) == set(value)
 
     @Task._stop_handler

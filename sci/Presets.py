@@ -15,9 +15,10 @@ def load_system_inst(spawner: Callable) -> Callable:
     def wrapper(*args, **kwargs):
         result_dict: Dict[str, Agent] = spawner(*args, **kwargs)
         for key, value in result_dict.items():
-            code_prompt = value.code_style.upper()
-            type_sort = key.replace(":", "_").upper()
-            value.system_inst = getattr(Prompts, f"{code_prompt}_{type_sort}")
+            code_prompt = value.code_style
+            type_sort = key.replace(":", "_")
+            prompt_name = f"{code_prompt}_{type_sort}".upper()
+            value.system_inst = getattr(Prompts, prompt_name)
         return result_dict
     return wrapper
 

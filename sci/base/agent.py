@@ -255,7 +255,7 @@ class Agent:
     def _init(self, inst: str) -> None:
         self.system_message: Message = Message(
             role="system",
-            content=[Content.text_content(self.SYSTEM_INST(inst))]
+            content=[Content.text_content(self.SYSTEM_INST(inst).strip())]
         )
         self.context: List[Message] = []
 
