@@ -90,7 +90,7 @@ class Log:
         self.logger = logging.getLogger(log_name)
         self.logger.setLevel(self.level)
 
-        self.extra = {"domain": Log.DEFAULT_DOMAIN}
+        self.extra = {"domain": self.DEFAULT_DOMAIN}
         self.adapter = logging.LoggerAdapter(self.logger, self.extra)
         self.logger = self.adapter.logger
 
@@ -188,11 +188,11 @@ class Log:
                 os.remove(file_path)
             # automatically add LEGACY_MARKER to old log file
             elif os.path.isfile(file_path) \
-                and not filename.startswith(Log.LEGACY_MARKER) \
+                and not filename.startswith(self.LEGACY_MARKER) \
                 and filename != self.save_name:
                 new_file_path = os.path.join(
                     self.save_path,
-                    Log.LEGACY_MARKER + filename
+                    self.LEGACY_MARKER + filename
                 )
                 os.rename(file_path, new_file_path)
 
@@ -204,7 +204,7 @@ class Log:
         ident: str = None,
         ignore: bool = True
     ) -> Self:
-        self.extra["domain"] = Log.DEFAULT_DOMAIN if ident is None else ident
+        self.extra["domain"] = self.DEFAULT_DOMAIN if ident is None else ident
 
         # called in __exit__()
         if ident is None:

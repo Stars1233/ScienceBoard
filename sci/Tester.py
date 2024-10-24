@@ -47,6 +47,7 @@ class Counter:
     def __repr__(self) -> str:
         return "\033[1m" + self.__str__() + "\033[0m"
 
+
 class Tester:
     def __init__(
         self,
@@ -78,7 +79,7 @@ class Tester:
         self.log = Log()
         self.log.trigger(
             self.logs_path,
-            prefix=Log.SUM_LOG_PREFIX,
+            prefix=self.log.SUM_LOG_PREFIX,
             dependent=False
         )
 
