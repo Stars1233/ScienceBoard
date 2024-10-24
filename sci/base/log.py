@@ -108,21 +108,21 @@ class Log:
 
     @staticmethod
     def replace_ansi(file_path: str) -> Callable[["Log"], None]:
-        def handle(self: Log) -> None:
+        def handler(self: Log) -> None:
             log_content = open(file_path, mode="r", encoding="utf-8").read()
             with open(file_path, mode="w", encoding="utf-8") as writable:
                 writable.write(re.sub(self.ANSI_ESCAPE, "", log_content))
-        return handle
+        return handler
 
     @staticmethod
     def delete(file_path: str) -> Callable[["Log"], None]:
-        def handle(self: Log) -> None:
+        def handler(self: Log) -> None:
             os.remove(file_path)
-        return handle
+        return handler
 
-    def register(self, handle: Callable[[str], Callable[["Log"], None]]) -> None:
+    def register(self, handler: Callable[[str], Callable[["Log"], None]]) -> None:
         assert self.file_handler is not None
-        self._registered.append(handle(self.file_handler.baseFilename))
+        self._registered.append(handler(self.file_handler.baseFilename))
 
     def __add_stream_handler(self) -> None:
         stream_handler = logging.StreamHandler()
@@ -155,8 +155,8 @@ class Log:
         self.logger.removeHandler(self.file_handler)
         self.file_handler = None
 
-        for handle in self._registered:
-            handle(self)
+        for handler in self._registered:
+            handler(self)
         self._registered.clear()
 
     # tricks of passing args to `with` block
