@@ -175,4 +175,6 @@ class Tester:
                         f"Task testing failed; skipped\n"
                             + traceback.format_exc()
                     )
+
         self.log.critical(local_counter.__repr__())
+        self.log.callback()

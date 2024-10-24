@@ -103,6 +103,14 @@ class Log:
         self.file_handler = None
         self._registered = []
 
+    # this cannot be called in __del__()
+    # because open (__builtin__) cannot be found then
+    # so callback() should be manually called by its owner
+    def callback(self) -> None:
+        for handler in self._registered:
+            handler(self)
+        self._registered.clear()
+
     @property
     def save_path(self) -> Optional[str]:
         return os.path.split(self.file_handler.baseFilename)[0] \
@@ -136,7 +144,6 @@ class Log:
         self.logger.addHandler(file_handler)
         if record_new:
             self.file_handler = file_handler
-            self._registered.clear()
         self.register(Log.replace_ansi, file_handler.baseFilename)
 
     def __remove_file_handler(self) -> None:
@@ -145,10 +152,6 @@ class Log:
 
         self.logger.removeHandler(self.file_handler)
         self.file_handler = None
-
-        for handler in self._registered:
-            handler(self)
-        self._registered.clear()
 
     # dependent=True: to remove previous file_handler if exists
     def trigger(
