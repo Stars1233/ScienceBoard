@@ -3,7 +3,7 @@
     "sort": "Raw",
     "steps": 5,
     "instruction": "Detect all clashes with VDW overlap ≥ 0.3Å in ChimeraX.",
-    "version": "0.4",
+    "version": "0.5",
     "initialize": [
         {
             "func": "alphafold_match",

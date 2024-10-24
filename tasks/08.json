@@ -3,7 +3,7 @@
     "sort": "Raw",
     "steps": 5,
     "instruction": "Change the background to grey color in ChimeraX.",
-    "version": "0.4",
+    "version": "0.5",
     "initialize": [
         {
             "func": "open",

@@ -3,7 +3,7 @@
     "sort": "Raw",
     "steps": 5,
     "instruction": "Toggle a dark blue scale bar of length 10 and thinkness 4 in ChimeraX.",
-    "version": "0.4",
+    "version": "0.5",
     "initialize": [
         {
             "func": "open",

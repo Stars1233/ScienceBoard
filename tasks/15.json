@@ -3,7 +3,7 @@
     "sort": "Raw",
     "steps": 5,
     "instruction": "Select all water molecules and draw their centroids with radius of 1Å in ChimeraX.",
-    "version": "0.4",
+    "version": "0.5",
     "initialize": [
         {
             "func": "open",

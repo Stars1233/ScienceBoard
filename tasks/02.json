@@ -3,7 +3,7 @@
     "sort": "Raw",
     "steps": 5,
     "instruction": "Load ~/Downloads/prot.cif in ChimeraX.",
-    "version": "0.4",
+    "version": "0.5",
     "initialize": [
         {
             "func": "clear"
