@@ -52,19 +52,37 @@ class Log:
 
     @property
     def traj_file_path(self):
+        assert self.file_handler is not None
         return os.path.join(self.save_path, self.TRAJ_FILENAME)
 
     @property
     def result_file_path(self):
+        assert self.file_handler is not None
         return os.path.join(self.save_path, self.RESULT_FILENAME)
 
     @property
     def record_file_path(self):
+        assert self.file_handler is not None
         return os.path.join(self.save_path, self.RECORD_FILENAME)
 
     @property
     def request_file_path(self):
+        assert self.file_handler is not None
         return os.path.join(self.save_path, self.REQUEST_FILENAME)
+
+    @property
+    def __timestamp(self) -> str:
+        return datetime.now().strftime(self.TIMESTAMP_PATTERN)
+
+    @property
+    def save_path(self) -> Optional[str]:
+        return os.path.split(self.file_handler.baseFilename)[0] \
+            if self.file_handler is not None else None
+
+    @property
+    def save_name(self) -> str:
+        assert self.file_handler is not None
+        return os.path.split(self.file_handler.baseFilename)[1]
 
     def __init__(
         self,
@@ -91,44 +109,9 @@ class Log:
 
         if not self.logger.disabled:
             self.__add_stream_handler()
+
         self.file_handler = None
         self._registered = []
-
-        # self.save_path is sync-ed with switch()
-        self.save_path: Optional[str] = None
-
-    @property
-    def __timestamp(self) -> str:
-        return datetime.now().strftime(self.TIMESTAMP_PATTERN)
-
-    @property
-    def __handler_name(self) -> str:
-        assert self.file_handler is not None
-        return os.path.split(self.file_handler.baseFilename)[1]
-
-    @staticmethod
-    def replace_ansi(file_path: str) -> Callable[["Log"], None]:
-        def handler(self: Log) -> None:
-            log_content = open(file_path, mode="r", encoding="utf-8").read()
-            with open(file_path, mode="w", encoding="utf-8") as writable:
-                writable.write(re.sub(self.ANSI_ESCAPE, "", log_content))
-        return handler
-
-    @staticmethod
-    def delete(file_path: str) -> Callable[["Log"], None]:
-        def handler(self: Log) -> None:
-            os.remove(file_path)
-        return handler
-
-    def register(
-        self,
-        handler: Callable[[str], Callable[["Log"], None]],
-        file_path: Optional[str] = None
-    ) -> None:
-        if file_path is None:
-            assert self.file_handler is not None
-            file_path = self.file_handler.baseFilename
-        self._registered.append(handler(file_path))
 
     def __add_stream_handler(self) -> None:
         stream_handler = logging.StreamHandler()
@@ -149,6 +132,7 @@ class Log:
         file_handler = logging.FileHandler(log_file_path)
         file_handler.setLevel(self.level)
         file_handler.setFormatter(log_formatter)
+
         self.logger.addHandler(file_handler)
         if record_new:
             self.file_handler = file_handler
@@ -168,15 +152,23 @@ class Log:
 
     # tricks of passing args to `with` block
     # ref: https://stackoverflow.com/a/10252925
-    def __call__(self, domain: str = "") -> Self:
-        assert isinstance(domain, str)
-        if domain == "":
-            domain = Log.DEFAULT_DOMAIN
-        self.extra["domain"] = domain
+    def __call__(
+        self,
+        base_path: str = None,
+        ident: str = None,
+        ignore: bool = True
+    ) -> Self:
+        self.extra["domain"] = Log.DEFAULT_DOMAIN if ident is None else ident
+
+        if ident is not None:
+            assert base_path is not None
+            log_file_path = os.path.join(base_path, ident)
+            os.makedirs(log_file_path, exist_ok=True)
+            self.switch(log_file_path, ignore=ignore)
         return self
 
-    def __enter__(self) -> Self:
-        return self
+    def __enter__(self) -> bool:
+        return os.path.exists(self.result_file_path)
 
     def __exit__(self, exc_type, exc_value, traceback) -> None:
         self()
@@ -208,7 +200,7 @@ class Log:
 
     def __clear(self, ignore: bool) -> bool:
         if os.path.exists(self.result_file_path) and ignore:
-            return False
+            return
 
         for filename in os.listdir(self.save_path):
             file_path = os.path.join(self.save_path, filename)
@@ -219,13 +211,12 @@ class Log:
             # automatically add LEGACY_MARKER to old log file
             elif os.path.isfile(file_path) \
                 and not filename.startswith(Log.LEGACY_MARKER) \
-                and filename != self.__handler_name:
+                and filename != self.save_name:
                 new_file_path = os.path.join(
                     self.save_path,
                     Log.LEGACY_MARKER + filename
                 )
                 os.rename(file_path, new_file_path)
-        return True
 
     def switch(
         self,
@@ -234,11 +225,10 @@ class Log:
         prefix: str = "",
         clear: bool = True,
         ignore: bool = True
-    ) -> Optional[bool]:
-        self.save_path = log_path
+    ) -> None:
         self.__file(log_path, log_name, prefix, delete_old=True)
         if clear:
-            return self.__clear(ignore)
+            self.__clear(ignore)
 
     def new(
         self,
@@ -247,6 +237,30 @@ class Log:
         prefix: str = ""
     ) -> None:
         self.__file(log_path, log_name, prefix, delete_old=False)
+
+    @staticmethod
+    def replace_ansi(file_path: str) -> Callable[["Log"], None]:
+        def handler(self: Log) -> None:
+            log_content = open(file_path, mode="r", encoding="utf-8").read()
+            with open(file_path, mode="w", encoding="utf-8") as writable:
+                writable.write(re.sub(self.ANSI_ESCAPE, "", log_content))
+        return handler
+
+    @staticmethod
+    def delete(file_path: str) -> Callable[["Log"], None]:
+        def handler(self: Log) -> None:
+            os.remove(file_path)
+        return handler
+
+    def register(
+        self,
+        handler: Callable[[str], Callable[["Log"], None]],
+        file_path: Optional[str] = None
+    ) -> None:
+        if file_path is None:
+            assert self.file_handler is not None
+            file_path = self.file_handler.baseFilename
+        self._registered.append(handler(file_path))
 
     def save(
         self,

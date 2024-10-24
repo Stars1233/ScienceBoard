@@ -148,10 +148,12 @@ class Tester:
     def __call__(self):
         local_counter = Counter()
         for task in self.tasks:
-            with self.log(domain=task.ident):
-                log_file_path = os.path.join(self.logs_path, task.ident)
-                os.makedirs(log_file_path, exist_ok=True)
-                if not self.log.switch(log_file_path, ignore=self.ignore):
+            with self.log(
+                base_path=self.logs_path,
+                ident=task.ident,
+                ignore=self.ignore
+            ) as result_exist:
+                if result_exist:
                     local_counter._ignore()
                     self.log.critical("Task already finished; ignored.")
                     self.log.register(Log.delete)
