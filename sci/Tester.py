@@ -127,7 +127,7 @@ class Tester:
 
     def __traverse(self, current_infix: str = "") -> None:
         current_dir_path = os.path.join(self.tasks_path, current_infix)
-        for unknown_name in os.listdir(current_dir_path):
+        for unknown_name in sorted(os.listdir(current_dir_path)):
             unknown_path = os.path.join(current_dir_path, unknown_name)
             if os.path.isfile(unknown_path):
                 try:

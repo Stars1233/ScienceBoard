@@ -56,6 +56,15 @@ class RawTask(Task):
         _, code = self.manager._call(f"turn {axis} {angle}")
         return code
 
+    def __alphafold_match(self, name: str) -> bool:
+        _, code = self.manager._call(f"alphafold match {name}")
+        return code
+
+    def __color(self, style: str) -> bool:
+        command = f"color {style}" if style != "rainbow" else style
+        _, code = self.manager._call(command)
+        return code
+
     @Task._error_handler
     def __eval_states(
         self,
