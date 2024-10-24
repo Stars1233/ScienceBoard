@@ -11,7 +11,9 @@ from .log import VirtualLog
 #   - __init__(): super().__init__() is required
 #     - entered: whether app is opened
 #     - vlog: virtual global log
-#   - __call__(): execute code with no feedback expected
+#   - __call__(): execute code
+#     - no feedback expected if obs_types is None
+#     - return value is expected for CLI tasks
 #   - __enter__() / __exit__(): open / close app
 # - subclass can also include
 #   - screenshot(): take screenshot of app
