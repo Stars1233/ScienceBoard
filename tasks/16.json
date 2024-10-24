@@ -1,0 +1,36 @@
+{
+    "type": "ChimeraX",
+    "sort": "Raw",
+    "steps": 5,
+    "instruction": "Detect all clashes with VDW overlap ≥ 0.3Å in ChimeraX.",
+    "version": "0.4",
+    "initialize": [
+        {
+            "func": "alphafold_match",
+            "name": "A8Z1J3"
+        },
+        {
+            "func": "turn",
+            "axis": "y",
+            "angle": 1
+        },
+        {
+            "func": "color",
+            "style": "bypolymer"
+        }
+    ],
+    "evaluate": [
+        {
+            "type": "states",
+            "find": "lambda key, value: key.endswith('_name') and value == 'clashes'",
+            "key": "lambda key: key",
+            "pattern": ".+"
+        },
+        {
+            "type": "states",
+            "find": "lambda key, value: key.endswith('page_source')",
+            "key": "lambda key: key",
+            "pattern": "4 clashes"
+        }
+    ]
+}

@@ -1,0 +1,37 @@
+{
+    "type": "ChimeraX",
+    "sort": "Raw",
+    "steps": 5,
+    "instruction": "Select all water molecules and draw their centroids with radius of 1Å in ChimeraX.",
+    "version": "0.4",
+    "initialize": [
+        {
+            "func": "open",
+            "name": "4tut"
+        },
+        {
+            "func": "turn",
+            "axis": "y",
+            "angle": 1
+        }
+    ],
+    "evaluate": [
+        {
+            "type": "info",
+            "key": "sel",
+            "value": [
+                "atom id #!1/A:201@O idatm_type O3",
+                "atom id #!1/A:202@O idatm_type O3",
+                "atom id #!1/A:203@O idatm_type O3",
+                "atom id #!1/A:204@O idatm_type O3",
+                "atom id #!1/A:205@O idatm_type O3"
+            ]
+        },
+        {
+            "type": "states",
+            "find": "lambda key, value: key.endswith('._name') and value == 'centroid'",
+            "key": "lambda key: '.'.join(key.split('.')[:-1] + ['_atoms_drawing', '_positions', '_shift_and_scale'])",
+            "value": "[[13.0012  1.7766 21.3672  1.    ]]"
+        }
+    ]
+}
