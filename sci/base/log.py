@@ -150,32 +150,7 @@ class Log:
             handler(self)
         self._registered.clear()
 
-    # tricks of passing args to `with` block
-    # ref: https://stackoverflow.com/a/10252925
-    def __call__(
-        self,
-        base_path: str = None,
-        ident: str = None,
-        ignore: bool = True
-    ) -> Self:
-        self.extra["domain"] = Log.DEFAULT_DOMAIN if ident is None else ident
-
-        if ident is None:
-            self.__remove_file_handler()
-        else:
-            assert base_path is not None
-            log_path = os.path.join(base_path, ident)
-            os.makedirs(log_path, exist_ok=True)
-            self.trigger(log_path)
-        return self
-
-    def __enter__(self) -> bool:
-        return os.path.exists(self.result_file_path)
-
-    def __exit__(self, exc_type, exc_value, traceback) -> None:
-        self()
-
-    # dependent=True: remove previous file_handler if exists
+    # dependent=True: to remove previous file_handler if exists
     def trigger(
         self,
         log_path: str,
@@ -221,13 +196,33 @@ class Log:
                 )
                 os.rename(file_path, new_file_path)
 
-    # def new(
-    #     self,
-    #     log_path: str,
-    #     log_name: str = "",
-    #     prefix: str = ""
-    # ) -> None:
-    #     self.__file(log_path, log_name, prefix, delete_old=False)
+    # tricks of passing args to `with` block
+    # ref: https://stackoverflow.com/a/10252925
+    def __call__(
+        self,
+        base_path: str = None,
+        ident: str = None,
+        ignore: bool = True
+    ) -> Self:
+        self.extra["domain"] = Log.DEFAULT_DOMAIN if ident is None else ident
+
+        # called in __exit__()
+        if ident is None:
+            self.__remove_file_handler()
+        # called before __enter__()
+        else:
+            assert base_path is not None
+            log_path = os.path.join(base_path, ident)
+            os.makedirs(log_path, exist_ok=True)
+            self.trigger(log_path)
+            self.__clear(ignore)
+        return self
+
+    def __enter__(self) -> bool:
+        return os.path.exists(self.result_file_path)
+
+    def __exit__(self, exc_type, exc_value, traceback) -> None:
+        self()
 
     @staticmethod
     def replace_ansi(file_path: str) -> Callable[["Log"], None]:
