@@ -1,0 +1,35 @@
+{
+    "type": "ChimeraX",
+    "sort": "Raw",
+    "steps": 5,
+    "instruction": "Remove nucleotide styling in ChimeraX.",
+    "version": "0.4",
+    "initialize": [
+        {
+            "func": "open",
+            "name": "3bna"
+        },
+        {
+            "func": "turn",
+            "axis": "y",
+            "angle": 1
+        }
+    ],
+    "evaluate": [
+        {
+            "type": "states",
+            "key": "lambda key: key.startswith('_state_containers.models._models.(1,)._nucleotide_info')",
+            "value": null
+        },
+        {
+            "type": "states",
+            "key": "lambda key: key.startswith('_state_containers.models._models.(1,)._nucleotide_changes')",
+            "value": null
+        },
+        {
+            "type": "states",
+            "key": "lambda key: key.startswith('_state_containers.models._models.(1,)._ring_drawing.name')",
+            "value": null
+        }
+    ]
+}

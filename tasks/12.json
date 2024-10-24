@@ -1,0 +1,25 @@
+{
+    "type": "ChimeraX",
+    "sort": "Raw",
+    "steps": 5,
+    "instruction": "Show nucleotides as H-bond ladders in ChimeraX.",
+    "version": "0.4",
+    "initialize": [
+        {
+            "func": "open",
+            "name": "3bna"
+        },
+        {
+            "func": "turn",
+            "axis": "y",
+            "angle": 1
+        }
+    ],
+    "evaluate": [
+        {
+            "type": "states",
+            "key": "_state_containers.models._models.(1,)._ladder_params.stubs_only",
+            "value": false
+        }
+    ]
+}

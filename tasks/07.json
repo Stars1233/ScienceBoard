@@ -1,0 +1,30 @@
+{
+    "type": "ChimeraX",
+    "sort": "Raw",
+    "steps": 5,
+    "instruction": "Rotates the scene to a standard orientation in ChimeraX.",
+    "version": "0.4",
+    "initialize": [
+        {
+            "func": "open",
+            "name": "1dns"
+        },
+        {
+            "func": "turn",
+            "axis": "y",
+            "angle": 114
+        },
+        {
+            "func": "turn",
+            "axis": "x",
+            "angle": 514
+        }
+    ],
+    "evaluate": [
+        {
+            "type": "states",
+            "key": "_state_containers.models._models.(1,)._atoms_drawing._draw_shape.bindings._opengl_context.window.view._render.current_model_view_matrix._m44",
+            "pattern": "^\\[\\[ +1\\. +0\\. +0\\. +0. +\\] \\[ +0\\. +1\\. +0\\. +0. +\\] \\[ +0\\. +0\\. +1\\. +0. +\\]"
+        }
+    ]
+}

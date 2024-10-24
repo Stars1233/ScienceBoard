@@ -1,0 +1,24 @@
+{
+    "type": "ChimeraX",
+    "sort": "Raw",
+    "steps": 5,
+    "instruction": "Load ~/Downloads/prot.cif in ChimeraX.",
+    "version": "0.4",
+    "initialize": [
+        {
+            "func": "clear"
+        },
+        {
+            "func": "download",
+            "url": "https://files.rcsb.org/download/3ppd.cif",
+            "path": "~/Downloads/prot.cif"
+        }
+    ],
+    "evaluate": [
+        {
+            "type": "states",
+            "key": "_state_containers.models._models.(1,)._name",
+            "value": "prot.cif"
+        }
+    ]
+}
