@@ -102,11 +102,15 @@ class Log:
 
         self.file_handler = None
         self._registered = []
+        self._independent = []
 
     # this cannot be called in __del__()
     # because open (__builtin__) cannot be found then
     # so callback() should be manually called by its owner
     def callback(self) -> None:
+        for file_handler in self._independent:
+            self.__remove_file_handler(file_handler)
+
         for handler in self._registered:
             handler(self)
         self._registered.clear()
@@ -132,7 +136,7 @@ class Log:
         self,
         log_path: str,
         log_name: str,
-        record_new: bool = True
+        dependent: bool = True
     ) -> None:
         log_file_path = os.path.join(log_path, f"{log_name}.log")
         log_formatter = logging.Formatter(self.FILE_LOG_PATTERN)
@@ -142,16 +146,26 @@ class Log:
         file_handler.setFormatter(log_formatter)
 
         self.logger.addHandler(file_handler)
-        if record_new:
+        if dependent:
             self.file_handler = file_handler
+        else:
+            self._independent.append(file_handler)
         self.register(Log.replace_ansi, file_handler.baseFilename)
 
-    def __remove_file_handler(self) -> None:
+    def __remove_file_handler(
+        self,
+        file_handler: Optional[logging.FileHandler] = None
+    ) -> None:
         if self.file_handler is None:
             return
 
-        self.logger.removeHandler(self.file_handler)
-        self.file_handler = None
+        if file_handler is None:
+            file_handler = self.file_handler
+
+        if file_handler == self.file_handler:
+            self.file_handler = None
+
+        self.logger.removeHandler(file_handler)
 
     # dependent=True: to remove previous file_handler if exists
     def trigger(
@@ -176,7 +190,7 @@ class Log:
         self.__add_file_handler(
             log_path,
             prefix + log_name,
-            record_new=dependent
+            dependent=dependent
         )
 
     def __clear(self, ignore: bool) -> bool:
