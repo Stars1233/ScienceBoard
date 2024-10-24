@@ -42,7 +42,8 @@ class RawTask(Task):
 
             for key_name in eval_item:
                 if eval_item["type"] != "info" or key_name != "value":
-                    assert isinstance(eval_item[key_name], str)
+                    assert eval_item[key_name] is None \
+                        or isinstance(eval_item[key_name], str)
 
     def _init(self) -> bool:
         _, code = self.manager._call("close")
@@ -72,6 +73,10 @@ class RawTask(Task):
         value: str = getitem(eval_item, "value", None)
         pattern: str = getitem(eval_item, "pattern", None)
 
+        # if value is set to null
+        # check the inexistence of item
+        check_null = "value" in eval_item and eval_item["value"] is None
+
         raw_key = None
         if key.startswith("lambda"):
             key: Callable[[str], Union[str, bool]] = eval(key)
@@ -86,17 +91,23 @@ class RawTask(Task):
                 key for key, value in current_states.items()
                 if find(key, value)
             ]
+            if check_null:
+                return len(raw_keys) == 0
             raw_key: str = key(meta_keys[0])
 
         # find raw_key directly using key(key)
         # type of key: str -> bool
         elif hasattr(key, "__call__"):
             raw_keys: List[str] = list(filter(key, current_states.keys()))
+            if check_null:
+                return len(raw_keys) == 0
             raw_key: str = raw_keys[0]
 
         # key itself is raw_key
         # type of key: str
         else:
+            if check_null:
+                return raw_key not in current_states
             raw_key: str = key
 
         # get targeted raw_value by raw_key
