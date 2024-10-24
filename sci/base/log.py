@@ -120,9 +120,15 @@ class Log:
             os.remove(file_path)
         return handler
 
-    def register(self, handler: Callable[[str], Callable[["Log"], None]]) -> None:
-        assert self.file_handler is not None
-        self._registered.append(handler(self.file_handler.baseFilename))
+    def register(
+        self,
+        handler: Callable[[str], Callable[["Log"], None]],
+        file_path: Optional[str] = None
+    ) -> None:
+        if file_path is None:
+            assert self.file_handler is not None
+            file_path = self.file_handler.baseFilename
+        self._registered.append(handler(file_path))
 
     def __add_stream_handler(self) -> None:
         stream_handler = logging.StreamHandler()
@@ -147,6 +153,7 @@ class Log:
         if record_new:
             self.file_handler = file_handler
             self._registered.clear()
+        self.register(Log.replace_ansi, file_handler.baseFilename)
 
     def __remove_file_handler(self) -> None:
         if self.file_handler is None:
@@ -198,7 +205,6 @@ class Log:
             prefix + log_name,
             record_new=delete_old
         )
-        self.register(Log.replace_ansi)
 
     def __clear(self, ignore: bool) -> bool:
         if os.path.exists(self.result_file_path) and ignore:
