@@ -40,11 +40,6 @@ class RawTask(Task):
             elif eval_item["type"] == "states":
                 assert "value" in eval_item or "pattern" in eval_item
 
-            for key_name in eval_item:
-                if eval_item["type"] != "info" or key_name != "value":
-                    assert eval_item[key_name] is None \
-                        or isinstance(eval_item[key_name], str)
-
     def _init(self) -> bool:
         _, code = self.manager._call("close")
         return code and self.manager.clear_history()
@@ -112,11 +107,14 @@ class RawTask(Task):
 
         # get targeted raw_value by raw_key
         raw_value: Any = current_states[raw_key]
-        if not isinstance(raw_value, str):
-            raw_value: str = json.dumps(raw_value)
 
+        # cast to str first
         if pattern is not None:
+            if not isinstance(raw_value, str):
+                raw_value: str = json.dumps(raw_value)
             return re.search(pattern, raw_value) is not None
+        # extract match
+        # no assumptions for value type
         elif value is not None:
             return value == raw_value
         return False
