@@ -92,6 +92,7 @@ class Log:
         if not self.logger.disabled:
             self.__add_stream_handler()
         self.file_handler = None
+        self._registered = []
 
         # self.save_path is sync-ed with switch()
         self.save_path: Optional[str] = None
@@ -104,6 +105,24 @@ class Log:
     def __handler_name(self) -> str:
         assert self.file_handler is not None
         return os.path.split(self.file_handler.baseFilename)[1]
+
+    @staticmethod
+    def replace_ansi(file_path: str) -> Callable[["Log"], None]:
+        def handle(self: Log) -> None:
+            log_content = open(file_path, mode="r", encoding="utf-8").read()
+            with open(file_path, mode="w", encoding="utf-8") as writable:
+                writable.write(re.sub(self.ANSI_ESCAPE, "", log_content))
+        return handle
+
+    @staticmethod
+    def delete(file_path: str) -> Callable[["Log"], None]:
+        def handle(self: Log) -> None:
+            os.remove(file_path)
+        return handle
+
+    def register(self, handle: Callable[[str], Callable[["Log"], None]]) -> None:
+        assert self.file_handler is not None
+        self._registered.append(handle(self.file_handler.baseFilename))
 
     def __add_stream_handler(self) -> None:
         stream_handler = logging.StreamHandler()
@@ -127,6 +146,7 @@ class Log:
         self.logger.addHandler(file_handler)
         if record_new:
             self.file_handler = file_handler
+            self._registered.clear()
 
     def __remove_file_handler(self) -> None:
         if self.file_handler is None:
@@ -134,6 +154,10 @@ class Log:
 
         self.logger.removeHandler(self.file_handler)
         self.file_handler = None
+
+        for handle in self._registered:
+            handle(self)
+        self._registered.clear()
 
     # tricks of passing args to `with` block
     # ref: https://stackoverflow.com/a/10252925
@@ -174,6 +198,7 @@ class Log:
             prefix + log_name,
             record_new=delete_old
         )
+        self.register(Log.replace_ansi)
 
     def __clear(self, ignore: bool) -> bool:
         if os.path.exists(self.result_file_path) and ignore:

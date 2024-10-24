@@ -154,6 +154,7 @@ class Tester:
                 if not self.log.switch(log_file_path, ignore=self.ignore):
                     local_counter._ignore()
                     self.log.critical("Task already finished; ignored.")
+                    self.log.register(Log.delete)
                     continue
 
                 try:
