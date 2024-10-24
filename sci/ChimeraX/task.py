@@ -2,7 +2,7 @@ import sys
 import re
 import json
 
-from typing import List, Tuple, Dict, Callable, Any
+from typing import List, Dict, Union, Callable, Any
 
 sys.dont_write_bytecode = True
 from ..base import Task
@@ -48,6 +48,10 @@ class RawTask(Task):
         _, code = self.manager._call("close")
         return code and self.manager.clear_history()
 
+    def __clear(self) -> bool:
+        _, code = self.manager._call(f"clear")
+        return code
+
     def __open(self, name: str) -> bool:
         _, code = self.manager._call(f"open {name}")
         return code
@@ -70,16 +74,19 @@ class RawTask(Task):
 
         raw_key = None
         if key.startswith("lambda"):
-            key: Callable[[str], Any] = eval(key)
+            key: Callable[[str], Union[str, bool]] = eval(key)
 
         # find meta_key by key-value pair using find(key)
         # process meta_key to raw_key using key(meta_key)
-        # type of find: (str, Any) -> bool
+        # type of find: str -> Any -> bool
         # type of key: str -> str
         if find is not None:
-            find: Callable[[Tuple[Any]], bool] = eval(find)
-            meta_keys: List[Tuple[Any]] = list(filter(find, current_states.items()))
-            raw_key: str = key(meta_keys[0][0])
+            find: Callable[[str, Any], bool] = eval(find)
+            meta_keys: List[str] = [
+                key for key, value in current_states.items()
+                if find(key, value)
+            ]
+            raw_key: str = key(meta_keys[0])
 
         # find raw_key directly using key(key)
         # type of key: str -> bool
@@ -125,6 +132,6 @@ class RawTask(Task):
             method_name = f"_{self.__class__.__name__}__eval_{eval_type}"
             eval_func = getattr(self, method_name)
             if not eval_func(eval_item, current_states):
-                self.vlog.info(f"Evaluation failed at key of {eval_item['key']}.")
+                self.vlog.info(f"Evaluation failed at {eval_type} of {eval_item['key']}.")
                 return False
         return True
