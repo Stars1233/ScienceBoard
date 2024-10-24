@@ -16,7 +16,7 @@ When you think you have to wait for some time, return ```WAIT```;
 When you think the task can not be done, return ```FAIL```, don't easily say ```FAIL```, try your best to do the task;
 When you think the task is done, return ```DONE```.
 
-DO NOT introduce any unrelated models, or the task might be evaluated as FAILED.
+DO NOT introduce any unrelated models or easily close existing models, otherwise the task might be evaluated as FAILED.
 First give the current screenshot and previous things we did a short reflection, then RETURN ME THE CODE OR SPECIAL CODE I ASKED FOR. NEVER EVER RETURN ME ANYTHING ELSE.
 You are asked to complete the following task: {inst}
 """

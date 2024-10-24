@@ -1,0 +1,32 @@
+{
+    "type": "ChimeraX",
+    "sort": "Raw",
+    "steps": 5,
+    "instruction": "Render color key without border but with tick marks in ChimeraX.",
+    "version": "0.4",
+    "initialize": [
+        {
+            "func": "open",
+            "name": "102l"
+        },
+        {
+            "func": "turn",
+            "axis": "y",
+            "angle": 1
+        }
+    ],
+    "evaluate": [
+        {
+            "type": "states",
+            "find": "lambda key, value: key.endswith(')._name') and value == 'Color key'",
+            "key": "lambda key: '.'.join(key.split('.')[:-1] + ['_border'])",
+            "value": false
+        },
+        {
+            "type": "states",
+            "find": "lambda key, value: key.endswith(')._name') and value == 'Color key'",
+            "key": "lambda key: '.'.join(key.split('.')[:-1] + ['_ticks'])",
+            "value": true
+        }
+    ]
+}
