@@ -10,6 +10,7 @@ sys.dont_write_bytecode = True
 from .agent import Agent, Primitive
 from .manager import Manager
 from .log import Log, VirtualLog
+from . import init
 
 # base class for all tasks
 # - subclass should include:
@@ -126,27 +127,67 @@ class Task:
             identifier.replace("\\", "/")
         return identifier
 
-    def _init(self) -> bool:
-        self.manager.__exit__(None, None, None)
-        time.sleep(Task.ACTION_INTERVAL)
-        self.manager.__enter__()
-        return True
+    def _stop_handler(method: Callable) -> Callable:
+        @Log.result_handler
+        def wrapper(self, stop_type: staticmethod) -> bool:
+            try:
+                return Task.eval(self, stop_type)
+            except Task.PlannedNotImplemented:
+                return method(self)
+        return wrapper
 
+    def _error_handler(method: Callable) -> Callable:
+        def wrapper(self, *args) -> bool:
+            try:
+                return method(self, *args)
+            except:
+                return False
+        return wrapper
+
+    def _init(self) -> bool:
+        try:
+            self.manager.__exit__(None, None, None)
+            time.sleep(Task.ACTION_INTERVAL)
+            self.manager.__enter__()
+            return True
+        except:
+            return False
+
+    # find local `func` first
+    # then find `raw_func` or `vm_func` in .base.init
+    # according to self.sort (in {"Raw", "VM"})
     def init(self) -> bool:
         assert self.available
-        name = lambda func: f"_{self.__class__.__name__}__{func}"
-        func = lambda func, **kwargs: getattr(self, name(func))(**kwargs)
+        local_name = lambda func: f"_{self.__class__.__name__}__{func}"
+        global_name = lambda func: f"{self.sort.lower()}_{func}"
+        func = lambda func, **kwargs: getattr(self, local_name(func))(**kwargs) \
+            if hasattr(self, local_name(func)) \
+            else getattr(init, global_name(func))(**kwargs)
 
+        # try `Task.CONFIG_RETRY` times
+        # trigger assertion error if all fail
         for round_index in range(Task.CONFIG_RETRY):
             feedback = True
+            # set to init state from second try
+            # if _init() failed, goto next iteration
             if round_index > 0 and not self._init():
                 continue
+
+            # try every init item in config file
+            # if error occurred / do not return True
+            # then stop init and retry in next iteration
             for init_item in self.initialize:
                 time.sleep(Task.ACTION_INTERVAL)
-                if not func(**init_item):
-                    feedback = False
-                    break
+                succeed = False
+                try:
+                    succeed = func(**init_item)
+                finally:
+                    if not succeed:
+                        feedback = False
+                        break
 
+            # if any of item fails
+            # feed back would not be True
             if feedback:
                 return True
             else:
@@ -187,23 +228,6 @@ class Task:
         except Primitive.PlannedTermination as early_stop:
             return early_stop.type
         return Primitive.TIMEOUT
-
-    def _stop_handler(method: Callable) -> Callable:
-        @Log.result_handler
-        def wrapper(self, stop_type: staticmethod) -> bool:
-            try:
-                return Task.eval(self, stop_type)
-            except Task.PlannedNotImplemented:
-                return method(self)
-        return wrapper
-
-    def _error_handler(method: Callable) -> Callable:
-        def wrapper(self, *args) -> bool:
-            try:
-                return method(self, *args)
-            except:
-                return False
-        return wrapper
 
     # in case Task().eval() is derectly called
     # if eval() of Task's subclass is called
