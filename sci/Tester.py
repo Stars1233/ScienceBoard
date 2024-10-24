@@ -76,7 +76,11 @@ class Tester:
         # in fact, self.log call inside of tester.__call()
         # should be converted into the form of vlog.info()
         self.log = Log()
-        self.log.new(self.logs_path, prefix=Log.SUM_LOG_PREFIX)
+        self.log.trigger(
+            self.logs_path,
+            prefix=Log.SUM_LOG_PREFIX,
+            dependent=False
+        )
 
         # agent in agents should not be Agent itself
         assert isinstance(agents, dict)

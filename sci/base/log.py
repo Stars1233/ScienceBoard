@@ -42,6 +42,10 @@ class Log:
     DEFAULT_DOMAIN = "GLOBAL"
     TIMESTAMP_PATTERN = "%y%m%d%H%M%S"
 
+    @property
+    def __timestamp(self) -> str:
+        return datetime.now().strftime(self.TIMESTAMP_PATTERN)
+
     IMAGE_FILENAME   = "step_{index}@{timestamp}.png"
     TEXT_FILENAME    = "step_{index}@{timestamp}.txt"
 
@@ -69,20 +73,6 @@ class Log:
     def request_file_path(self):
         assert self.file_handler is not None
         return os.path.join(self.save_path, self.REQUEST_FILENAME)
-
-    @property
-    def __timestamp(self) -> str:
-        return datetime.now().strftime(self.TIMESTAMP_PATTERN)
-
-    @property
-    def save_path(self) -> Optional[str]:
-        return os.path.split(self.file_handler.baseFilename)[0] \
-            if self.file_handler is not None else None
-
-    @property
-    def save_name(self) -> str:
-        assert self.file_handler is not None
-        return os.path.split(self.file_handler.baseFilename)[1]
 
     def __init__(
         self,
@@ -112,6 +102,16 @@ class Log:
 
         self.file_handler = None
         self._registered = []
+
+    @property
+    def save_path(self) -> Optional[str]:
+        return os.path.split(self.file_handler.baseFilename)[0] \
+            if self.file_handler is not None else None
+
+    @property
+    def save_name(self) -> str:
+        assert self.file_handler is not None
+        return os.path.split(self.file_handler.baseFilename)[1]
 
     def __add_stream_handler(self) -> None:
         stream_handler = logging.StreamHandler()
@@ -160,11 +160,13 @@ class Log:
     ) -> Self:
         self.extra["domain"] = Log.DEFAULT_DOMAIN if ident is None else ident
 
-        if ident is not None:
+        if ident is None:
+            self.__remove_file_handler()
+        else:
             assert base_path is not None
-            log_file_path = os.path.join(base_path, ident)
-            os.makedirs(log_file_path, exist_ok=True)
-            self.switch(log_file_path, ignore=ignore)
+            log_path = os.path.join(base_path, ident)
+            os.makedirs(log_path, exist_ok=True)
+            self.trigger(log_path)
         return self
 
     def __enter__(self) -> bool:
@@ -173,12 +175,13 @@ class Log:
     def __exit__(self, exc_type, exc_value, traceback) -> None:
         self()
 
-    def __file(
+    # dependent=True: remove previous file_handler if exists
+    def trigger(
         self,
         log_path: str,
         log_name: str = "",
         prefix: str = "",
-        delete_old: bool = True
+        dependent: bool = True
     ) -> None:
         assert isinstance(log_path, str)
         log_path = os.path.expanduser(log_path)
@@ -190,12 +193,12 @@ class Log:
 
         assert isinstance(prefix, str)
 
-        if delete_old:
+        if dependent:
             self.__remove_file_handler()
         self.__add_file_handler(
             log_path,
             prefix + log_name,
-            record_new=delete_old
+            record_new=dependent
         )
 
     def __clear(self, ignore: bool) -> bool:
@@ -218,25 +221,13 @@ class Log:
                 )
                 os.rename(file_path, new_file_path)
 
-    def switch(
-        self,
-        log_path: str,
-        log_name: str = "",
-        prefix: str = "",
-        clear: bool = True,
-        ignore: bool = True
-    ) -> None:
-        self.__file(log_path, log_name, prefix, delete_old=True)
-        if clear:
-            self.__clear(ignore)
-
-    def new(
-        self,
-        log_path: str,
-        log_name: str = "",
-        prefix: str = ""
-    ) -> None:
-        self.__file(log_path, log_name, prefix, delete_old=False)
+    # def new(
+    #     self,
+    #     log_path: str,
+    #     log_name: str = "",
+    #     prefix: str = ""
+    # ) -> None:
+    #     self.__file(log_path, log_name, prefix, delete_old=False)
 
     @staticmethod
     def replace_ansi(file_path: str) -> Callable[["Log"], None]:
