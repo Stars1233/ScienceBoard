@@ -43,6 +43,6 @@ def spawn_managers() -> Dict[str, Manager]:
             sort="daily",
             port=8000,
             gui=True,
-            version="0.4"
+            version="0.5"
         )
     }
