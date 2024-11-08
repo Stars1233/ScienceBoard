@@ -157,13 +157,12 @@ class RawManager(Manager):
         while True:
             if self.process.stdout.readline().startswith(RawManager.REST_FLAG):
                 self.__prepare_env(self.version)
-                self.entered = True
-                return self
+                return super().__enter__()
             assert time.time() <= timeout, "Timeout when opening ChimeraX"
 
     def __exit__(self, exc_type, exc_value, traceback) -> None:
         self.process.kill()
-        self.entered = False
+        super().__exit__(None, None, None)
 
     def __linux_show_window(self):
         # to disable Pylance syntax checker
