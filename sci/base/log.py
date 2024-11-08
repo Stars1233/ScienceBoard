@@ -16,9 +16,8 @@ if TYPE_CHECKING:
     from .agent import CodeLike
 
 class Log:
-    # use self.PROPERTY instead of Log.PROPERTY
-    # to make it easier to change outside of the class
-    # e.g.
+    # use self.PROPERTY instead of Log.PROPERTY to
+    # make it easier to change outside of the class, e.g.
     #   log = Log()
     #   log.LOG_PATTERN = "%Y%m%d%H%M%S"
     #   log.switch("~/Downloads")
@@ -346,7 +345,6 @@ class Log:
     #   in these functions, self.logger (:= self.adapter.logger) is used, while
     #   in __getattr__, self.adapter is used (to fill domain formatter)
     def __getattr__(self, attr: str) -> Any:
-        logging.info
         return getattr(self.adapter, attr)
 
     # to be a hint for user input
