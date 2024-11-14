@@ -18,7 +18,7 @@ class VManager(Manager):
         return super().__enter__()
 
     def __exit__(self, exc_type, exc_value, traceback) -> None:
-        super().exit(None, None, None)
+        super().__exit__(None, None, None)
 
     def screenshot(self) -> Image.Image:
         raise NotImplementedError

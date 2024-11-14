@@ -218,12 +218,14 @@ class Log:
         self,
         base_path: str = None,
         ident: str = None,
-        ignore: bool = True
+        ignore: bool = True,
+        in_exit: bool = False
     ) -> Self:
         self.extra["domain"] = self.DEFAULT_DOMAIN if ident is None else ident
 
         # called in __exit__()
-        if ident is None:
+        # in_exit should not be called manually
+        if in_exit:
             self.__remove_file_handler()
         # called before __enter__()
         else:
@@ -238,7 +240,7 @@ class Log:
         return os.path.exists(self.result_file_path)
 
     def __exit__(self, exc_type, exc_value, traceback) -> None:
-        self()
+        self(in_exit=True)
 
     @staticmethod
     def replace_ansi(file_path: str) -> Callable[["Log"], None]:
@@ -251,7 +253,9 @@ class Log:
     @staticmethod
     def delete(file_path: str) -> Callable[["Log"], None]:
         def handler(self: Log) -> None:
-            os.remove(file_path)
+            try:
+                os.remove(file_path)
+            except FileNotFoundError: ...
         return handler
 
     def register(
@@ -361,6 +365,7 @@ class Log:
         self.adapter.log(level=level, msg=msg)
         self.stream_handler.terminator = stored_end
         return input()
+
 
 class VirtualLog:
     def __init__(self) -> None:

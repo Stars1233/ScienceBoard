@@ -83,7 +83,7 @@ class Tester:
             dependent=False
         )
 
-        # agent in agents should not be Agent itself
+        # agent in agents should be Agent
         assert isinstance(agents, dict)
         for key in agents:
             agent = agents[key]
@@ -167,7 +167,11 @@ class Tester:
                 try:
                     passed = task()
                     local_counter._pass() if passed else local_counter._fail()
-                    self.log.critical(f"\033[1mTask finished with passed={str(passed).upper()}.\033[0m")
+                    self.log.critical((
+                        f"\033[1m"
+                        f"Task finished with passed={str(passed).upper()}."
+                        f"\033[0m"
+                    ))
 
                 except Exception:
                     local_counter._skip()
