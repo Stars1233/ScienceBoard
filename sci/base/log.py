@@ -54,6 +54,16 @@ class Log:
     REQUEST_FILENAME = "request.json"
 
     @property
+    def save_path(self) -> Optional[str]:
+        return os.path.split(self.file_handler.baseFilename)[0] \
+            if self.file_handler is not None else None
+
+    @property
+    def save_name(self) -> str:
+        assert self.file_handler is not None
+        return os.path.split(self.file_handler.baseFilename)[1]
+
+    @property
     def traj_file_path(self):
         assert self.file_handler is not None
         return os.path.join(self.save_path, self.TRAJ_FILENAME)
@@ -102,6 +112,7 @@ class Log:
         self.file_handler = None
         self._registered = []
         self._independent = []
+        self.register_callback = None
 
     # this cannot be called in __del__()
     # because open (__builtin__) cannot be found then
@@ -114,15 +125,31 @@ class Log:
             handler(self)
         self._registered.clear()
 
-    @property
-    def save_path(self) -> Optional[str]:
-        return os.path.split(self.file_handler.baseFilename)[0] \
-            if self.file_handler is not None else None
+    @staticmethod
+    def replace_ansi(file_path: str) -> Callable[["Log"], None]:
+        def handler(self: Log) -> None:
+            log_content = open(file_path, mode="r", encoding="utf-8").read()
+            with open(file_path, mode="w", encoding="utf-8") as writable:
+                writable.write(re.sub(self.ANSI_ESCAPE, "", log_content))
+        return handler
 
-    @property
-    def save_name(self) -> str:
-        assert self.file_handler is not None
-        return os.path.split(self.file_handler.baseFilename)[1]
+    @staticmethod
+    def delete(file_path: str) -> Callable[["Log"], None]:
+        def handler(self: Log) -> None:
+            try:
+                os.remove(file_path)
+            except FileNotFoundError: ...
+        return handler
+
+    def register(
+        self,
+        handler: Callable[[str], Callable[["Log"], None]],
+        file_path: Optional[str] = None
+    ) -> None:
+        if file_path is None:
+            assert self.file_handler is not None
+            file_path = self.file_handler.baseFilename
+        self._registered.append(handler(file_path))
 
     def __add_stream_handler(self) -> None:
         stream_handler = logging.StreamHandler()
@@ -219,54 +246,39 @@ class Log:
         base_path: str = None,
         ident: str = None,
         ignore: bool = True,
+        callback: bool = False,
         in_exit: bool = False
     ) -> Self:
         self.extra["domain"] = self.DEFAULT_DOMAIN if ident is None else ident
 
         # called in __exit__()
-        # in_exit should not be called manually
         if in_exit:
             self.__remove_file_handler()
         # called before __enter__()
         else:
+            assert self.register_callback == None, \
+                "in_exit should not be assigned manually"
+
             assert base_path is not None
             log_path = os.path.join(base_path, ident)
             os.makedirs(log_path, exist_ok=True)
             self.trigger(log_path)
             self.__clear(ignore)
+
+            assert isinstance(callback, bool)
+            self.register_callback = callback
         return self
 
     def __enter__(self) -> bool:
         return os.path.exists(self.result_file_path)
 
     def __exit__(self, exc_type, exc_value, traceback) -> None:
+        assert isinstance(self.register_callback, bool)
+        if self.register_callback:
+            self.callback()
+        self.register_callback = None
+
         self(in_exit=True)
-
-    @staticmethod
-    def replace_ansi(file_path: str) -> Callable[["Log"], None]:
-        def handler(self: Log) -> None:
-            log_content = open(file_path, mode="r", encoding="utf-8").read()
-            with open(file_path, mode="w", encoding="utf-8") as writable:
-                writable.write(re.sub(self.ANSI_ESCAPE, "", log_content))
-        return handler
-
-    @staticmethod
-    def delete(file_path: str) -> Callable[["Log"], None]:
-        def handler(self: Log) -> None:
-            try:
-                os.remove(file_path)
-            except FileNotFoundError: ...
-        return handler
-
-    def register(
-        self,
-        handler: Callable[[str], Callable[["Log"], None]],
-        file_path: Optional[str] = None
-    ) -> None:
-        if file_path is None:
-            assert self.file_handler is not None
-            file_path = self.file_handler.baseFilename
-        self._registered.append(handler(file_path))
 
     def save(
         self,
