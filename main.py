@@ -15,5 +15,7 @@ if __name__ == "__main__":
     Tester(
         tasks_path="./tasks",
         logs_path="./logs",
-        agents=agents
+        agents=agents,
+        debug=True,
+        ignore=False
     )()

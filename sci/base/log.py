@@ -114,17 +114,6 @@ class Log:
         self._independent = []
         self.register_callback = None
 
-    # this cannot be called in __del__()
-    # because open (__builtin__) cannot be found then
-    # so callback() should be manually called by its owner
-    def callback(self) -> None:
-        for file_handler in self._independent:
-            self.__remove_file_handler(file_handler)
-
-        for handler in self._registered:
-            handler(self)
-        self._registered.clear()
-
     @staticmethod
     def replace_ansi(file_path: str) -> Callable[["Log"], None]:
         def handler(self: Log) -> None:
@@ -150,6 +139,18 @@ class Log:
             assert self.file_handler is not None
             file_path = self.file_handler.baseFilename
         self._registered.append(handler(file_path))
+
+    # this cannot be called in __del__()
+    # because open (__builtin__) cannot be found then
+    # so callback() should be manually called by its owner
+    # or use callback=True in with __call__() method
+    def callback(self) -> None:
+        for file_handler in self._independent:
+            self.__remove_file_handler(file_handler)
+
+        for handler in self._registered:
+            handler(self)
+        self._registered.clear()
 
     def __add_stream_handler(self) -> None:
         stream_handler = logging.StreamHandler()
@@ -251,17 +252,13 @@ class Log:
     ) -> Self:
         self.extra["domain"] = self.DEFAULT_DOMAIN if ident is None else ident
 
-        # called in __exit__()
-        if in_exit:
-            self.__remove_file_handler()
         # called before __enter__()
-        else:
+        if not in_exit:
             assert self.register_callback == None, \
                 "in_exit should not be assigned manually"
 
             assert base_path is not None
             log_path = os.path.join(base_path, ident)
-            os.makedirs(log_path, exist_ok=True)
             self.trigger(log_path)
             self.__clear(ignore)
 
@@ -278,6 +275,7 @@ class Log:
             self.callback()
         self.register_callback = None
 
+        self.__remove_file_handler()
         self(in_exit=True)
 
     def save(
