@@ -20,7 +20,7 @@ class Log:
     # make it easier to change outside of the class, e.g.
     #   log = Log()
     #   log.LOG_PATTERN = "%Y%m%d%H%M%S"
-    #   log.switch("~/Downloads")
+    #   log.trigger("~/Downloads")
     #   log.info("Test")
     ANSI_ESCAPE = r'\033(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])'
     LOG_PATTERN = (
@@ -143,7 +143,7 @@ class Log:
     # this cannot be called in __del__()
     # because open (__builtin__) cannot be found then
     # so callback() should be manually called by its owner
-    # or use callback=True in with __call__() method
+    # or use with(callback=True) block
     def callback(self) -> None:
         for file_handler in self._independent:
             self.__remove_file_handler(file_handler)
@@ -242,28 +242,31 @@ class Log:
 
     # tricks of passing args to `with` block
     # ref: https://stackoverflow.com/a/10252925
+    # this is called before __enter__()
     def __call__(
         self,
-        base_path: str = None,
-        ident: str = None,
-        ignore: bool = True,
+        base_path: str,
+        ident: Optional[str] = None,
         callback: bool = False,
-        in_exit: bool = False
+        ignore: bool = True
     ) -> Self:
+        assert self.register_callback == None, (
+            "__call__() should not be called twice "
+            "without calling __exit__() in between; ",
+            "usage: with log(...): ..."
+        )
+
+        assert isinstance(base_path, str)
+        assert isinstance(ident, str) or ident is None
+
+        self.trigger(os.path.join(base_path, ident))
         self.extra["domain"] = self.DEFAULT_DOMAIN if ident is None else ident
 
-        # called before __enter__()
-        if not in_exit:
-            assert self.register_callback == None, \
-                "in_exit should not be assigned manually"
+        assert isinstance(ignore, bool)
+        self.__clear(ignore)
 
-            assert base_path is not None
-            log_path = os.path.join(base_path, ident)
-            self.trigger(log_path)
-            self.__clear(ignore)
-
-            assert isinstance(callback, bool)
-            self.register_callback = callback
+        assert isinstance(callback, bool)
+        self.register_callback = callback
         return self
 
     def __enter__(self) -> bool:
@@ -276,7 +279,7 @@ class Log:
         self.register_callback = None
 
         self.__remove_file_handler()
-        self(in_exit=True)
+        self.extra["domain"] = self.DEFAULT_DOMAIN
 
     def save(
         self,
@@ -285,7 +288,7 @@ class Log:
         codes: List["CodeLike"],
         request: Dict[str, Any]
     ) -> None:
-        assert self.save_path is not None, "Call switch() first"
+        assert self.save_path is not None, "Call trigger() first"
 
         timestamp = self.__timestamp
         traj_obj = {
@@ -312,7 +315,7 @@ class Log:
             if isinstance(item, str)
         ]
         if len(filtered_text) == 1:
-            traj_obj["screenshot"] = text_file_name
+            traj_obj["a11y_tree"] = text_file_name
             with open(text_file_path, mode="r", encoding="utf-8") as writable:
                 writable.write(filtered_text[0])
 
@@ -322,7 +325,7 @@ class Log:
             if isinstance(item, Image.Image)
         ]
         if len(filtered_image) == 1:
-            traj_obj["a11y_tree"] = image_filename
+            traj_obj["screenshot"] = image_filename
             filtered_image[0].save(image_file_path)
 
         # save trajetories by appending previous records

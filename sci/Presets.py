@@ -11,7 +11,7 @@ AGENT_KEYS = [
     "ChimeraX:Raw"
 ]
 
-def load_system_inst(spawner: Callable) -> Callable:
+def instruct_handler(spawner: Callable) -> Callable:
     def wrapper(*args, **kwargs):
         result_dict: Dict[str, Agent] = spawner(*args, **kwargs)
         for key, value in result_dict.items():
@@ -22,7 +22,7 @@ def load_system_inst(spawner: Callable) -> Callable:
         return result_dict
     return wrapper
 
-@load_system_inst
+@instruct_handler
 def spawn_agents(**kwargs) -> Dict[str, Agent]:
     model_kwargs = {
         key: value for key, value in kwargs.items()

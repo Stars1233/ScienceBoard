@@ -77,11 +77,6 @@ class Tester:
         # in fact, self.log call inside of tester.__call()
         # should be converted into the form of vlog.info()
         self.log = Log()
-        self.log.trigger(
-            self.logs_path,
-            prefix=self.log.SUM_LOG_PREFIX,
-            dependent=False
-        )
 
         # agent in agents should be Agent
         assert isinstance(agents, dict)
@@ -148,9 +143,22 @@ class Tester:
             else:
                 self.__traverse(os.path.join(current_infix, unknown_name))
 
+
+    def log_handler(method: Callable) -> Callable:
+        def wrapper(self: "Tester"):
+            self.log.trigger(
+                self.logs_path,
+                prefix=self.log.SUM_LOG_PREFIX,
+                dependent=False
+            )
+            method(self)
+            self.log.callback()
+        return wrapper
+
     # log.critical() here is not an error info
     # only to distinguish importance from other loggers
-    def __call__(self):
+    @log_handler
+    def __call__(self, ):
         local_counter = Counter()
         for task in self.tasks:
             with self.log(
@@ -181,4 +189,3 @@ class Tester:
                     )
 
         self.log.critical(local_counter.__repr__())
-        self.log.callback()
