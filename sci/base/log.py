@@ -336,8 +336,9 @@ class Log:
         with open(self.request_file_path, mode="w", encoding="utf-8") as writable:
             json.dump(request, writable, ensure_ascii=False, indent=2)
 
+    @staticmethod
     def result_handler(method: Callable) -> Callable:
-        def wrapper(self: "Task", stop_type: staticmethod) -> bool:
+        def result_wrapper(self: "Task", stop_type: staticmethod) -> bool:
             return_value = method(self, stop_type)
             with open(
                 self.vlog.result_file_path,
@@ -346,15 +347,16 @@ class Log:
             ) as writable:
                 writable.write(str(int(return_value)))
             return return_value
-        return wrapper
+        return result_wrapper
 
+    @staticmethod
     def record_handler(method: Callable) -> Callable:
-        def wrapper(self: "Task") -> bool:
+        def record_wrapper(self: "Task") -> bool:
             self.manager.record_start()
             return_value = method(self)
             self.manager.record_stop(self.vlog.record_file_path)
             return return_value
-        return wrapper
+        return record_wrapper
 
     # use log.info() directly instead of self.adapter.info()
     # WARNING:

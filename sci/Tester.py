@@ -143,9 +143,9 @@ class Tester:
             else:
                 self.__traverse(os.path.join(current_infix, unknown_name))
 
-
-    def log_handler(method: Callable) -> Callable:
-        def wrapper(self: "Tester"):
+    @staticmethod
+    def _log_handler(method: Callable) -> Callable:
+        def log_wrapper(self: "Tester"):
             self.log.trigger(
                 self.logs_path,
                 prefix=self.log.SUM_LOG_PREFIX,
@@ -153,11 +153,11 @@ class Tester:
             )
             method(self)
             self.log.callback()
-        return wrapper
+        return log_wrapper
 
     # log.critical() here is not an error info
     # only to distinguish importance from other loggers
-    @log_handler
+    @_log_handler
     def __call__(self, ):
         local_counter = Counter()
         for task in self.tasks:

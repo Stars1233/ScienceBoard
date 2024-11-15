@@ -127,22 +127,24 @@ class Task:
             identifier.replace("\\", "/")
         return identifier
 
+    @staticmethod
     def _stop_handler(method: Callable) -> Callable:
         @Log.result_handler
-        def wrapper(self, stop_type: staticmethod) -> bool:
+        def _stop_wrapper(self, stop_type: staticmethod) -> bool:
             try:
                 return Task.eval(self, stop_type)
             except Task.PlannedNotImplemented:
                 return method(self)
-        return wrapper
+        return _stop_wrapper
 
+    @staticmethod
     def _error_handler(method: Callable) -> Callable:
-        def wrapper(self, *args) -> bool:
+        def _error_wrapper(self, *args) -> bool:
             try:
                 return method(self, *args)
             except:
                 return False
-        return wrapper
+        return _error_wrapper
 
     def _init(self) -> bool:
         try:

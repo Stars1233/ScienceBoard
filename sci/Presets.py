@@ -11,8 +11,8 @@ AGENT_KEYS = [
     "ChimeraX:Raw"
 ]
 
-def instruct_handler(spawner: Callable) -> Callable:
-    def wrapper(*args, **kwargs):
+def _instruct_handler(spawner: Callable) -> Callable:
+    def instruct_wrapper(*args, **kwargs):
         result_dict: Dict[str, Agent] = spawner(*args, **kwargs)
         for key, value in result_dict.items():
             code_prompt = value.code_style
@@ -20,9 +20,9 @@ def instruct_handler(spawner: Callable) -> Callable:
             prompt_name = f"{code_prompt}_{type_sort}".upper()
             value.system_inst = getattr(Prompts, prompt_name)
         return result_dict
-    return wrapper
+    return instruct_wrapper
 
-@instruct_handler
+@_instruct_handler
 def spawn_agents(**kwargs) -> Dict[str, Agent]:
     model_kwargs = {
         key: value for key, value in kwargs.items()
