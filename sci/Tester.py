@@ -3,7 +3,7 @@ import os
 import traceback
 
 from dataclasses import dataclass
-from typing import List, Dict, Set, Optional
+from typing import List, Dict, Set
 from typing import Iterable, Callable
 
 sys.dont_write_bytecode
@@ -52,9 +52,10 @@ class Counter:
         )
 
     def __repr__(self) -> str:
-        result = "\033[1m" + self.__str__() + "\033[0m"
-        self.vlog.critical(result)
-        return result
+        return "\033[1m" + self.__str__() + "\033[0m"
+
+    def callback(self) -> None:
+        self.vlog.critical(self.__repr__())
 
 
 class Tester:
@@ -163,7 +164,7 @@ class Tester:
             )
             method(self, local_counter)
             self.log.callback()
-            local_counter.__repr__()
+            local_counter.callback()
         return log_wrapper
 
     # there is no need to pass counter
