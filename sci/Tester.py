@@ -7,7 +7,7 @@ from typing import List, Dict, Set, Optional
 from typing import Iterable, Callable
 
 sys.dont_write_bytecode
-from . import Agent, Manager, Task, Log
+from . import Agent, Manager, Task, Log, VirtualLog
 from . import Presets
 
 # THESE WILL BE LOOKED-UP BY `globals()`
@@ -20,19 +20,26 @@ class Counter:
     failed: int = 0
     skipped: int = 0
     ignored: int = 0
+    vlog: VirtualLog = VirtualLog()
 
-    # suggested functions usage:
-    # counter._pass()
-    # counter._fail()
-    # counter._skip()
-    # counter._ignore()
-    def __getattr__(self, attr: str) -> Optional[Callable]:
-        for field in self.__dataclass_fields__:
-            if attr[0] == "_" and field.startswith(attr[1:]):
-                def func(self):
-                    setattr(self, field, getattr(self, field) + 1)
-                return func.__get__(self)
-        return None
+    # log.critical() here is not any error info
+    # only to distinguish importance from other loggers
+    def _pass(self):
+        self.passed += 1
+        self.vlog.critical("\033[1mTask finished with passed=TRUE.\033[0m")
+
+    def _fail(self):
+        self.failed += 1
+        self.vlog.critical("\033[1mTask finished with passed=FALSE.\033[0m")
+
+    def _skip(self):
+        self.skipped += 1
+        self.vlog.critical("Task testing failed; skipped.\n" + traceback.format_exc())
+
+    def _ignore(self):
+        self.ignored += 1
+        self.vlog.critical("Task already finished; ignored.")
+        self.vlog.register(Log.delete)
 
     def __str__(self) -> str:
         total = self.passed + self.failed + self.skipped + self.ignored
@@ -45,7 +52,9 @@ class Counter:
         )
 
     def __repr__(self) -> str:
-        return "\033[1m" + self.__str__() + "\033[0m"
+        result = "\033[1m" + self.__str__() + "\033[0m"
+        self.vlog.critical(result)
+        return result
 
 
 class Tester:
@@ -71,7 +80,6 @@ class Tester:
         os.makedirs(logs_path, exist_ok=True)
         self.logs_path = logs_path
 
-        # log.critical is only called in this file
         # all run-time error / assertion error
         # should be caught in __traverse() & __call()
         # in fact, self.log call inside of tester.__call()
@@ -146,20 +154,22 @@ class Tester:
     @staticmethod
     def _log_handler(method: Callable) -> Callable:
         def log_wrapper(self: "Tester"):
+            local_counter = Counter()
+            local_counter.vlog.set(self.log)
             self.log.trigger(
                 self.logs_path,
                 prefix=self.log.SUM_LOG_PREFIX,
                 dependent=False
             )
-            method(self)
+            method(self, local_counter)
             self.log.callback()
+            local_counter.__repr__()
         return log_wrapper
 
-    # log.critical() here is not an error info
-    # only to distinguish importance from other loggers
+    # there is no need to pass counter
+    # as decorator has done all for it
     @_log_handler
-    def __call__(self, ):
-        local_counter = Counter()
+    def __call__(self, counter: Counter):
         for task in self.tasks:
             with self.log(
                 base_path=self.logs_path,
@@ -167,25 +177,9 @@ class Tester:
                 ignore=self.ignore
             ) as result_exist:
                 if result_exist:
-                    local_counter._ignore()
-                    self.log.critical("Task already finished; ignored.")
-                    self.log.register(Log.delete)
+                    counter._ignore()
                     continue
-
                 try:
-                    passed = task()
-                    local_counter._pass() if passed else local_counter._fail()
-                    self.log.critical((
-                        f"\033[1m"
-                        f"Task finished with passed={str(passed).upper()}."
-                        f"\033[0m"
-                    ))
-
+                    counter._pass() if task() else counter._fail()
                 except Exception:
-                    local_counter._skip()
-                    self.log.critical(
-                        f"Task testing failed; skipped\n"
-                            + traceback.format_exc()
-                    )
-
-        self.log.critical(local_counter.__repr__())
+                    counter._skip()
