@@ -35,6 +35,14 @@ class Manager:
     def __exit__(self, exc_type, exc_value, traceback) -> None:
         self.entered = False
 
+    # return whether subclass's screenshot() is implemented
+    # basically used by raw manager
+    def is_gui(self) -> None:
+        return self.__class__.screenshot != Manager.screenshot
+
+    def textual(self) -> str:
+        raise NotImplementedError
+
     def screenshot(self) -> Image.Image:
         raise NotImplementedError
 

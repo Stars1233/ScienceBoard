@@ -1,3 +1,6 @@
+import sys
+
+sys.dont_write_bytecode
 from .base import Content
 from .base import Message
 from .base import Model

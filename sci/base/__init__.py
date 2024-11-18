@@ -1,3 +1,6 @@
+import sys
+
+sys.dont_write_bytecode
 from .agent import Content
 from .agent import Message
 from .agent import Model

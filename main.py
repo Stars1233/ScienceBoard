@@ -18,4 +18,4 @@ if __name__ == "__main__":
         agents=agents,
         debug=True,
         ignore=False
-    )()
+    )

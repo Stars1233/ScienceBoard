@@ -336,6 +336,8 @@ class Log:
         with open(self.request_file_path, mode="w", encoding="utf-8") as writable:
             json.dump(request, writable, ensure_ascii=False, indent=2)
 
+    # should not be set as protected method
+    # as they will be used by Task objects
     @staticmethod
     def result_handler(method: Callable) -> Callable:
         def result_wrapper(self: "Task", stop_type: staticmethod) -> bool:
