@@ -7,6 +7,7 @@ from . import TypeSort
 
 
 # preserved for potential comman kwargs
+# all args should have a default value
 def spawn_managers() -> Dict[TypeSort, Dict]:
     Sort = TypeSort.Sort
 

@@ -9,7 +9,7 @@ from requests import Response
 from io import BytesIO
 
 from enum import Enum
-from typing import Optional, Union, List, Dict, Set
+from typing import Optional, List, Dict, Set
 from typing import Callable, Literal, Any, Self
 
 from PIL import Image
@@ -17,7 +17,7 @@ from PIL import Image
 sys.dont_write_bytecode = True
 from .manager import Manager
 from .log import VirtualLog
-from ..Prompts import *
+from .. import Prompts
 
 # modify asdict() for class Content
 # ref: https://stackoverflow.com/a/78289335
@@ -221,6 +221,9 @@ class Agent:
     USER_FLATTERY = "What's the next step that you will do to help with the task?"
     USER_OPENING: Dict[Set[str], str] = {
         frozenset({
+            Manager.textual.__name__
+        }): "Given the terminal output as below:\n{textual}\n",
+        frozenset({
             Manager.screenshot.__name__
         }): "Given the screenshot as below. ",
         frozenset({
@@ -273,9 +276,7 @@ class Agent:
 
     def _init(self, inst: str, type_sort: Optional[TypeSort] = None) -> None:
         prompt_name = f"{self.code_style}_{type_sort}".upper()
-        system_inst = globals()[prompt_name] \
-            if prompt_name in globals() \
-            else self.SYSTEM_INST
+        system_inst = getattr(Prompts, prompt_name, self.SYSTEM_INST)
 
         self.system_message: Message = Message(
             role="system",
@@ -284,9 +285,15 @@ class Agent:
         self.context: List[Message] = []
 
     def _step(self, obs: Dict[str, Any]) -> List[Content]:
+        textual = obs[Manager.textual.__name__] \
+            if Manager.textual.__name__ in obs else None
         a11y_tree = obs[Manager.a11y_tree.__name__] \
             if Manager.a11y_tree.__name__ in obs else None
-        opening = self.USER_OPENING[frozenset(obs.keys())].format(a11y_tree=a11y_tree)
+
+        opening = self.USER_OPENING[frozenset(obs.keys())].format(
+            textual=textual,
+            a11y_tree=a11y_tree
+        )
         contents = [Content.text_content(opening + Agent.USER_FLATTERY)]
 
         images = [item for _, item in obs.items() if isinstance(item, Image.Image)]

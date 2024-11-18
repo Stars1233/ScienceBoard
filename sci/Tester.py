@@ -5,11 +5,13 @@ import traceback
 
 from dataclasses import dataclass
 
-from typing import List, Set
+from typing import Optional, List, Set
 from typing import Iterable, Callable
 
 sys.dont_write_bytecode
-from . import Model, Agent, TypeSort, Task, Log, VirtualLog
+from . import TypeSort, Model, Agent
+from . import Manager, Task
+from . import Log, VirtualLog
 from . import Presets
 
 
@@ -86,7 +88,7 @@ class Tester:
         tasks_path: str,
         logs_path: str,
         automata: Automata,
-        obs_types: Set[str] = {"screenshot"},
+        obs_types: Set[str] = {Manager.screenshot.__name__},
         ignore: bool = True,
         debug: bool = False
     ) -> None:
@@ -135,7 +137,7 @@ class Tester:
 
         manager_class = getattr(
             self.modules[type_sort.type],
-            type_sort("Manager")
+            type_sort(Manager.__name__)
         )
         manager = manager_class(**self.manager_args[type_sort])
         self.managers[type_sort] = manager
@@ -145,7 +147,7 @@ class Tester:
     def __load(self, config_path: str) -> Task:
         # using nil agent & manager only to load type field
         type_sort = Task(config_path=config_path).type_sort
-        task_class = getattr(self.modules[type_sort.type], type_sort("Task"))
+        task_class = getattr(self.modules[type_sort.type], type_sort(Task.__name__))
 
         return task_class(
             config_path=config_path,

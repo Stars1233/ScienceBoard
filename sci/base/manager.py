@@ -15,8 +15,10 @@ from .log import VirtualLog
 #     - no feedback expected if obs_types is None
 #     - return value is expected for CLI tasks
 #   - __enter__() / __exit__(): open / close app
+#   - textual() / screenshot(): one of them for RawManager
+#     - for CLI app: textual() only
+#     - for GUI Raw: screenshot() only
 # - subclass can also include
-#   - screenshot(): take screenshot of app
 #   - a11y_tree(): get a11y tree of app
 #   - set_of_marks(): get som of app
 #   - record_start() / record_stop(): record video for log
@@ -37,6 +39,7 @@ class Manager:
 
     # return whether subclass's screenshot() is implemented
     # basically used by raw manager
+    @property
     def is_gui(self) -> None:
         return self.__class__.screenshot != Manager.screenshot
 
@@ -56,4 +59,4 @@ class Manager:
         self.vlog.warning("record_start() is not implemented.")
 
     def record_stop(self, dest_path: str) -> None:
-        self.vlog.warning("record_stop() is not implemented.")
+        self.vlog.warning(f"record_stop({dest_path}) is not implemented.")

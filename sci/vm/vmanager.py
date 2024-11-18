@@ -1,7 +1,7 @@
 import sys
 from desktop_env.desktop_env import DesktopEnv
 
-from typing import Optional, Self
+from typing import Self
 
 from PIL import Image
 

@@ -35,7 +35,7 @@ class Task:
         config_path: str,
         manager: Optional[Manager] = None,
         agent: Optional[Agent] = None,
-        obs_types: Set[str] = {"screenshot"},
+        obs_types: Optional[Set[str]] = None,
         debug: bool = False,
         infix: str = "",
     ) -> None:
@@ -57,18 +57,20 @@ class Task:
         if self.available:
             assert self.__class__.__name__.startswith(self.sort)
 
+        # for RawTask: use textual() for CLI and screenshot() for GUI
+        # for VMTask: use pre-defined observation set
+        if obs_types is None:
+            obs_types = {Manager.screenshot.__name__}
         assert isinstance(obs_types, Iterable)
-        for obs_type in obs_types:
-            assert obs_type in (
-                Manager.screenshot.__name__,
-                Manager.a11y_tree.__name__,
-                Manager.set_of_marks.__name__
-            )
-
-        # SoM has the highest priority
-        if Manager.set_of_marks.__name__ in obs_types:
-            assert len(obs_types) == 1
-        self.obs_types = obs_types
+        assert frozenset(obs_types) in Agent.USER_OPENING
+        if self.type_sort.sort == TypeSort.Sort.VM:
+            self.obs_types = set(obs_types)
+        elif manager is not None:
+            self.obs_types = {
+                Manager.screenshot.__name__
+                if Manager.is_gui
+                else Manager.textual.__name__
+            }
 
         assert isinstance(infix, str)
         self.infix = infix
