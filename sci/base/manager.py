@@ -1,6 +1,6 @@
 import sys
 
-from typing import Self
+from typing import Self, Callable
 from PIL import Image
 
 sys.dont_write_bytecode = True
@@ -42,6 +42,14 @@ class Manager:
     @property
     def is_gui(self) -> None:
         return self.__class__.screenshot != Manager.screenshot
+
+    @staticmethod
+    def _assert_handler(method: Callable) -> Callable:
+        def assert_wrapper(self):
+            result = method(self)
+            assert result is not None
+            return result
+        return assert_wrapper
 
     def textual(self) -> str:
         raise NotImplementedError

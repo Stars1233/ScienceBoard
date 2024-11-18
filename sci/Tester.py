@@ -5,7 +5,7 @@ import traceback
 
 from dataclasses import dataclass
 
-from typing import Optional, List, Set
+from typing import List, Set
 from typing import Iterable, Callable
 
 sys.dont_write_bytecode

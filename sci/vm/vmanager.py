@@ -23,6 +23,7 @@ class VManager(Manager):
             require_a11y_tree=True,
             require_terminal=False,
         )
+        self.controller = self.env.controller
 
     def __call__(self) -> None:
         ...
@@ -33,20 +34,24 @@ class VManager(Manager):
     def __exit__(self, exc_type, exc_value, traceback) -> None:
         super().__exit__(None, None, None)
 
+    @Manager._assert_handler
     def textual(self) -> str:
-        raise NotImplementedError
+        self.controller.get_terminal_output()
 
+    @Manager._assert_handler
     def screenshot(self) -> Image.Image:
-        raise NotImplementedError
+        self.controller.get_screenshot()
 
+    @Manager._assert_handler
     def a11y_tree(self) -> str:
-        raise NotImplementedError
+        self.controller.get_accessibility_tree()
 
+    @Manager._assert_handler
     def set_of_marks(self) -> Image.Image:
-        raise NotImplementedError
+        return "..."
 
     def record_start(self) -> None:
-        self.env.controller.start_recording()
+        self.controller.start_recording()
 
     def record_stop(self, dest_path: str) -> None:
-        self.env.controller.end_recording(dest_path)
+        self.controller.end_recording(dest_path)

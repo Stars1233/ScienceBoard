@@ -1,6 +1,6 @@
 import sys
 
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, TypeAlias
 
 sys.dont_write_bytecode = True
 from . import TypeSort
@@ -8,7 +8,9 @@ from . import TypeSort
 
 # preserved for potential comman kwargs
 # all args should have a default value
-def spawn_managers() -> Dict[TypeSort, Dict]:
+# should be consisted with Prompts' lambda
+Config: TypeAlias = Dict[TypeSort, Dict[str, Any]]
+def spawn_managers() -> Config:
     Sort = TypeSort.Sort
 
     return {
@@ -20,7 +22,7 @@ def spawn_managers() -> Dict[TypeSort, Dict]:
         }
     }
 
-def spawn_modules(manager_args: Optional[Dict[TypeSort, Dict]] = None):
+def spawn_modules(manager_args: Optional[Config] = None):
     from . import ChimeraX
 
     frozen = locals()
