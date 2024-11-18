@@ -7,7 +7,7 @@ from typing import Set, Union, Optional
 from typing import Iterable, Callable, NoReturn
 
 sys.dont_write_bytecode = True
-from .agent import Agent, Primitive
+from .agent import TypeSort, Agent, Primitive
 from .manager import Manager
 from .log import Log, VirtualLog
 from . import init
@@ -25,7 +25,6 @@ class Task:
     CONFIG_RETRY = 5
     ACTION_INTERVAL = 1
     EARLY_STOP = "stop"
-    SORTS = {"Raw", "VM"}
 
     class PlannedNotImplemented(Exception):
         def __init__(self) -> None:
@@ -92,7 +91,12 @@ class Task:
 
         assert "sort" in self.config
         self.sort = self.config["sort"]
-        assert self.sort in Task.SORTS
+        assert self.sort in TypeSort.Sort._member_names_
+
+        self.type_sort = TypeSort(
+            self.type,
+            TypeSort.Sort._member_map_[self.sort]
+        )
 
         assert "steps" in self.config
         self.steps = self.config["steps"]
@@ -224,7 +228,7 @@ class Task:
         assert self.available
 
         try:
-            self.agent._init(self.instruction)
+            self.agent._init(self.instruction, self.type_sort)
             for step_index in range(self.steps):
                 self._step(step_index)
         except Primitive.PlannedTermination as early_stop:

@@ -1,6 +1,7 @@
 import sys
 
 sys.dont_write_bytecode
+from .base import TypeSort
 from .base import Content
 from .base import Message
 from .base import Model
@@ -15,4 +16,5 @@ from .base import Log
 from .base import VirtualLog
 
 from .Tester import Counter
+from .Tester import Automata
 from .Tester import Tester

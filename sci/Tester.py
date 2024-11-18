@@ -1,18 +1,17 @@
 import sys
 import os
+import inspect
 import traceback
 
 from dataclasses import dataclass
-from typing import List, Dict, Set
+
+from typing import List, Set
 from typing import Iterable, Callable
 
 sys.dont_write_bytecode
-from . import Agent, Manager, Task, Log, VirtualLog
+from . import Model, Agent, TypeSort, Task, Log, VirtualLog
 from . import Presets
 
-# THESE WILL BE LOOKED-UP BY `globals()`
-# DO NOT REMOVE THESE
-from . import ChimeraX
 
 @dataclass
 class Counter:
@@ -58,13 +57,35 @@ class Counter:
         self.vlog.critical(self.__repr__())
 
 
+# Automata only receive keyword args from Model and Agent
+class Automata:
+    def __init__(self, **kwargs) -> None:
+        model_params = list(Model.__dataclass_fields__.keys())
+        agent_params = list(inspect.signature(Agent).parameters)
+        for key in kwargs:
+            assert key in model_params or key in agent_params
+
+        self.model_args = {
+            key: value for key, value in kwargs.items()
+            if key in model_params
+        }
+
+        self.agent_args = {
+            key: value for key, value in kwargs.items()
+            if key in agent_params
+        }
+
+    def __call__(self) -> Agent:
+        model = Model(**self.model_args)
+        return Agent(model=model, **self.agent_args)
+
+
 class Tester:
     def __init__(
         self,
         tasks_path: str,
         logs_path: str,
-        agents: Dict[str, Agent],
-        managers: Dict[str, Manager] = Presets.spawn_managers(),
+        automata: Automata,
         obs_types: Set[str] = {"screenshot"},
         ignore: bool = True,
         debug: bool = False
@@ -87,22 +108,14 @@ class Tester:
         # should be converted into the form of vlog.info()
         self.log = Log()
 
-        # agent in agents should be Agent
-        assert isinstance(agents, dict)
-        for key in agents:
-            agent = agents[key]
-            assert isinstance(agent, Agent)
-            agent.vlog.set(self.log)
-        self.agents = agents
+        assert isinstance(automata, Automata)
+        self.agent = automata()
+        self.agent.vlog.set(self.log)
 
         # manager in managers should not be Manager itself
-        assert isinstance(managers, dict)
-        for key in managers:
-            manager = managers[key]
-            assert issubclass(type(manager), Manager)
-            assert type(manager) != Manager
-            manager.vlog.set(self.log)
-        self.managers = managers
+        self.modules = Presets.spawn_modules()
+        self.manager_args = Presets.spawn_managers()
+        self.managers = {}
 
         assert isinstance(obs_types, Iterable)
         self.obs_types = obs_types
@@ -116,20 +129,28 @@ class Tester:
         self.tasks: List[Task] = []
         self.__traverse()
 
+    def __manager(self, type_sort: TypeSort):
+        if type_sort in self.managers:
+            return self.managers[type_sort]
+
+        manager_class = getattr(
+            self.modules[type_sort.type],
+            type_sort("Manager")
+        )
+        manager = manager_class(**self.manager_args[type_sort])
+        self.managers[type_sort] = manager
+        manager.vlog.set(self.log)
+        return manager
+
     def __load(self, config_path: str) -> Task:
         # using nil agent & manager only to load type field
-        nil_task = Task(config_path=config_path)
-        task_type = nil_task.type
-        task_sort = nil_task.sort
+        type_sort = Task(config_path=config_path).type_sort
+        task_class = getattr(self.modules[type_sort.type], type_sort("Task"))
 
-        task_class = getattr(globals()[task_type], task_sort + "Task")
-
-        # assert task_type in self.agents
-        # assert task_type in self.managers
         return task_class(
             config_path=config_path,
-            manager=self.managers[f"{task_type}:{task_sort}"],
-            agent=self.agents[f"{task_type}:{task_sort}"],
+            manager=self.__manager(type_sort),
+            agent=self.agent,
             obs_types=self.obs_types,
             debug=self.debug
         )

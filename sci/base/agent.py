@@ -8,13 +8,16 @@ from dataclasses import dataclass, asdict
 from requests import Response
 from io import BytesIO
 
-from typing import Optional, List, Dict, Set
+from enum import Enum
+from typing import Optional, Union, List, Dict, Set
 from typing import Callable, Literal, Any, Self
+
 from PIL import Image
 
 sys.dont_write_bytecode = True
 from .manager import Manager
 from .log import VirtualLog
+from ..Prompts import *
 
 # modify asdict() for class Content
 # ref: https://stackoverflow.com/a/78289335
@@ -30,6 +33,28 @@ def _asdict_inner(obj, dict_factory):
             return user_dict
     return _asdict_inner_actual(obj, dict_factory)
 dataclasses._asdict_inner = _asdict_inner
+
+
+@dataclass
+class TypeSort:
+    class Sort(Enum):
+        Raw = 0
+        VM = 1
+
+    type: str
+    sort: Sort
+
+    def __str__(self) -> str:
+        return f"{self.type}_{self.sort.name}"
+
+    def __repr__(self) -> str:
+        return f"{self.type}:{self.sort.name}"
+
+    def __call__(self, postfix: str) -> Any:
+        return self.sort.name + postfix
+
+    def __hash__(self) -> int:
+        return hash(self.__repr__())
 
 
 @dataclass
@@ -216,7 +241,6 @@ class Agent:
         access_style: str = "openai",
         code_style: str = "antiquot",
         overflow_style: Optional[str] = None,
-        system_inst: Optional[Callable[[str], str]] = None,
         context_window: int = 3
     ) -> None:
         assert isinstance(model, Model)
@@ -242,20 +266,20 @@ class Agent:
             else getattr(Overflow, overflow_style)
         self.overflow_style = overflow_style
 
-        if system_inst is None:
-            system_inst = Agent.SYSTEM_INST
-        assert hasattr(system_inst, "__call__")
-        self.SYSTEM_INST: Callable[[str], str] = system_inst
-
         assert isinstance(context_window, int)
         self.context_window = context_window
 
         self.vlog = VirtualLog()
 
-    def _init(self, inst: str) -> None:
+    def _init(self, inst: str, type_sort: Optional[TypeSort] = None) -> None:
+        prompt_name = f"{self.code_style}_{type_sort}".upper()
+        system_inst = globals()[prompt_name] \
+            if prompt_name in globals() \
+            else self.SYSTEM_INST
+
         self.system_message: Message = Message(
             role="system",
-            content=[Content.text_content(self.SYSTEM_INST(inst).strip())]
+            content=[Content.text_content(system_inst(inst).strip())]
         )
         self.context: List[Message] = []
 

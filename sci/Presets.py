@@ -1,48 +1,32 @@
 import sys
-from typing import Dict, Callable
+
+from typing import Optional, Dict, Any
 
 sys.dont_write_bytecode = True
-from . import Manager, Model, Agent
-from . import Prompts
+from . import TypeSort
 
-from . import ChimeraX
 
-AGENT_KEYS = [
-    "ChimeraX:Raw"
-]
+# preserved for potential comman kwargs
+def spawn_managers() -> Dict[TypeSort, Dict]:
+    Sort = TypeSort.Sort
 
-def _instruct_handler(spawner: Callable) -> Callable:
-    def instruct_wrapper(*args, **kwargs):
-        result_dict: Dict[str, Agent] = spawner(*args, **kwargs)
-        for key, value in result_dict.items():
-            code_prompt = value.code_style
-            type_sort = key.replace(":", "_")
-            prompt_name = f"{code_prompt}_{type_sort}".upper()
-            value.system_inst = getattr(Prompts, prompt_name)
-        return result_dict
-    return instruct_wrapper
-
-@_instruct_handler
-def spawn_agents(**kwargs) -> Dict[str, Agent]:
-    model_kwargs = {
-        key: value for key, value in kwargs.items()
-        if key in Model.__dataclass_fields__.keys()
+    return {
+        TypeSort("ChimeraX", Sort.Raw): {
+            "sort": "daily",
+            "port": 8000,
+            "gui": True,
+            "version": "0.5"
+        }
     }
 
-    agent_kwargs = {
-        key: value for key, value in kwargs.items()
-        if key not in Model.__dataclass_fields__.keys()
-    }
+def spawn_modules(manager_args: Optional[Dict[TypeSort, Dict]] = None):
+    from . import ChimeraX
 
-    model = Model(**model_kwargs)
-    return {key: Agent(model=model, **agent_kwargs) for key in AGENT_KEYS}
+    frozen = locals()
+    if manager_args == None:
+        manager_args = spawn_managers()
 
-def spawn_managers() -> Dict[str, Manager]:
-    return{
-        "ChimeraX:Raw": ChimeraX.RawManager(
-            sort="daily",
-            port=8000,
-            gui=True,
-            version="0.5"
-        )
+    return {
+        type_sort.type: frozen[type_sort.type]
+        for type_sort in manager_args
     }
