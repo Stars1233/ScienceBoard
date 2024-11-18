@@ -8,7 +8,7 @@ import string
 from datetime import datetime
 from PIL import Image
 
-from typing import Optional, List, Dict, Any
+from typing import Optional, List, Dict, Any, Iterable
 from typing import Callable, Self, TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -52,6 +52,7 @@ class Log:
     RESULT_FILENAME  = "result.out"
     RECORD_FILENAME  = "record.mp4"
     REQUEST_FILENAME = "request.json"
+    SIMP_FILENAME    = "request.simp.json"
 
     @property
     def save_path(self) -> Optional[str]:
@@ -82,6 +83,11 @@ class Log:
     def request_file_path(self):
         assert self.file_handler is not None
         return os.path.join(self.save_path, self.REQUEST_FILENAME)
+
+    @property
+    def simp_file_path(self):
+        assert self.file_handler is not None
+        return os.path.join(self.save_path, self.SIMP_FILENAME)
 
     def __init__(
         self,
@@ -281,6 +287,18 @@ class Log:
         self.__remove_file_handler()
         self.extra["domain"] = self.DEFAULT_DOMAIN
 
+    def __mod_url(self, obj: Any):
+        mod = lambda data: ", ".join([data.split(", ")[0], "..."])
+        if isinstance(obj, dict):
+            return {
+                key: (mod(value) if key == "url" else self.__mod_url(value))
+                for key, value in obj.items()
+            }
+        elif isinstance(obj, list):
+            return [self.__mod_url(item) for item in obj]
+        else:
+            return obj
+
     def save(
         self,
         step_index: int,
@@ -311,7 +329,7 @@ class Log:
 
         # save a11y_tree to new file
         filtered_text = [
-            item for _, item in obs.items()
+            item for item in obs.values()
             if isinstance(item, str)
         ]
         if len(filtered_text) == 1:
@@ -321,7 +339,7 @@ class Log:
 
         # save screenshot (or SoM screenshot) to new file
         filtered_image = [
-            item for _, item in obs.items()
+            item for item in obs.values()
             if isinstance(item, Image.Image)
         ]
         if len(filtered_image) == 1:
@@ -335,6 +353,10 @@ class Log:
         # save requests by overwriting previous record
         with open(self.request_file_path, mode="w", encoding="utf-8") as writable:
             json.dump(request, writable, ensure_ascii=False, indent=2)
+
+        with open(self.simp_file_path, mode="w", encoding="utf-8") as writable:
+            request_simp = self.__mod_url(request)
+            json.dump(request_simp, writable, ensure_ascii=False, indent=2)
 
     # should not be set as protected method
     # as they will be used by Task objects
