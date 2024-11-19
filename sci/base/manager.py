@@ -1,6 +1,6 @@
 import sys
 
-from typing import Self, Callable
+from typing import Union, Callable, Self, NoReturn
 from PIL import Image
 
 sys.dont_write_bytecode = True
@@ -51,16 +51,16 @@ class Manager:
             return result
         return assert_wrapper
 
-    def textual(self) -> str:
+    def textual(self) -> Union[str, NoReturn]:
         raise NotImplementedError
 
-    def screenshot(self) -> Image.Image:
+    def screenshot(self) -> Union[Image.Image, NoReturn]:
         raise NotImplementedError
 
-    def a11y_tree(self) -> str:
+    def a11y_tree(self) -> Union[str, NoReturn]:
         raise NotImplementedError
 
-    def set_of_marks(self) -> Image.Image:
+    def set_of_marks(self) -> Union[Image.Image, NoReturn]:
         raise NotImplementedError
 
     def record_start(self) -> None:

@@ -10,6 +10,7 @@ import tempfile
 import urllib.request
 
 from typing import List, Dict, Tuple, Optional, Callable
+
 from PIL import Image
 from PIL import ImageGrab
 
@@ -162,7 +163,7 @@ class RawManager(Manager):
 
     def __exit__(self, exc_type, exc_value, traceback) -> None:
         self.process.kill()
-        super().__exit__(None, None, None)
+        super().__exit__(exc_type, exc_value, traceback)
 
     def __linux_show_window(self):
         # to disable Pylance syntax checker

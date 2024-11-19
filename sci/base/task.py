@@ -152,6 +152,8 @@ class Task:
                 return False
         return _error_wrapper
 
+    # do not use this method as much as posssible
+    # try to customize each manager's own method of resetting
     def _init(self) -> bool:
         try:
             self.manager.__exit__(None, None, None)
