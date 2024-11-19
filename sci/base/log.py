@@ -6,22 +6,33 @@ import random
 import string
 
 from datetime import datetime
-from PIL import Image
-
+from enum import Enum
 from typing import Optional, List, Dict, Any
 from typing import Callable, Self, TYPE_CHECKING
+
+from PIL import Image
 
 if TYPE_CHECKING:
     from .task import Task
     from .agent import CodeLike
 
+
+GLOBAL_VLOG = None
 class Log:
+    # IGNORE: refuse all calls outside of Log.log()
+    # NATURALIZATION: print output in ways of Log
+    # OVERLOOK: print output as it is
+    class Tactic(Enum):
+        IGNORE = 0
+        NATURALIZATION = 1
+        OVERLOOK = 2
+
+    TACTIC = Tactic.NATURALIZATION
+    UNIQUE_PREFIX = "«"
+    UNIQUE_SUFFIX = "»"
+
     # use self.PROPERTY instead of Log.PROPERTY to
-    # make it easier to change outside of the class, e.g.
-    #   log = Log()
-    #   log.LOG_PATTERN = "%Y%m%d%H%M%S"
-    #   log.trigger("~/Downloads")
-    #   log.info("Test")
+    # make it easier to change according to different obj
     ANSI_ESCAPE = r'\033(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])'
     LOG_PATTERN = (
         "\033[1;91m[%(asctime)s "
@@ -31,6 +42,19 @@ class Log:
         "\033[1;91m] "
         "\033[0m%(message)s"
     )
+
+    # but DO NOT change this
+    LEVELS = [
+        "log",
+        "debug",
+        "info",
+        "warn",
+        "warning",
+        "exception",
+        "error",
+        "fatal",
+        "critical"
+    ]
 
     @property
     def FILE_LOG_PATTERN(self) -> str:
@@ -92,7 +116,8 @@ class Log:
     def __init__(
         self,
         level: int = logging.INFO,
-        disabled: bool = False
+        disabled: bool = False,
+        global_vlog: bool = False
     ) -> None:
         assert isinstance(level, int)
         self.level = level
@@ -102,7 +127,7 @@ class Log:
         log_name = "".join(random.choice(
             string.ascii_uppercase + string.digits
         ) for _ in range(64))
-        self.logger = logging.getLogger(log_name)
+        self.logger = logging.getLogger(f"«{log_name}»")
         self.logger.setLevel(self.level)
 
         self.extra = {"domain": self.DEFAULT_DOMAIN}
@@ -119,6 +144,14 @@ class Log:
         self._registered = []
         self._independent = []
         self.register_callback = None
+
+        if global_vlog:
+            self.assign()
+
+    # can be also used as staticmethod as Log.assign(log)
+    def assign(self: Self):
+        global GLOBAL_VLOG
+        GLOBAL_VLOG.set(self)
 
     @staticmethod
     def replace_ansi(file_path: str) -> Callable[["Log"], None]:
@@ -388,7 +421,7 @@ class Log:
     #   in these functions, self.logger (:= self.adapter.logger) is used, while
     #   in __getattr__, self.adapter is used (to fill domain formatter)
     def __getattr__(self, attr: str) -> Any:
-        return getattr(self.adapter, attr)
+        return getattr(self.adapter if attr in Log.LEVELS else self.logger, attr)
 
     # to be a hint for user input
     # we suggested setting level to CRITICAL
@@ -408,13 +441,36 @@ class Log:
 
 class VirtualLog:
     def __init__(self) -> None:
-        self.log = None
+        self._log = None
 
     def set(self, log: Log):
         assert isinstance(log, Log)
-        self.log = log
+        self._log = log
 
     # use vlog.info() directly instead of vlog.log.adapter.info()
     def __getattr__(self, attr: str) -> Any:
-        log = Log(disabled=True) if self.log is None else self.log
+        log = Log(disabled=True) if self._log is None else self._log
         return getattr(log, attr)
+
+
+
+
+if GLOBAL_VLOG is None:
+    GLOBAL_VLOG = VirtualLog()
+    _logger_log = logging.Logger._log
+
+    def _log(self, *arg, **kwargs):
+        internal = self.name.startswith(Log.UNIQUE_PREFIX) \
+            or self.name.endswith(Log.UNIQUE_SUFFIX)
+        # print(f"internal={internal}")
+
+        if internal:
+            _logger_log(self, *arg, **kwargs)
+        elif Log.TACTIC == Log.Tactic.IGNORE:
+            return
+        elif Log.TACTIC == Log.Tactic.NATURALIZATION:
+            level, msg = arg[0], arg[1]
+            GLOBAL_VLOG.log(level, msg)
+        elif Log.TACTIC == Log.Tactic.OVERLOOK:
+            _logger_log(self, *arg, **kwargs)
+    logging.Logger._log = _log
