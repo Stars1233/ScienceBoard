@@ -1,10 +1,12 @@
 import sys
 
-from typing import Union, Callable, Self, NoReturn
+from typing import Union, Tuple, Callable, Self, NoReturn, TypeVar
 from PIL import Image
 
 sys.dont_write_bytecode = True
 from .log import VirtualLog
+
+T = TypeVar("T")
 
 # abstract base class of all apps
 # - subclass should include
@@ -44,8 +46,10 @@ class Manager:
         return self.__class__.screenshot != Manager.screenshot
 
     @staticmethod
-    def _assert_handler(method: Callable) -> Callable:
-        def assert_wrapper(self):
+    def _assert_handler(
+        method: Callable[[Self], T]
+    ) -> Callable[[Self], Union[T, NoReturn]]:
+        def assert_wrapper(self: Self):
             result = method(self)
             assert result is not None
             return result
@@ -60,7 +64,7 @@ class Manager:
     def a11y_tree(self) -> Union[str, NoReturn]:
         raise NotImplementedError
 
-    def set_of_marks(self) -> Union[Image.Image, NoReturn]:
+    def set_of_marks(self) -> Union[Tuple[Image.Image, str], NoReturn]:
         raise NotImplementedError
 
     def record_start(self) -> None:

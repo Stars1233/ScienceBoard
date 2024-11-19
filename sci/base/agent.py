@@ -17,6 +17,7 @@ from PIL import Image
 sys.dont_write_bytecode = True
 from .manager import Manager
 from .log import VirtualLog
+from . import utils
 from .. import Prompts
 
 # modify asdict() for class Content
@@ -230,8 +231,9 @@ class Agent:
             Manager.a11y_tree.__name__
         }): "Given the info from accessibility tree as below:\n{a11y_tree}\n",
         frozenset({
+            Manager.a11y_tree.__name__,
             Manager.set_of_marks.__name__
-        }): "Given the tagged screenshot as below. ",
+        }): "Given the tagged screenshot and info from accessibility tree as below:\n{a11y_tree}\n",
         frozenset({
             Manager.screenshot.__name__,
             Manager.a11y_tree.__name__
@@ -284,11 +286,11 @@ class Agent:
         )
         self.context: List[Message] = []
 
+    # crucial: obs here may not be the same as in Task
+    # e.g. Task.obs_types=SoM -> Agent._step(obs={SoM, A11yTree})
     def _step(self, obs: Dict[str, Any]) -> List[Content]:
-        textual = obs[Manager.textual.__name__] \
-            if Manager.textual.__name__ in obs else None
-        a11y_tree = obs[Manager.a11y_tree.__name__] \
-            if Manager.a11y_tree.__name__ in obs else None
+        textual = utils.getitem(obs, Manager.textual.__name__, None)
+        a11y_tree = utils.getitem(obs, Manager.a11y_tree.__name__, None)
 
         opening = self.USER_OPENING[frozenset(obs.keys())].format(
             textual=textual,

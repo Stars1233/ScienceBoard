@@ -2,12 +2,13 @@ import sys
 from desktop_env.desktop_env import DesktopEnv
 
 from io import BytesIO
-from typing import Optional, Self
+from typing import Optional, Union, Tuple, Self, NoReturn
 
 from PIL import Image
 
 sys.dont_write_bytecode
 from ..base import Manager
+from .som import tag_screenshot
 
 class VManager(Manager):
     def __init__(
@@ -43,16 +44,25 @@ class VManager(Manager):
 
     @Manager._assert_handler
     def screenshot(self) -> Optional[Image.Image]:
-        screenshot = self.controller.get_screenshot()
-        return Image.open(BytesIO(screenshot))
+        raw_screenshot = self.controller.get_screenshot()
+        return Image.open(BytesIO(raw_screenshot))
 
     @Manager._assert_handler
     def a11y_tree(self) -> Optional[str]:
         return self.controller.get_accessibility_tree()
 
-    @Manager._assert_handler
-    def set_of_marks(self) -> Optional[Image.Image]:
-        return "..."
+    def set_of_marks(self) -> Union[Tuple[Image.Image, str], NoReturn]:
+        # a11y tree consumes more time than screenshot
+        # env may change if screenshot is taken in advance
+        raw_a11y_tree = self.a11y_tree()
+
+        # getting raw screenshot content
+        # controller does not check nullity
+        raw_screenshot = self.controller.get_screenshot()
+        assert raw_screenshot is not None
+
+        _, _, som, a11y_tree = tag_screenshot(raw_screenshot, raw_a11y_tree)
+        return (Image.open(BytesIO(som)), a11y_tree)
 
     def record_start(self) -> None:
         self.controller.start_recording()

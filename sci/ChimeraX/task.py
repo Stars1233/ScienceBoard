@@ -6,6 +6,7 @@ from typing import List, Dict, Union, Callable, Any
 
 sys.dont_write_bytecode = True
 from ..base import Task
+from ..base import utils
 from .chimerax import RawManager
 
 class RawTask(Task):
@@ -71,11 +72,10 @@ class RawTask(Task):
         eval_item: Dict[str, Any],
         current_states: Dict[str, Any]
     ) -> bool:
-        getitem = lambda obj, key, default: obj[key] if key in obj else default
-        find: str = eval_item["find"] if "find" in eval_item else None
+        find: str = utils.getitem(eval_item, "find", None)
         key: str = eval_item["key"]
-        value: str = getitem(eval_item, "value", None)
-        pattern: str = getitem(eval_item, "pattern", None)
+        value: str = utils.getitem(eval_item, "value", None)
+        pattern: str = utils.getitem(eval_item, "pattern", None)
 
         # if value is set to null
         # check the inexistence of item

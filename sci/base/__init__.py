@@ -1,6 +1,8 @@
 import sys
 
 sys.dont_write_bytecode
+from . import utils
+
 from .agent import TypeSort
 from .agent import Content
 from .agent import Message

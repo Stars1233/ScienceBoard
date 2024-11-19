@@ -209,6 +209,13 @@ class Task:
             obs_type: getattr(self.manager, obs_type)()
             for obs_type in self.obs_types
         }
+
+        # special cases: SoM -> SoM + A11y Tree
+        if Manager.set_of_marks.__name__ in obs:
+            som, a11y_tree = obs[Manager.set_of_marks.__name__]
+            obs[Manager.a11y_tree.__name__] = a11y_tree
+            obs[Manager.set_of_marks.__name__] = som
+
         user_contents = self.agent._step(obs)
         response_message = self.agent(user_contents)
         assert len(response_message.content) == 1
