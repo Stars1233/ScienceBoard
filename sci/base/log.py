@@ -8,7 +8,7 @@ import string
 from datetime import datetime
 from PIL import Image
 
-from typing import Optional, List, Dict, Any, Iterable
+from typing import Optional, List, Dict, Any
 from typing import Callable, Self, TYPE_CHECKING
 
 if TYPE_CHECKING:

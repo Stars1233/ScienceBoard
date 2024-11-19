@@ -1,10 +1,10 @@
 import sys
-from desktop_env.desktop_env import DesktopEnv
 
 from io import BytesIO
 from typing import Optional, Union, Tuple, Self, NoReturn
 
 from PIL import Image
+from desktop_env.desktop_env import DesktopEnv
 
 sys.dont_write_bytecode
 from ..base import Manager
@@ -36,6 +36,7 @@ class VManager(Manager):
     def __exit__(self, exc_type, exc_value, traceback) -> None:
         super().__exit__(exc_type, exc_value, traceback)
 
+    # TODO: linearize a11y_tree()
     # TODO: VM's `with` waste lots of time, how to optimize?
     # TODO: to disable OSWorld's logging
     @Manager._assert_handler
