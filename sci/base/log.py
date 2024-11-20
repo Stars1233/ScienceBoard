@@ -94,27 +94,27 @@ class Log:
         return os.path.split(self.file_handler.baseFilename)[1]
 
     @property
-    def traj_file_path(self):
+    def traj_file_path(self) -> str:
         assert self.file_handler is not None
         return os.path.join(self.save_path, self.TRAJ_FILENAME)
 
     @property
-    def result_file_path(self):
+    def result_file_path(self) -> str:
         assert self.file_handler is not None
         return os.path.join(self.save_path, self.RESULT_FILENAME)
 
     @property
-    def record_file_path(self):
+    def record_file_path(self) -> str:
         assert self.file_handler is not None
         return os.path.join(self.save_path, self.RECORD_FILENAME)
 
     @property
-    def request_file_path(self):
+    def request_file_path(self) -> str:
         assert self.file_handler is not None
         return os.path.join(self.save_path, self.REQUEST_FILENAME)
 
     @property
-    def simp_file_path(self):
+    def simp_file_path(self) -> str:
         assert self.file_handler is not None
         return os.path.join(self.save_path, self.SIMP_FILENAME)
 

@@ -165,7 +165,7 @@ class RawManager(Manager):
         self.process.kill()
         super().__exit__(exc_type, exc_value, traceback)
 
-    def __linux_show_window(self):
+    def __linux_show_window(self) -> None:
         # to disable Pylance syntax checker
         assert sys.platform == "linux"
         from wmctrl import Window
@@ -176,7 +176,7 @@ class RawManager(Manager):
         current_window.maximize()
         time.sleep(1)
 
-    def __win32_show_window(self):
+    def __win32_show_window(self) -> None:
         # to disable Pylance syntax checker
         assert sys.platform == "win32"
         import win32gui, win32con

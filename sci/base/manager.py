@@ -49,7 +49,7 @@ class Manager:
     def _assert_handler(
         method: Callable[[Self], T]
     ) -> Callable[[Self], Union[T, NoReturn]]:
-        def assert_wrapper(self: Self):
+        def assert_wrapper(self: Self) -> Union[T, NoReturn]:
             result = method(self)
             assert result is not None
             return result

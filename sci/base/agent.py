@@ -10,7 +10,7 @@ from io import BytesIO
 
 from enum import Enum
 from typing import Optional, List, Dict, Set
-from typing import Callable, Literal, Any, Self
+from typing import Callable, Literal, Any, Self, NoReturn
 
 from PIL import Image
 
@@ -168,19 +168,19 @@ class Primitive:
             self.type = type
 
     @staticmethod
-    def DONE():
+    def DONE() -> NoReturn:
         raise Primitive.PlannedTermination(Primitive.DONE)
 
     @staticmethod
-    def FAIL():
+    def FAIL() -> NoReturn:
         raise Primitive.PlannedTermination(Primitive.FAIL)
 
     @staticmethod
-    def WAIT():
+    def WAIT() -> None:
         time.sleep(Agent.WAIT_TIME)
 
     @staticmethod
-    def TIMEOUT():
+    def TIMEOUT() -> None:
         ...
 
 
@@ -200,7 +200,7 @@ class CodeLike:
         return [CodeLike(code=code) for code in occurence]
 
     @property
-    def PRIMITIVE(self):
+    def PRIMITIVE(self) -> List[str]:
         return [
             key for key, value in Primitive.__dict__.items()
             if isinstance(value, staticmethod)

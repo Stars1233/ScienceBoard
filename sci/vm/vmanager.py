@@ -2,7 +2,7 @@ import sys
 
 from io import BytesIO
 from typing import Optional, Union, Tuple
-from typing import Self, NoReturn, Callable
+from typing import Self, NoReturn, Callable, Any
 
 from PIL import Image
 from desktop_env.desktop_env import DesktopEnv
@@ -12,16 +12,20 @@ from ..base import Manager
 from . import utils
 
 class VManager(Manager):
+    VM_PATH = "./vmware"
+
     def __init__(
         self,
-        path: str,
+        path: Optional[str] = None,
         headless: bool = False,
         a11y_tree_limit: int = 8192
     ) -> None:
         super().__init__()
 
+        if path is None:
+            self.__download_vm()
+
         # prevent DesktopEnv from loading immediately
-        assert isinstance(path, str)
         assert isinstance(headless, bool)
         self.env = lambda: DesktopEnv(
             provider_name="vmware",
@@ -34,9 +38,13 @@ class VManager(Manager):
         assert isinstance(a11y_tree_limit, int)
         self.a11y_tree_limit = a11y_tree_limit
 
+    def __download_vm(self) -> None:
+        # TODO: download file to VM_PATH
+        raise NotImplementedError
+
     @staticmethod
     def _env_handler(method: Callable) -> Callable:
-        def env_wrapper(self: Self, *args, **kwargs):
+        def env_wrapper(self: Self, *args, **kwargs) -> Any:
             assert isinstance(self.env, DesktopEnv)
             return method(self, *args, **kwargs)
         return env_wrapper

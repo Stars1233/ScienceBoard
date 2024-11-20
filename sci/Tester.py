@@ -6,7 +6,7 @@ import traceback
 from dataclasses import dataclass
 
 from typing import Union, List, Set
-from typing import Iterable, Callable
+from typing import Iterable, Callable, Generator
 
 sys.dont_write_bytecode
 from . import TypeSort, Model, Agent
@@ -23,19 +23,19 @@ class Counter:
     ignored: int = 0
     vlog: VirtualLog = VirtualLog()
 
-    def _pass(self):
+    def _pass(self) -> None:
         self.passed += 1
         self.vlog.info("\033[1mTask finished with passed=TRUE.\033[0m")
 
-    def _fail(self):
+    def _fail(self) -> None:
         self.failed += 1
         self.vlog.info("\033[1mTask finished with passed=FALSE.\033[0m")
 
-    def _skip(self):
+    def _skip(self) -> None:
         self.skipped += 1
         self.vlog.error("Task testing failed; skipped.\n" + traceback.format_exc())
 
-    def _ignore(self):
+    def _ignore(self) -> None:
         self.ignored += 1
         self.vlog.info("Task already finished; ignored.")
         self.vlog.register(Log.delete)
@@ -122,13 +122,13 @@ class TaskGroup:
                 self.groups.append([task_info])
             last_info = task_info
 
-    def __check(self):
+    def __check(self) -> None:
         for group in self.groups:
             assert len(group) > 0
             for task_info in group:
                 assert group[0].task.manager == task_info.task.manager
 
-    def __call__(self):
+    def __call__(self) -> Generator[TaskInfo]:
         self.__check()
         for group in self.groups:
             with group[0].task.manager:
