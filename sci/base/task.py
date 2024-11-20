@@ -170,7 +170,7 @@ class Task:
             feedback = True
             # set to init state from second try
             # if _init() failed, goto next iteration
-            if round_index > 0 and not self._init():
+            if not self._init():
                 continue
 
             # try every init item in config file

@@ -95,10 +95,10 @@ class TaskInfo:
             identifier.replace("\\", "/")
         return identifier
 
-    # ATTENTION: behavior of __eq__() & __it__() are not consistent
-    #            because they are used in different situations
+    # behavior of __eq__() & __it__() are not consistent
+    # because they are used in different situations
+    # __eq__() is used in TaskGroup while __it__() is used in sorted
     def __eq__(self, __value: Union["TaskInfo", None]) -> bool:
-        print("__eq__() called()")
         if __value is None:
             return False
 
@@ -110,7 +110,6 @@ class TaskInfo:
         return False
 
     def __lt__(self, __value: "TaskInfo") -> bool:
-        print("__lt__() called()")
         left, right = self.task, __value.task
         return left.sort < right.sort or \
             (left.sort == right.sort and left.type < right.type)
@@ -129,7 +128,7 @@ class TaskGroup:
 
         last_info = None
         for task_info in raw:
-            assert(task_info, TaskInfo)
+            assert isinstance(task_info, TaskInfo)
             if task_info == last_info:
                 self.groups[-1].append(task_info)
             else:
@@ -267,7 +266,7 @@ class Tester:
     # as decorator has done all for it
     @_log_handler
     def __call__(self, counter: Counter):
-        for task_info in self.task_group if self.optimize else self.task_info:
+        for task_info in self.task_group() if self.optimize else self.task_info:
             with self.log(
                 base_path=self.logs_path,
                 ident=task_info.ident,
