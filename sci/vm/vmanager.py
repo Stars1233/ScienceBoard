@@ -8,7 +8,7 @@ from desktop_env.desktop_env import DesktopEnv
 
 sys.dont_write_bytecode
 from ..base import Manager
-from .som import tag_screenshot
+from . import utils
 
 class VManager(Manager):
     def __init__(
@@ -36,7 +36,6 @@ class VManager(Manager):
     def __exit__(self, exc_type, exc_value, traceback) -> None:
         super().__exit__(exc_type, exc_value, traceback)
 
-    # TODO: linearize a11y_tree()
     @Manager._assert_handler
     def textual(self) -> Optional[str]:
         return self.controller.get_terminal_output()
@@ -48,7 +47,8 @@ class VManager(Manager):
 
     @Manager._assert_handler
     def a11y_tree(self) -> Optional[str]:
-        return self.controller.get_accessibility_tree()
+        raw_a11y_tree = self.controller.get_accessibility_tree()
+        return utils.trim(utils.linearize(raw_a11y_tree))
 
     def set_of_marks(self) -> Union[Tuple[Image.Image, str], NoReturn]:
         # a11y tree consumes more time than screenshot
@@ -60,7 +60,7 @@ class VManager(Manager):
         raw_screenshot = self.controller.get_screenshot()
         assert raw_screenshot is not None
 
-        _, _, som, a11y_tree = tag_screenshot(raw_screenshot, raw_a11y_tree)
+        _, _, som, a11y_tree = utils.tag_screenshot(raw_screenshot, raw_a11y_tree)
         return (Image.open(BytesIO(som)), a11y_tree)
 
     def record_start(self) -> None:

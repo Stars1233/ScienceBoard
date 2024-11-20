@@ -1,19 +1,21 @@
 # extracted from OSWorld/mm_agents
 # ref: https://github.com/xlang-ai/OSWorld/blob/main/mm_agents/agent.py
 import xml.etree.ElementTree as ET
-
 from io import BytesIO
 from typing import Tuple, List
 
+import tiktoken
 from PIL import Image, ImageDraw, ImageFont
 
-state_ns_ubuntu = "https://accessibility.ubuntu.example.org/ns/state"
-state_ns_windows = "https://accessibility.windows.example.org/ns/state"
-component_ns_ubuntu = "https://accessibility.ubuntu.example.org/ns/component"
-component_ns_windows = "https://accessibility.windows.example.org/ns/component"
-value_ns_ubuntu = "https://accessibility.ubuntu.example.org/ns/value"
-value_ns_windows = "https://accessibility.windows.example.org/ns/value"
-class_ns_windows = "https://accessibility.windows.example.org/ns/class"
+attributes_ns_ubuntu = "https://a11y.windows.example.org/ns/attributes"
+attributes_ns_windows = "https://a11y.windows.example.org/ns/attributes"
+state_ns_ubuntu = "https://a11y.ubuntu.example.org/ns/state"
+state_ns_windows = "https://a11y.windows.example.org/ns/state"
+component_ns_ubuntu = "https://a11y.ubuntu.example.org/ns/component"
+component_ns_windows = "https://a11y.windows.example.org/ns/component"
+value_ns_ubuntu = "https://a11y.ubuntu.example.org/ns/value"
+value_ns_windows = "https://a11y.windows.example.org/ns/value"
+class_ns_windows = "https://a11y.windows.example.org/ns/class"
 
 def judge_node(node: ET, platform="ubuntu", check_image=False) -> bool:
     if platform == "ubuntu":
@@ -186,7 +188,53 @@ def draw_bounding_boxes(nodes: List, image_file_content: bytes, down_sampling_ra
 
     return marks, drew_nodes, "\n".join(text_informations), image_content
 
-def tag_screenshot(screenshot: bytes, accessibility_tree: str, platform: str = "ubuntu"):
-    nodes = filter_nodes(ET.fromstring(accessibility_tree), platform=platform, check_image=True)
+def linearize(a11y_tree: str, platform: str = "ubuntu"):
+    if platform == "ubuntu":
+        _attributes_ns = attributes_ns_ubuntu
+        _state_ns = state_ns_ubuntu
+        _component_ns = component_ns_ubuntu
+        _value_ns = value_ns_ubuntu
+    elif platform == "windows":
+        _attributes_ns = attributes_ns_windows
+        _state_ns = state_ns_windows
+        _component_ns = component_ns_windows
+        _value_ns = value_ns_windows
+    else:
+        raise ValueError("Invalid platform, must be 'ubuntu' or 'windows'")
+
+    filtered_nodes = filter_nodes(ET.fromstring(a11y_tree), platform)
+    linearized_a11y_tree = ["tag\tname\ttext\tclass\tdescription\tposition (top-left x&y)\tsize (w&h)"]
+
+    for node in filtered_nodes:
+        if node.text:
+            text = (node.text if '"' not in node.text else '"{:}"'.format(node.text.replace('"', '""')))
+        elif node.get("{{{:}}}class".format(class_ns_windows), "").endswith("EditWrapper") \
+                and node.get("{{{:}}}value".format(_value_ns)):
+            node_text = node.get("{{{:}}}value".format(_value_ns), "")
+            text = (node_text if '"' not in node_text else '"{:}"'.format(node_text.replace('"', '""')))
+        else:
+            text = '""'
+
+        linearized_a11y_tree.append("{:}\t{:}\t{:}\t{:}\t{:}\t{:}\t{:}".format(
+            node.tag, node.get("name", ""),
+            text,
+            node.get("{{{:}}}class".format(_attributes_ns), "") if platform == "ubuntu" else node.get("{{{:}}}class".format(class_ns_windows), ""),
+            node.get("{{{:}}}description".format(_attributes_ns), ""),
+            node.get('{{{:}}}screencoord'.format(_component_ns), ""),
+            node.get('{{{:}}}size'.format(_component_ns), "")
+        ))
+
+    return "\n".join(linearized_a11y_tree)
+
+def trim(linearized_a11y_tree, max_tokens):
+    enc = tiktoken.encoding_for_model("gpt-4")
+    tokens = enc.encode(linearized_a11y_tree)
+    if len(tokens) > max_tokens:
+        linearized_a11y_tree = enc.decode(tokens[:max_tokens])
+        linearized_a11y_tree += "[...]\n"
+    return linearized_a11y_tree
+
+def tag_screenshot(screenshot: bytes, a11y_tree: str, platform: str = "ubuntu"):
+    nodes = filter_nodes(ET.fromstring(a11y_tree), platform=platform, check_image=True)
     marks, drew_nodes, element_list, tagged_screenshot = draw_bounding_boxes(nodes, screenshot)
     return marks, drew_nodes, tagged_screenshot, element_list
