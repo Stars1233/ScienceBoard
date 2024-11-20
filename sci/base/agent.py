@@ -46,13 +46,22 @@ class TypeSort:
     sort: Sort
 
     def __str__(self) -> str:
-        return f"{self.type}_{self.sort.name}"
+        if self.sort == TypeSort.Sort.VM:
+            return self.sort.name
+        else:
+            return f"{self.type}_{self.sort.name}"
 
     def __repr__(self) -> str:
-        return f"{self.type}:{self.sort.name}"
+        if self.sort == TypeSort.Sort.VM:
+            return self.sort.name
+        else:
+            return f"{self.type}:{self.sort.name}"
 
     def __call__(self, postfix: str) -> Any:
         return self.sort.name + postfix
+
+    def __eq__(self, __value: "TypeSort") -> bool:
+        return self.__repr__() == __value.__repr__()
 
     def __hash__(self) -> int:
         return hash(self.__repr__())

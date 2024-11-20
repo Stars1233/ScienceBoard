@@ -95,20 +95,6 @@ class TaskInfo:
             identifier.replace("\\", "/")
         return identifier
 
-    # behavior of __eq__() & __it__() are not consistent
-    # because they are used in different situations
-    # __eq__() is used in TaskGroup while __it__() is used in sorted
-    def __eq__(self, __value: Union["TaskInfo", None]) -> bool:
-        if __value is None:
-            return False
-
-        left, right = self.task, __value.task
-        vm_name = TypeSort.Sort.VM.name
-        if (left.sort == vm_name and right.sort == vm_name) \
-            or (left.sort == right.sort and left.type == right.type):
-            return True
-        return False
-
     def __lt__(self, __value: "TaskInfo") -> bool:
         left, right = self.task, __value.task
         return left.sort < right.sort or \
@@ -129,7 +115,8 @@ class TaskGroup:
         last_info = None
         for task_info in raw:
             assert isinstance(task_info, TaskInfo)
-            if task_info == last_info:
+            if last_info is not None \
+                and task_info.task.type_sort == last_info.task.type_sort:
                 self.groups[-1].append(task_info)
             else:
                 self.groups.append([task_info])

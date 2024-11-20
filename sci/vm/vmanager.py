@@ -30,6 +30,9 @@ class VManager(Manager):
     def __call__(self) -> None:
         ...
 
+    def revert(self, snapshot: str) -> bool:
+        ...
+
     def __enter__(self) -> Self:
         return super().__enter__()
 
