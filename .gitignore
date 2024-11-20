@@ -2,3 +2,6 @@
 .VSCodeCounter
 
 /logs/*
+
+.vmware_lck
+.vmware_vms
