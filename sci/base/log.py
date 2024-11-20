@@ -18,6 +18,8 @@ if TYPE_CHECKING:
 
 
 GLOBAL_VLOG = None
+HAVE_CALLED = False
+
 class Log:
     # IGNORE: refuse all calls outside of Log.log()
     # NATURALIZATION: print output in ways of Log
@@ -27,7 +29,9 @@ class Log:
         NATURALIZATION = 1
         OVERLOOK = 2
 
-    TACTIC = Tactic.NATURALIZATION
+    # no influence on logging if module is imported without __init__
+    # but TACTIC will be set to NATURALIZATION once log is created
+    TACTIC = Tactic.OVERLOOK
     UNIQUE_PREFIX = "«"
     UNIQUE_SUFFIX = "»"
 
@@ -119,6 +123,11 @@ class Log:
         disabled: bool = False,
         global_vlog: Optional[bool] = None
     ) -> None:
+        global HAVE_CALLED
+        if not HAVE_CALLED:
+            Log.TACTIC = Log.Tactic.NATURALIZATION
+            HAVE_CALLED = True
+
         assert isinstance(level, int)
         self.level = level
 
@@ -462,16 +471,7 @@ if GLOBAL_VLOG is None:
     GLOBAL_VLOG = VirtualLog()
     _logger_log = logging.Logger._log
 
-    def _log(
-        self,
-        level,
-        msg,
-        args,
-        exc_info=None,
-        extra=None,
-        stack_info=False,
-        stacklevel=1
-    ):
+    def _log(self, level, msg, *args, stacklevel=1, **kwargs):
         internal = self.name.startswith(Log.UNIQUE_PREFIX) \
             or self.name.endswith(Log.UNIQUE_SUFFIX)
 
@@ -480,42 +480,30 @@ if GLOBAL_VLOG is None:
         stacklevel += 1
 
         if internal:
-            _logger_log(
-                self,
-                level,
-                msg,
-                args,
-                exc_info,
-                extra,
-                stack_info,
-                stacklevel
-            )
+            _logger_log(self, level, msg, *args, stacklevel=stacklevel, **kwargs)
         elif Log.TACTIC == Log.Tactic.IGNORE:
             return
         elif Log.TACTIC == Log.Tactic.NATURALIZATION:
             GLOBAL_VLOG.log(level, msg, stacklevel=stacklevel)
         elif Log.TACTIC == Log.Tactic.OVERLOOK:
-            _logger_log(
-                self,
-                level,
-                msg,
-                args,
-                exc_info,
-                extra,
-                stack_info,
-                stacklevel
-            )
+            _logger_log(self, level, msg, *args, stacklevel=stacklevel, **kwargs)
+
     logging.Logger._log = _log
 
-def haha():
-    Log.TACTIC = Log.Tactic.OVERLOOK
-    log = Log()
-    log.info("#1")
+    for func_name in Log.LEVELS:
+        func = getattr(logging, func_name)
+
+
+def domain():
     logger = logging.getLogger("...")
     logger.setLevel(logging.INFO)
     stream_handler = logging.StreamHandler()
     stream_handler.setLevel(logging.INFO)
     logger.addHandler(stream_handler)
-    logger.info("#2")
+    logger.info("#1")
 
-haha()
+    log = Log()
+    log.info("#2")
+    logger.info("#3")
+
+domain()
