@@ -38,7 +38,6 @@ class VManager(Manager):
 
     # TODO: linearize a11y_tree()
     # TODO: VM's `with` waste lots of time, how to optimize?
-    # TODO: to disable OSWorld's logging
     @Manager._assert_handler
     def textual(self) -> Optional[str]:
         return self.controller.get_terminal_output()

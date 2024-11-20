@@ -117,7 +117,7 @@ class Log:
         self,
         level: int = logging.INFO,
         disabled: bool = False,
-        global_vlog: bool = False
+        global_vlog: Optional[bool] = None
     ) -> None:
         assert isinstance(level, int)
         self.level = level
@@ -145,12 +145,14 @@ class Log:
         self._independent = []
         self.register_callback = None
 
-        if global_vlog:
+        global GLOBAL_VLOG
+        if global_vlog or (global_vlog is None and GLOBAL_VLOG.is_none()):
             self.assign()
 
-    # can be also used as staticmethod as Log.assign(log)
+    # can be also used as static method via Log.assign(log)
     def assign(self: Self):
         global GLOBAL_VLOG
+        assert isinstance(GLOBAL_VLOG, VirtualLog)
         GLOBAL_VLOG.set(self)
 
     @staticmethod
@@ -443,6 +445,9 @@ class VirtualLog:
     def __init__(self) -> None:
         self._log = None
 
+    def is_none(self) -> bool:\
+        return self._log is None
+
     def set(self, log: Log):
         assert isinstance(log, Log)
         self._log = log
@@ -453,24 +458,64 @@ class VirtualLog:
         return getattr(log, attr)
 
 
-
-
 if GLOBAL_VLOG is None:
     GLOBAL_VLOG = VirtualLog()
     _logger_log = logging.Logger._log
 
-    def _log(self, *arg, **kwargs):
+    def _log(
+        self,
+        level,
+        msg,
+        args,
+        exc_info=None,
+        extra=None,
+        stack_info=False,
+        stacklevel=1
+    ):
         internal = self.name.startswith(Log.UNIQUE_PREFIX) \
             or self.name.endswith(Log.UNIQUE_SUFFIX)
-        # print(f"internal={internal}")
+
+        # _log defined here cannot pass check of _is_internal_frame(f)
+        # thus stacklevel should be increased every time _log() is called
+        stacklevel += 1
 
         if internal:
-            _logger_log(self, *arg, **kwargs)
+            _logger_log(
+                self,
+                level,
+                msg,
+                args,
+                exc_info,
+                extra,
+                stack_info,
+                stacklevel
+            )
         elif Log.TACTIC == Log.Tactic.IGNORE:
             return
         elif Log.TACTIC == Log.Tactic.NATURALIZATION:
-            level, msg = arg[0], arg[1]
-            GLOBAL_VLOG.log(level, msg)
+            GLOBAL_VLOG.log(level, msg, stacklevel=stacklevel)
         elif Log.TACTIC == Log.Tactic.OVERLOOK:
-            _logger_log(self, *arg, **kwargs)
+            _logger_log(
+                self,
+                level,
+                msg,
+                args,
+                exc_info,
+                extra,
+                stack_info,
+                stacklevel
+            )
     logging.Logger._log = _log
+
+def haha():
+    Log.TACTIC = Log.Tactic.OVERLOOK
+    log = Log()
+    log.info("#1")
+    logger = logging.getLogger("...")
+    logger.setLevel(logging.INFO)
+    stream_handler = logging.StreamHandler()
+    stream_handler.setLevel(logging.INFO)
+    logger.addHandler(stream_handler)
+    logger.info("#2")
+
+haha()
