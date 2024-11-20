@@ -14,15 +14,21 @@ from . import utils
 class VManager(Manager):
     def __init__(
         self,
-        a11y_tree_limit: int = 1024
+        path: str,
+        headless: bool = False,
+        a11y_tree_limit: int = 8192
     ) -> None:
         super().__init__()
 
-        # lazy loading
+        # prevent DesktopEnv from loading immediately
+        assert isinstance(path, str)
+        assert isinstance(headless, bool)
         self.env = lambda: DesktopEnv(
-            path_to_vm="/media/PJLAB\wangyian/Data/repo/osworld/vmware_vm_data/Ubuntu.vmx",
+            provider_name="vmware",
+            region=None,
+            path_to_vm=path,
             action_space="pyautogui",
-            headless=False
+            headless=headless,
         )
 
         assert isinstance(a11y_tree_limit, int)
@@ -30,9 +36,9 @@ class VManager(Manager):
 
     @staticmethod
     def _env_handler(method: Callable) -> Callable:
-        def env_wrapper(self: Self):
+        def env_wrapper(self: Self, *args, **kwargs):
             assert isinstance(self.env, DesktopEnv)
-            return method(self)
+            return method(self, *args, **kwargs)
         return env_wrapper
 
     @_env_handler
@@ -45,8 +51,12 @@ class VManager(Manager):
         assert isinstance(self.env, DesktopEnv)
         assert isinstance(snapshot_name, str)
 
-        self.env.snapshot_name = snapshot_name
-        self.env.reset()
+        try:
+            self.env.snapshot_name = snapshot_name
+            self.env.reset()
+            return True
+        except:
+            return False
 
     def __enter__(self) -> Self:
         self.env: DesktopEnv = self.env()
@@ -73,21 +83,27 @@ class VManager(Manager):
     @_env_handler
     def a11y_tree(self) -> Optional[str]:
         raw_a11y_tree = self.controller.get_accessibility_tree()
-        return utils.trim(utils.linearize(raw_a11y_tree), self.a11y_tree_limit)
+        a11y_tree = utils.linearize(raw_a11y_tree)
+        if a11y_tree:
+            a11y_tree = utils.trim(a11y_tree, self.a11y_tree_limit)
+        return a11y_tree
 
     @_env_handler
     def set_of_marks(self) -> Union[Tuple[Image.Image, str], NoReturn]:
         # a11y tree consumes more time than screenshot
         # env may change if screenshot is taken in advance
-        raw_a11y_tree = self.a11y_tree()
-
-        # getting raw screenshot content
-        # controller does not check nullity
+        raw_a11y_tree = self.controller.get_accessibility_tree()
         raw_screenshot = self.controller.get_screenshot()
+
+        # controller does not check nullity
+        assert raw_a11y_tree is not None
         assert raw_screenshot is not None
 
         _, _, som, a11y_tree = utils.tag_screenshot(raw_screenshot, raw_a11y_tree)
-        return (Image.open(BytesIO(som)), a11y_tree)
+        return (
+            Image.open(BytesIO(som)),
+            utils.trim(a11y_tree, self.a11y_tree_limit)
+        )
 
     @_env_handler
     def record_start(self) -> None:
