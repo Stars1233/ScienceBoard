@@ -155,7 +155,8 @@ class Tester:
         automata: Automata,
         obs_types: Set[str] = {Manager.screenshot.__name__},
         ignore: bool = True,
-        debug: bool = False
+        debug: bool = False,
+        optimize: bool = True
     ) -> None:
         assert isinstance(tasks_path, str)
         tasks_path = os.path.expanduser(tasks_path)
@@ -192,6 +193,9 @@ class Tester:
 
         assert isinstance(debug, bool)
         self.debug = debug
+
+        assert isinstance(optimize, bool)
+        self.optimize = optimize
 
         self.task_info: List[TaskInfo] = []
         self.__traverse()
@@ -263,7 +267,7 @@ class Tester:
     # as decorator has done all for it
     @_log_handler
     def __call__(self, counter: Counter):
-        for task_info in self.task_group:
+        for task_info in self.task_group if self.optimize else self.task_info:
             with self.log(
                 base_path=self.logs_path,
                 ident=task_info.ident,
