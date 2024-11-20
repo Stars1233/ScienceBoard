@@ -18,4 +18,5 @@ from .base import VirtualLog
 from .Tester import Counter
 from .Tester import Automata
 from .Tester import TaskInfo
+from .Tester import TaskGroup
 from .Tester import Tester

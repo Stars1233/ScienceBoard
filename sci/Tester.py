@@ -5,7 +5,7 @@ import traceback
 
 from dataclasses import dataclass
 
-from typing import List, Set
+from typing import Union, List, Set
 from typing import Iterable, Callable
 
 sys.dont_write_bytecode
@@ -95,8 +95,56 @@ class TaskInfo:
             identifier.replace("\\", "/")
         return identifier
 
+    # ATTENTION: behavior of __eq__() & __it__() are not consistent
+    #            because they are used in different situations
+    def __eq__(self, __value: Union["TaskInfo", None]) -> bool:
+        print("__eq__() called()")
+        if __value is None:
+            return False
+
+        left, right = self.task, __value.task
+        vm_name = TypeSort.Sort.VM.name
+        if (left.sort == vm_name and right.sort == vm_name) \
+            or (left.sort == right.sort and left.type == right.type):
+            return True
+        return False
+
+    def __lt__(self, __value: "TaskInfo") -> bool:
+        print("__lt__() called()")
+        left, right = self.task, __value.task
+        return left.sort < right.sort or \
+            (left.sort == right.sort and left.type < right.type)
+
+    def __repr__(self) -> str:
+        return f"{self.ident}: {self.task.sort}.{self.task.type}"
+
     def __call__(self) -> bool:
         return self.task()
+
+
+class TaskGroup:
+    def __init__(self, raw: List[TaskInfo]) -> None:
+        assert isinstance(raw, list)
+        self.groups: List[List[TaskInfo]] = []
+
+        last_info = None
+        for task_info in raw:
+            assert(task_info, TaskInfo)
+            if task_info == last_info:
+                self.groups[-1].append(task_info)
+            else:
+                self.groups.append([task_info])
+            last_info = task_info
+
+        for group in self.groups:
+            assert len(group) > 0
+
+    def __call__(self):
+        for group in self.groups:
+            manager = group[0].task.manager
+            with manager:
+                for task_info in group:
+                    yield task_info
 
 
 class Tester:
@@ -147,6 +195,7 @@ class Tester:
 
         self.task_info: List[TaskInfo] = []
         self.__traverse()
+        self.task_group = TaskGroup(sorted(self.task_info))
 
     def __manager(self, type_sort: TypeSort):
         if type_sort in self.managers:
@@ -214,7 +263,7 @@ class Tester:
     # as decorator has done all for it
     @_log_handler
     def __call__(self, counter: Counter):
-        for task_info in self.task_info:
+        for task_info in self.task_group:
             with self.log(
                 base_path=self.logs_path,
                 ident=task_info.ident,

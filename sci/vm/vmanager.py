@@ -37,7 +37,6 @@ class VManager(Manager):
         super().__exit__(exc_type, exc_value, traceback)
 
     # TODO: linearize a11y_tree()
-    # TODO: VM's `with` waste lots of time, how to optimize?
     @Manager._assert_handler
     def textual(self) -> Optional[str]:
         return self.controller.get_terminal_output()
