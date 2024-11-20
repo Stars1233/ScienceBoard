@@ -13,6 +13,7 @@ from . import utils
 
 class VManager(Manager):
     VM_PATH = "./vmware"
+    INIT_NAME = "init"
 
     def __init__(
         self,
@@ -23,7 +24,7 @@ class VManager(Manager):
         super().__init__()
 
         if path is None:
-            self.__download_vm()
+            self.__init_vm()
 
         # prevent DesktopEnv from loading immediately
         assert isinstance(headless, bool)
@@ -38,8 +39,10 @@ class VManager(Manager):
         assert isinstance(a11y_tree_limit, int)
         self.a11y_tree_limit = a11y_tree_limit
 
-    def __download_vm(self) -> None:
+    def __init_vm(self) -> None:
         # TODO: download file to VM_PATH
+        # TODO: take snapshot of INIT_NAME
+        self.path = ...
         raise NotImplementedError
 
     @staticmethod

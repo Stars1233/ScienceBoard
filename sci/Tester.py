@@ -128,7 +128,7 @@ class TaskGroup:
             for task_info in group:
                 assert group[0].task.manager == task_info.task.manager
 
-    def __call__(self) -> Generator[TaskInfo]:
+    def __call__(self) -> Generator:
         self.__check()
         for group in self.groups:
             with group[0].task.manager:
