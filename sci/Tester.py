@@ -80,6 +80,25 @@ class Automata:
         return Agent(model=model, **self.agent_args)
 
 
+class TaskInfo:
+    def __init__(self, task: Task, infix: str = "") -> None:
+        assert isinstance(task, Task)
+        self.task = task
+
+        assert isinstance(infix, str)
+        self.infix = infix
+
+    @property
+    def ident(self):
+        identifier = os.path.join(self.infix, self.task.name)
+        if sys.platform == "win32":
+            identifier.replace("\\", "/")
+        return identifier
+
+    def __call__(self) -> bool:
+        return self.task()
+
+
 class Tester:
     def __init__(
         self,
@@ -126,7 +145,7 @@ class Tester:
         assert isinstance(debug, bool)
         self.debug = debug
 
-        self.tasks: List[Task] = []
+        self.task_info: List[TaskInfo] = []
         self.__traverse()
 
     def __manager(self, type_sort: TypeSort):
@@ -145,7 +164,10 @@ class Tester:
     def __load(self, config_path: str) -> Task:
         # using nil agent & manager only to load type field
         type_sort = Task(config_path=config_path).type_sort
-        task_class = getattr(self.modules[type_sort.type], type_sort(Task.__name__))
+        task_class = getattr(
+            self.modules[type_sort.type],
+            type_sort(Task.__name__)
+        )
 
         return task_class(
             config_path=config_path,
@@ -162,9 +184,8 @@ class Tester:
             if os.path.isfile(unknown_path):
                 try:
                     new_task = self.__load(unknown_path)
-                    new_task.infix = current_infix
                     new_task.vlog.set(self.log)
-                    self.tasks.append(new_task)
+                    self.task_info.append(TaskInfo(new_task, infix=current_infix))
                 except Exception:
                     error_info = "Config loading failed; skipped: " \
                         + unknown_path \
@@ -193,16 +214,16 @@ class Tester:
     # as decorator has done all for it
     @_log_handler
     def __call__(self, counter: Counter):
-        for task in self.tasks:
+        for task_info in self.task_info:
             with self.log(
                 base_path=self.logs_path,
-                ident=task.ident,
+                ident=task_info.ident,
                 ignore=self.ignore
             ) as result_exist:
                 if result_exist:
                     counter._ignore()
                     continue
                 try:
-                    counter._pass() if task() else counter._fail()
+                    counter._pass() if task_info() else counter._fail()
                 except Exception:
                     counter._skip()

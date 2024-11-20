@@ -36,8 +36,7 @@ class Task:
         manager: Optional[Manager] = None,
         agent: Optional[Agent] = None,
         obs_types: Optional[Set[str]] = None,
-        debug: bool = False,
-        infix: str = "",
+        debug: bool = False
     ) -> None:
         assert isinstance(config_path, str)
         config_path = os.path.expanduser(config_path)
@@ -71,9 +70,6 @@ class Task:
                 if Manager.is_gui
                 else Manager.textual.__name__
             }
-
-        assert isinstance(infix, str)
-        self.infix = infix
 
         assert isinstance(debug, bool)
         self.debug = debug
@@ -126,12 +122,6 @@ class Task:
                 assert "value" in eval_item
                 assert isinstance(eval_item["value"], str)
 
-    @property
-    def ident(self):
-        identifier = os.path.join(self.infix, self.name)
-        if sys.platform == "win32":
-            identifier.replace("\\", "/")
-        return identifier
 
     @staticmethod
     def _stop_handler(method: Callable) -> Callable:

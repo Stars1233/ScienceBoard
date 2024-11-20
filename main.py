@@ -14,5 +14,6 @@ if __name__ == "__main__":
     Tester(
         tasks_path="./tasks",
         logs_path="./logs",
-        automata=automata
+        automata=automata,
+        debug=True
     )()
