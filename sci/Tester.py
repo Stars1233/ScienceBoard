@@ -135,13 +135,16 @@ class TaskGroup:
                 self.groups.append([task_info])
             last_info = task_info
 
+    def __check(self):
         for group in self.groups:
             assert len(group) > 0
+            for task_info in group:
+                assert group[0].task.manager == task_info.task.manager
 
     def __call__(self):
+        self.__check()
         for group in self.groups:
-            manager = group[0].task.manager
-            with manager:
+            with group[0].task.manager:
                 for task_info in group:
                     yield task_info
 
