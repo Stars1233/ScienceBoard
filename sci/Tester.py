@@ -23,23 +23,21 @@ class Counter:
     ignored: int = 0
     vlog: VirtualLog = VirtualLog()
 
-    # log.critical() here is not any error info
-    # only to distinguish importance from other loggers
     def _pass(self):
         self.passed += 1
-        self.vlog.critical("\033[1mTask finished with passed=TRUE.\033[0m")
+        self.vlog.info("\033[1mTask finished with passed=TRUE.\033[0m")
 
     def _fail(self):
         self.failed += 1
-        self.vlog.critical("\033[1mTask finished with passed=FALSE.\033[0m")
+        self.vlog.info("\033[1mTask finished with passed=FALSE.\033[0m")
 
     def _skip(self):
         self.skipped += 1
-        self.vlog.critical("Task testing failed; skipped.\n" + traceback.format_exc())
+        self.vlog.error("Task testing failed; skipped.\n" + traceback.format_exc())
 
     def _ignore(self):
         self.ignored += 1
-        self.vlog.critical("Task already finished; ignored.")
+        self.vlog.info("Task already finished; ignored.")
         self.vlog.register(Log.delete)
 
     def __str__(self) -> str:
@@ -56,7 +54,7 @@ class Counter:
         return "\033[1m" + self.__str__() + "\033[0m"
 
     def callback(self) -> None:
-        self.vlog.critical(self.__repr__())
+        self.vlog.info(self.__repr__())
 
 
 # Automata only receive keyword args from Model and Agent
@@ -168,10 +166,11 @@ class Tester:
                     new_task.vlog.set(self.log)
                     self.tasks.append(new_task)
                 except Exception:
-                    self.log.critical(
-                        f"Config loading failed; skipped: {unknown_path}\n"
-                            + traceback.format_exc()
-                    )
+                    error_info = "Config loading failed; skipped: " \
+                        + unknown_path \
+                        + "\n" \
+                        + traceback.format_exc()
+                    self.log.error(error_info)
             else:
                 self.__traverse(os.path.join(current_infix, unknown_name))
 

@@ -40,10 +40,11 @@ class Log:
     ANSI_ESCAPE = r'\033(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])'
     LOG_PATTERN = (
         "\033[1;91m[%(asctime)s "
-        "\033[1;91m%(levelname)s "
-        "\033[1;94mID=%(domain)s "
+        "\033[1;91m%(levelname)-5s "
+        "\033[1;94mID=%(domain)-6s "
         "\033[1;92m%(module)s::%(funcName)s@%(filename)s:%(lineno)d"
         "\033[1;91m] "
+        "\033[0;1m%(log)s"
         "\033[0m%(message)s"
     )
 
@@ -137,9 +138,10 @@ class Log:
             string.ascii_uppercase + string.digits
         ) for _ in range(64))
         self.logger = logging.getLogger(f"«{log_name}»")
+        self.logger.propagate = False
         self.logger.setLevel(self.level)
 
-        self.extra = {"domain": self.DEFAULT_DOMAIN}
+        self.extra = {"domain": self.DEFAULT_DOMAIN, "log": ""}
         self.adapter = logging.LoggerAdapter(self.logger, self.extra)
         self.logger = self.adapter.logger
 
@@ -331,6 +333,14 @@ class Log:
         self.__remove_file_handler()
         self.extra["domain"] = self.DEFAULT_DOMAIN
 
+    def set_external(self, log_name: str = "") -> None:
+        assert isinstance(log_name, str)
+
+        if len(log_name) > 0:
+            self.extra["log"] = f"({log_name.strip()}) "
+        else:
+            self.extra["log"] = log_name
+
     def __mod_url(self, obj: Any):
         mod = lambda data: ", ".join([data.split(", ")[0], "..."])
         if isinstance(obj, dict):
@@ -461,6 +471,16 @@ class VirtualLog:
         assert isinstance(log, Log)
         self._log = log
 
+    def __call__(self, log_name: str = "") -> Self:
+        self._log.set_external(log_name)
+        return self
+
+    def __enter__(self) -> Self:
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback) -> None:
+        self()
+
     # use vlog.info() directly instead of vlog.log.adapter.info()
     def __getattr__(self, attr: str) -> Any:
         log = Log(disabled=True) if self._log is None else self._log
@@ -484,26 +504,9 @@ if GLOBAL_VLOG is None:
         elif Log.TACTIC == Log.Tactic.IGNORE:
             return
         elif Log.TACTIC == Log.Tactic.NATURALIZATION:
-            GLOBAL_VLOG.log(level, msg, stacklevel=stacklevel)
+            with GLOBAL_VLOG(self.name) as vlog:
+                vlog.log(level, msg, stacklevel=stacklevel)
         elif Log.TACTIC == Log.Tactic.OVERLOOK:
             _logger_log(self, level, msg, *args, stacklevel=stacklevel, **kwargs)
 
     logging.Logger._log = _log
-
-    for func_name in Log.LEVELS:
-        func = getattr(logging, func_name)
-
-
-def domain():
-    logger = logging.getLogger("...")
-    logger.setLevel(logging.INFO)
-    stream_handler = logging.StreamHandler()
-    stream_handler.setLevel(logging.INFO)
-    logger.addHandler(stream_handler)
-    logger.info("#1")
-
-    log = Log()
-    log.info("#2")
-    logger.info("#3")
-
-domain()
