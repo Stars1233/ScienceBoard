@@ -41,7 +41,7 @@ class Log:
     LOG_PATTERN = (
         "\033[1;91m[%(asctime)s "
         "\033[1;91m%(levelname)-5s "
-        "\033[1;94mID=%(domain)-6s "
+        "\033[1;94mID=%(domain)-s "
         "\033[1;92m%(module)s::%(funcName)s@%(filename)s:%(lineno)d"
         "\033[1;91m] "
         "\033[0;1m%(log)s"
@@ -444,13 +444,10 @@ class Log:
     def __getattr__(self, attr: str) -> Any:
         return getattr(self.adapter if attr in Log.LEVELS else self.logger, attr)
 
-    # to be a hint for user input
-    # we suggested setting level to CRITICAL
-    # although there is no error occurred
     def input(
         self,
         msg: str,
-        level: int = logging.CRITICAL,
+        level: int = logging.INFO,
         end: str ="\n"
     ) -> str:
         stored_end = self.stream_handler.terminator
