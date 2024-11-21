@@ -1,5 +1,6 @@
 import sys
 import os
+import re
 import subprocess
 
 from io import BytesIO
@@ -11,17 +12,20 @@ from desktop_env.desktop_env import DesktopEnv
 
 sys.dont_write_bytecode
 from ..base import Manager
-from ..Prompts import *
+from .. import Prompts
+from . import utils
 
 class VManager(Manager):
     VM_PATH = "./vmware"
     INIT_NAME = "init"
+    VERSION_FILE = "__VERSION__"
 
     def __init__(
         self,
         path: Optional[str] = None,
         headless: bool = False,
-        a11y_tree_limit: int = 8192
+        a11y_tree_limit: int = 8192,
+        version: str = "0.1"
     ) -> None:
         super().__init__()
 
@@ -42,6 +46,16 @@ class VManager(Manager):
 
         assert isinstance(a11y_tree_limit, int)
         self.a11y_tree_limit = a11y_tree_limit
+
+        # version argument should be consistent with vm file
+        assert re.match(r'^\d+\.\d+$', version) is not None
+        with open(
+            os.path.join(self.path, VManager.VERSION_FILE),
+            mode="r",
+            encoding="utf-8"
+        ) as readble:
+            assert(readble.read().strip() == version)
+        self.version = version
 
     def __init_vm(self) -> str:
         # TODO: download file to VM_PATH
@@ -66,9 +80,9 @@ class VManager(Manager):
             "-T",
             "ws",
             "-gu",
-            VM_USERNAME,
+            Prompts.VM_USERNAME,
             "-gp",
-            VM_PASSWORD,
+            Prompts.VM_PASSWORD,
             command,
             self.path,
             *args

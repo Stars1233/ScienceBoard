@@ -3,12 +3,15 @@
     "sort": "VM",
     "steps": 5,
     "instruction": "Fetch 2OLX in ChimeraX.",
-    "version": "0.5",
+    "version": "0.1",
     "initialize": [
         {
             "func": "osworld",
-            "config": {
-                
+            "type": "launch",
+            "parameters": {
+                "command": [
+                    "google-chrome"
+                ]
             }
         }
     ],

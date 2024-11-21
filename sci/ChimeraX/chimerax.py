@@ -44,7 +44,7 @@ class RawManager(Manager):
         path: Optional[str] = None,
         port: int = 8000,
         gui: bool = False,
-        version: str = "0.4"
+        version: str = "0.5"
     ) -> None:
         super().__init__()
 
