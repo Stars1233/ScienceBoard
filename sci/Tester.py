@@ -246,7 +246,7 @@ class Tester:
 
     @staticmethod
     def _log_handler(method: Callable) -> Callable:
-        def log_wrapper(self: "Tester"):
+        def _log_wrapper(self: "Tester"):
             local_counter = Counter()
             local_counter.vlog.set(self.log)
             self.log.trigger(
@@ -257,7 +257,7 @@ class Tester:
             method(self, local_counter)
             self.log.callback()
             local_counter.callback()
-        return log_wrapper
+        return _log_wrapper
 
     # there is no need to pass counter
     # as decorator has done all for it

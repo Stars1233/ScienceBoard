@@ -61,10 +61,10 @@ class VManager(Manager):
 
     @staticmethod
     def _env_handler(method: Callable) -> Callable:
-        def env_wrapper(self: Self, *args, **kwargs) -> Any:
+        def _env_wrapper(self: Self, *args, **kwargs) -> Any:
             assert isinstance(self.env, DesktopEnv)
             return method(self, *args, **kwargs)
-        return env_wrapper
+        return _env_wrapper
 
     @_env_handler
     def __vmrun(self, command: str, *args: str) -> bool:

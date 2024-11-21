@@ -164,6 +164,7 @@ class Task:
         assert self.available
         local_name = lambda func: f"_{func}"
         global_name = lambda func: f"{self.sort.lower()}_{func}"
+
         func = lambda func, **kwargs: getattr(self, local_name(func))(**kwargs) \
             if hasattr(self, local_name(func)) \
             else getattr(init, global_name(func))(**kwargs)
@@ -231,7 +232,6 @@ class Task:
     @Log.record_handler
     def predict(self) -> staticmethod:
         assert self.available
-
         try:
             self.agent._init(self.instruction, self.type_sort)
             for step_index in range(self.steps):
@@ -246,8 +246,8 @@ class Task:
     @Log.result_handler
     def eval(self, stop_type: staticmethod) -> Union[bool, NoReturn]:
         assert self.available
-
         eval_index = 0
+
         while eval_index < len(self.evaluate):
             eval_item = self.evaluate[eval_index]
             if eval_item["type"] != Task.EARLY_STOP:
@@ -283,7 +283,6 @@ class Task:
     def __call__(self) -> bool:
         assert self.available
         self.vlog.info(f"\033[1mTask: {self.instruction}\033[0m")
-
         if not self.manager.entered:
             with self.manager:
                 return self.__call()
