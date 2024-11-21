@@ -63,9 +63,9 @@ class VManager(Manager):
         if self.__is_zip(vm_path):
             cwd = os.path.join(os.path.abspath("."), VManager.VM_PATH)
             with zipfile.ZipFile(vm_path, "r") as zip_ref:
-                self.vlog.info("Start to extract the zip file...")
+                GLOBAL_VLOG.info("Start to extract the .zip file...")
                 zip_ref.extractall(cwd)
-                self.vlog.info("Succeed to extract the zip file.")
+                GLOBAL_VLOG.info("Files were extracted successfully.")
                 vm_path = os.path.join(cwd, VManager.VMX_NAME)
 
         assert os.path.exists(vm_path)
@@ -128,7 +128,9 @@ class VManager(Manager):
 
         success = completed.returncode in tolerance
         if not success:
-            self.vlog.error(f"Executing failed on vmrun {command}: {completed.stderr}.")
+            self.vlog.fallback().error(
+                f"Executing failed on vmrun {command}: {completed.stderr}."
+            )
         return (completed.stdout, success)
 
     def _list_snapshots(self) -> Optional[str]:
