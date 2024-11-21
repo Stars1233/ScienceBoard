@@ -160,14 +160,14 @@ class VManager(Manager):
             port = f":{VManager.SERVER_PORT}"
 
         request = getattr(requests, request_method.lower())
-        url = self.controller.http_server + port + pathname
+        base = f"http://{self.controller.vm_ip}"
 
         if request == "POST":
             if "header" not in param:
                 param["header"] = {}
             if "Content-Type" not in param["header"]:
                 param["header"]["Content-Type"] = "application/json"
-        return request(url, **param)
+        return request(base + port + pathname, **param)
 
     @_env_handler
     def __call__(self, code: str) -> None:

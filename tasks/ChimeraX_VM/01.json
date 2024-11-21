@@ -4,11 +4,13 @@
     "steps": 5,
     "instruction": "Fetch 2OLX in ChimeraX.",
     "version": "0.1",
-    "snapshot": "SciBench",
+    "snapshot": "sci_bench",
     "initialize": [
         {
             "func": "launch",
-            "command": "google-chrome"
+            "command": [
+                "kalgebra"
+            ]
         }
     ],
     "evaluate": []

@@ -50,6 +50,7 @@ class VTask(Task):
             return _request_wrapper
         return _request_decorator
 
+    # TODO: more steup functions
     @_request_factory("POST/setup/launch")
     def _launch(self, command: Union[str, List[str]], shell: bool = False) -> Dict:
         isinstance(command, list)

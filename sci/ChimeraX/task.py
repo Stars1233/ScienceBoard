@@ -166,6 +166,7 @@ class VMTask(VTask):
 
         # to enable Pylance type checker
         self.manager = manager
+
         super().__init__(config_path, manager, *args, **kwargs)
 
     @Task._stop_handler
