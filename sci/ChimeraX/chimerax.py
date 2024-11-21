@@ -6,7 +6,6 @@ import json
 import zipfile
 import requests
 import subprocess
-import tempfile
 import urllib.request
 
 from typing import List, Dict, Tuple, Optional, Callable
@@ -64,17 +63,15 @@ class RawManager(Manager):
         assert re.match(r'^\d+\.\d+$', version) is not None
         self.version = version
 
-        self.__temp_dir = tempfile.TemporaryDirectory()
-        self.temp_dir = self.__temp_dir.name
-
-    def __del__(self) -> None:
-        self.__temp_dir.cleanup()
-
     def __call(self, command: str) -> Dict:
-        return requests.get(
+        response = requests.get(
             RawManager.BASE_URL(self.port),
             params={"command": command}
         ).json()
+
+        if response["error"] is not None:
+            self.vlog.error(f"Error when executing {command}: {response['error']}")
+        return response
 
     def _call(self, command: str) -> Tuple[List[str], bool]:
         response = self.__call(command)
@@ -92,7 +89,7 @@ class RawManager(Manager):
             self.temp_dir = self.temp_dir.replace("\\", "/")
         self(f"states {self.temp_dir} {timestamp}")
         return json.load(open(
-            os.path.join(self.temp_dir, timestamp + ".json"),
+            self.temp(f"{timestamp}.json"),
             mode="r",
             encoding="utf-8"
         ))
@@ -125,8 +122,8 @@ class RawManager(Manager):
             return None
 
     def __install_bundle(self, version: str, uninstall: bool = True) -> None:
-        zip_file_path = os.path.join(self.temp_dir, f"{version}.zip")
-        bundle_dir_path = os.path.join(self.temp_dir, f"chimerax-states-{version}")
+        zip_file_path = self.temp(f"{version}.zip")
+        bundle_dir_path = self.temp(f"chimerax-states-{version}")
         urllib.request.urlretrieve(RawManager.TOOL_URL(version), zip_file_path)
 
         with zipfile.ZipFile(zip_file_path, "r") as zip_ref:

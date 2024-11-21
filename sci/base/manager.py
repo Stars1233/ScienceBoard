@@ -1,4 +1,6 @@
 import sys
+import os
+import tempfile
 
 from typing import Union, Tuple, Callable, Self, NoReturn, TypeVar
 from PIL import Image
@@ -28,6 +30,16 @@ class Manager:
     def __init__(self) -> None:
         self.entered = False
         self.vlog = VirtualLog()
+
+        self.__temp_dir = tempfile.TemporaryDirectory()
+        self.temp_dir = self.__temp_dir.name
+
+    def __del__(self) -> None:
+        self.__temp_dir.cleanup()
+
+    def temp(self, name: str) -> str:
+        assert isinstance(name, str)
+        return os.path.join(self.temp_dir, name)
 
     def __call__(self) -> None:
         raise NotImplementedError
