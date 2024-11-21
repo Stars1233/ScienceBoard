@@ -4,15 +4,12 @@
     "steps": 5,
     "instruction": "Fetch 2OLX in ChimeraX.",
     "version": "0.1",
+    "snapshot": "SciBench",
     "initialize": [
         {
-            "func": "osworld",
-            "type": "launch",
-            "parameters": {
-                "command": [
-                    "google-chrome"
-                ]
-            }
+            "func": "launch",
+            "program": "google",
+            "args": []
         }
     ],
     "evaluate": []

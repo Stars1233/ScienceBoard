@@ -16,7 +16,7 @@ from . import utils
 
 class VManager(Manager):
     VM_PATH = "./vmware"
-    INIT_NAME = "init"
+    INIT_NAME = "sci_bench"
     VERSION_FILE = "__VERSION__"
 
     def __init__(
@@ -93,6 +93,12 @@ class VManager(Manager):
     def run_bash(self, text: str) -> bool:
         assert isinstance(text, str)
         return self.__vmrun("runScriptInGuest", "/usr/bin/bash", text)
+
+    def run_program(self, program: str, *args: str) -> bool:
+        assert isinstance(program, str)
+        for arg in args:
+            assert isinstance(arg, str)
+        return self.__vmrun("runProgramInGuest", program, *args)
 
     @_env_handler
     def __call__(self, code: str) -> None:

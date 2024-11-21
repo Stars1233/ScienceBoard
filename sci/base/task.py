@@ -45,14 +45,15 @@ class Task:
 
         self.name = os.path.split(self.path)[1].split(".")[0]
         self.config = json.load(open(self.path, mode="r", encoding="utf-8"))
-        self.__check_config()
 
         assert manager is None or isinstance(manager, Manager)
-        self.manager = manager
-
         assert agent is None or isinstance(agent, Agent)
+        self.manager = manager
         self.agent = agent
 
+        self.__check_config()
+        if self.__class__ != Task:
+            assert self.version == self.manager.version
         if self.available:
             assert self.__class__.__name__.startswith(self.sort)
 
@@ -107,7 +108,6 @@ class Task:
         assert "version" in self.config
         self.version = self.config["version"]
         assert isinstance(self.version, str)
-        assert self.version == self.manager.version
 
         assert "initialize" in self.config
         self.initialize = self.config["initialize"]
@@ -126,7 +126,6 @@ class Task:
             if eval_item["type"] == Task.EARLY_STOP:
                 assert "value" in eval_item
                 assert isinstance(eval_item["value"], str)
-
 
     @staticmethod
     def _stop_handler(method: Callable) -> Callable:
@@ -171,7 +170,7 @@ class Task:
 
         # try `Task.CONFIG_RETRY` times
         # trigger assertion error if all fail
-        for round_index in range(Task.CONFIG_RETRY):
+        for _ in range(Task.CONFIG_RETRY):
             feedback = True
             # set to init state from second try
             # if _init() failed, goto next iteration
