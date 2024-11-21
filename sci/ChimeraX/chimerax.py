@@ -40,13 +40,13 @@ class RawManager(Manager):
 
     def __init__(
         self,
+        version: str = "0.5",
         sort: str = "stable",
         path: Optional[str] = None,
         port: int = 8000,
-        gui: bool = False,
-        version: str = "0.5"
+        gui: bool = False
     ) -> None:
-        super().__init__()
+        super().__init__(version)
 
         assert sort in RawManager.SORT_MAP
         self.sort = sort
@@ -59,9 +59,6 @@ class RawManager(Manager):
 
         assert isinstance(gui, bool)
         self.gui = gui
-
-        assert re.match(r'^\d+\.\d+$', version) is not None
-        self.version = version
 
     def __call(self, command: str) -> Dict:
         response = requests.get(

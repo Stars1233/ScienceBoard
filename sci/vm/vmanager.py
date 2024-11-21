@@ -1,6 +1,5 @@
 import sys
 import os
-import re
 import subprocess
 
 from io import BytesIO
@@ -22,12 +21,20 @@ class VManager(Manager):
 
     def __init__(
         self,
+        version: str = "0.1",
         path: Optional[str] = None,
         headless: bool = False,
-        a11y_tree_limit: int = 8192,
-        version: str = "0.1"
+        a11y_tree_limit: int = 8192
     ) -> None:
-        super().__init__()
+        super().__init__(version)
+
+        # version argument should be consistent with vm file
+        with open(
+            os.path.join(self.path, VManager.VERSION_FILE),
+            mode="r",
+            encoding="utf-8"
+        ) as readble:
+            assert(readble.read().strip() == self.version)
 
         self.path = self.__init_vm() if path is None else path
         assert os.path.exists(self.path)
@@ -46,16 +53,6 @@ class VManager(Manager):
 
         assert isinstance(a11y_tree_limit, int)
         self.a11y_tree_limit = a11y_tree_limit
-
-        # version argument should be consistent with vm file
-        assert re.match(r'^\d+\.\d+$', version) is not None
-        with open(
-            os.path.join(self.path, VManager.VERSION_FILE),
-            mode="r",
-            encoding="utf-8"
-        ) as readble:
-            assert(readble.read().strip() == version)
-        self.version = version
 
     def __init_vm(self) -> str:
         # TODO: download file to VM_PATH

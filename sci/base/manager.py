@@ -1,5 +1,6 @@
 import sys
 import os
+import re
 import time
 import tempfile
 
@@ -34,12 +35,15 @@ class Manager:
     def pause() -> None:        
         time.sleep(Manager.ACTION_INTERVAL)
 
-    def __init__(self) -> None:
+    def __init__(self, version: str) -> None:
         self.entered = False
         self.vlog = VirtualLog()
 
         self.__temp_dir = tempfile.TemporaryDirectory()
         self.temp_dir = self.__temp_dir.name
+
+        assert re.match(r'^\d+\.\d+$', version) is not None
+        self.version = version
 
     def __del__(self) -> None:
         self.__temp_dir.cleanup()

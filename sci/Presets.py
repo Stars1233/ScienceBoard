@@ -15,10 +15,10 @@ def spawn_managers() -> Config:
 
     return {
         TypeSort("ChimeraX", Sort.Raw): {
+            "version": "0.5",
             "sort": "daily",
             "port": 8000,
-            "gui": True,
-            "version": "0.5"
+            "gui": True
         }
     }
 
