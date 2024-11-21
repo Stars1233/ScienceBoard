@@ -56,7 +56,7 @@ class VManager(Manager):
         return env_wrapper
 
     @_env_handler
-    def vmrun(self, command: str, *args: str) -> bool:
+    def __vmrun(self, command: str, *args: str) -> bool:
         assert isinstance(command, str)
         for arg in args:
             assert isinstance(arg, str)
@@ -72,12 +72,16 @@ class VManager(Manager):
             command,
             self.path,
             *args
-        ], shell=True, text=True, capture_output=True, encoding="utf-8")
+        ], text=True, capture_output=True, encoding="utf-8")
 
         success = completed.returncode == 0
         if not success:
             self.vlog.error(f"Error executing vmrun {command}: {completed.stderr}.")
         return success
+
+    def run_bash(self, text: str) -> bool:
+        assert isinstance(text, str)
+        return self.__vmrun("runScriptInGuest", "/usr/bin/bash", text)
 
     @_env_handler
     def __call__(self, code: str) -> None:

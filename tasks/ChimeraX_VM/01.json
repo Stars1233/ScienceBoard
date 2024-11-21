@@ -1,0 +1,16 @@
+{
+    "type": "ChimeraX",
+    "sort": "VM",
+    "steps": 5,
+    "instruction": "Fetch 2OLX in ChimeraX.",
+    "version": "0.5",
+    "initialize": [
+        {
+            "func": "osworld",
+            "config": {
+                
+            }
+        }
+    ],
+    "evaluate": []
+}

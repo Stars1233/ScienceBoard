@@ -46,16 +46,13 @@ class TypeSort:
     sort: Sort
 
     def __str__(self) -> str:
-        if self.sort == TypeSort.Sort.VM:
-            return self.sort.name
-        else:
-            return f"{self.type}_{self.sort.name}"
+        f"{self.type}_{self.sort.name}"
 
     def __repr__(self) -> str:
         if self.sort == TypeSort.Sort.VM:
             return self.sort.name
         else:
-            return f"{self.type}:{self.sort.name}"
+            return f"{self.sort.name}:{self.type}"
 
     def __call__(self, postfix: str) -> Any:
         return self.sort.name + postfix
