@@ -5,7 +5,7 @@ import traceback
 
 from dataclasses import dataclass
 
-from typing import Union, List, Set
+from typing import Optional, List, Set
 from typing import Iterable, Callable, Generator
 
 sys.dont_write_bytecode
@@ -143,6 +143,7 @@ class Tester:
         logs_path: str,
         automata: Automata,
         obs_types: Set[str] = {Manager.screenshot.__name__},
+        vm_path: Optional[str] = None,
         ignore: bool = True,
         debug: bool = False,
         optimize: bool = True
@@ -171,11 +172,14 @@ class Tester:
 
         # manager in managers should not be Manager itself
         self.modules = Presets.spawn_modules()
-        self.manager_args = Presets.spawn_managers()
+        self.manager_args = Presets.spawn_managers(vm_path)
         self.managers = {}
 
         assert isinstance(obs_types, Iterable)
         self.obs_types = obs_types
+
+        assert vm_path is None or isinstance(vm_path, str)
+        self.vm_path = vm_path
 
         assert isinstance(ignore, bool)
         self.ignore = ignore
@@ -206,6 +210,9 @@ class Tester:
     def __load(self, config_path: str) -> Task:
         # using nil agent & manager only to load type field
         type_sort = Task(config_path=config_path).type_sort
+        if type_sort.sort == TypeSort.Sort.VM:
+            assert self.vm_path is not None
+
         task_class = getattr(
             self.modules[type_sort.type],
             type_sort(Task.__name__)

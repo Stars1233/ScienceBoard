@@ -41,6 +41,8 @@ class Manager:
 
         self.__temp_dir = tempfile.TemporaryDirectory()
         self.temp_dir = self.__temp_dir.name
+        if sys.platform == "win32":
+            self.temp_dir = self.temp_dir.replace("\\", "/")
 
         assert re.match(r'^\d+\.\d+$', version) is not None
         self.version = version

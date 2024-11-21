@@ -10,10 +10,15 @@ from . import TypeSort
 # all args should have a default value
 # should be consisted with Prompts' lambda
 Config: TypeAlias = Dict[TypeSort, Dict[str, Any]]
-def spawn_managers() -> Config:
+def spawn_managers(vm_path: Optional[str] = None) -> Config:
     Sort = TypeSort.Sort
 
     return {
+        TypeSort("", Sort.VM): {
+            "version": "0.1",
+            "path": vm_path,
+            "headless": False
+        },
         TypeSort("ChimeraX", Sort.Raw): {
             "version": "0.5",
             "sort": "daily",
@@ -32,4 +37,5 @@ def spawn_modules(manager_args: Optional[Config] = None):
     return {
         type_sort.type: frozen[type_sort.type]
         for type_sort in manager_args
+        if len(type_sort.type) > 0
     }

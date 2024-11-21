@@ -152,4 +152,12 @@ class RawTask(Task):
 
 
 class VMTask(VTask):
-    ...
+    def __init__(
+        self,
+        config_path: str,
+        manager: VMManager,
+        *args,
+        **kwargs
+    ) -> None:
+        assert isinstance(manager, VMManager)
+        super().__init__(config_path, manager, *args, **kwargs)

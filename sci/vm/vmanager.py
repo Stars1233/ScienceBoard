@@ -29,11 +29,11 @@ class VManager(Manager):
         super().__init__(version)
 
         # version argument should be consistent with vm file
-        with open(
-            os.path.join(self.path, VManager.VERSION_FILE),
-            mode="r",
-            encoding="utf-8"
-        ) as readble:
+        # no more check required if this assertion pass
+        with open(os.path.join(
+            os.path.split(path)[0],
+            VManager.VERSION_FILE
+        ), mode="r", encoding="utf-8") as readble:
             assert(readble.read().strip() == self.version)
 
         self.path = self.__init_vm() if path is None else path

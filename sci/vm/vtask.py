@@ -16,10 +16,6 @@ class VTask(Task):
         **kwargs
     ) -> None:
         assert isinstance(manager, VManager)
-
-        # TEMP: to enable Pylance type checker
-        self.manager = manager
-
         super().__init__(config_path, manager, *args, **kwargs)
         self.__check_config()
 

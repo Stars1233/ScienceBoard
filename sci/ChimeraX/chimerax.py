@@ -83,8 +83,6 @@ class RawManager(Manager):
 
     def states_dump(self) -> dict:
         timestamp = str(int(time.time() * 1000))
-        if sys.platform == "win32":
-            self.temp_dir = self.temp_dir.replace("\\", "/")
         self(f"states {self.temp_dir} {timestamp}")
         return json.load(open(
             self.temp(f"{timestamp}.json"),
