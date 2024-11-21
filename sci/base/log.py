@@ -450,10 +450,13 @@ class Log:
         level: int = logging.INFO,
         end: str ="\n"
     ) -> str:
-        stored_end = self.stream_handler.terminator
-        self.stream_handler.terminator = end
+        if hasattr(self, "stream_handler"):
+            stored_end = self.stream_handler.terminator
+            self.stream_handler.terminator = end
+
         self.adapter.log(level=level, msg=msg)
-        self.stream_handler.terminator = stored_end
+        if hasattr(self, "stream_handler"):
+            self.stream_handler.terminator = stored_end
         return input()
 
 

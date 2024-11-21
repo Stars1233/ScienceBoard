@@ -14,7 +14,7 @@ if __name__ == "__main__":
     tester = Tester(
         tasks_path="./tasks/ChimeraX_VM",
         logs_path="./logs",
-        vm_path="/media/PJLAB\\wangyian/Data/repo/osworld/vmware_vm_data/Ubuntu.vmx",
+        vm_path="/home/PJLAB/wangyian/Downloads/os-sci/vmware/Ubuntu.vmx",
         automata=automata,
         debug=True
     )

@@ -14,6 +14,7 @@ from .base import Manager
 from .base import Task
 from .base import Log
 from .base import VirtualLog
+from .base import GLOBAL_VLOG
 
 from .vm import VManager
 from .vm import VTask

@@ -17,3 +17,4 @@ from .manager import Manager
 from .task import Task
 from .log import Log
 from .log import VirtualLog
+from .log import GLOBAL_VLOG

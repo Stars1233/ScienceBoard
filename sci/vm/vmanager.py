@@ -1,6 +1,7 @@
 import sys
 import os
 import re
+import zipfile
 import subprocess
 
 from io import BytesIO
@@ -13,33 +14,27 @@ from desktop_env.desktop_env import DesktopEnv
 
 sys.dont_write_bytecode
 from ..base import Manager
+from ..base import GLOBAL_VLOG
 from .. import Prompts
 from . import utils
 
 class VManager(Manager):
-    VM_PATH = "./vmware"
+    VM_PATH = "vmware"
+    VMX_NAME = "Ubuntu.vmx"
+    VERSION_NAME = "__VERSION__"
+
     INIT_NAME = "sci_bench"
-    VERSION_FILE = "__VERSION__"
+    SERVER_PORT = 5000
 
     def __init__(
         self,
         version: str = "0.1",
-        path: Optional[str] = None,
+        vm_path: Optional[str] = None,
         headless: bool = False,
         a11y_tree_limit: int = 8192
     ) -> None:
         super().__init__(version)
-
-        # version argument should be consistent with vm file
-        # no more check required if this assertion pass
-        with open(os.path.join(
-            os.path.split(path)[0],
-            VManager.VERSION_FILE
-        ), mode="r", encoding="utf-8") as readble:
-            assert(readble.read().strip() == self.version)
-
-        self.path = self.__init_vm() if path is None else path
-        assert os.path.exists(self.path)
+        self.__vm_path(vm_path)
 
         assert isinstance(headless, bool)
         self.headless = headless
@@ -48,7 +43,7 @@ class VManager(Manager):
         self.env = lambda: DesktopEnv(
             provider_name="vmware",
             region=None,
-            path_to_vm=path,
+            path_to_vm=self.path,
             action_space="pyautogui",
             headless=self.headless,
         )
@@ -56,10 +51,43 @@ class VManager(Manager):
         assert isinstance(a11y_tree_limit, int)
         self.a11y_tree_limit = a11y_tree_limit
 
-    def __init_vm(self) -> str:
-        # TODO: download file to VM_PATH
-        # TODO: take snapshot of INIT_NAME
-        return "/path/to/vm"
+    def __is_zip(self, file_path: str):
+        assert os.path.exists(file_path)
+        with open(file_path, mode="rb") as readble:
+            magic_number = readble.read(4)
+        return magic_number == b"PK\x03\x04"
+
+    # - check if vm_path is Ubuntu.zip file (and extract)
+    # - record vm_path to Ubuntu.vmx file
+    def __vm_path(self, vm_path: str):
+        if self.__is_zip(vm_path):
+            cwd = os.path.join(os.path.abspath("."), VManager.VM_PATH)
+            with zipfile.ZipFile(vm_path, "r") as zip_ref:
+                self.vlog.info("Start to extract the zip file...")
+                zip_ref.extractall(cwd)
+                self.vlog.info("Succeed to extract the zip file.")
+                vm_path = os.path.join(cwd, VManager.VMX_NAME)
+
+        assert os.path.exists(vm_path)
+        self.path = vm_path
+
+        # version argument should be consistent with vm file
+        # no more check required if this assertion pass
+        with open(os.path.join(
+            os.path.split(self.path)[0],
+            VManager.VERSION_NAME
+        ), mode="r", encoding="utf-8") as readble:
+            assert(readble.read().strip() == self.version)
+
+        snapshot_detect = self._list_snapshots()
+        assert snapshot_detect is not None
+        impure_snapshots = snapshot_detect.split("\n")
+        if VManager.INIT_NAME not in impure_snapshots:
+            GLOBAL_VLOG.input((
+                f"Snapshot {VManager.INIT_NAME} will be created automatically; "
+                f"press ENTER to continue: "
+            ), end="")
+            assert self._create_snapshots(VManager.INIT_NAME) is True
 
     @staticmethod
     def _env_handler(method: Callable) -> Callable:
@@ -69,22 +97,21 @@ class VManager(Manager):
         return _env_wrapper
 
     # hard to use, try OSWorld's service instead
-    @_env_handler
-    def __vmrun(
+    def _vmrun(
         self,
         command: str,
         *args: str,
         tolerance: Iterable[int] = []
-    ) -> bool:
+    ) -> Tuple[str, bool]:
+        assert isinstance(command, str)
+        for arg in args:
+            assert isinstance(arg, str)
+
         assert isinstance(tolerance, Iterable)
         for return_code in tolerance:
             assert isinstance(return_code, int)
         tolerance = set(tolerance)
         tolerance.add(0)
-
-        assert isinstance(command, str)
-        for arg in args:
-            assert isinstance(arg, str)
 
         completed = subprocess.run([
             "vmrun",
@@ -99,9 +126,18 @@ class VManager(Manager):
             *args
         ], text=True, capture_output=True, encoding="utf-8")
 
-        success = completed.returncode not in tolerance
+        success = completed.returncode in tolerance
         if not success:
             self.vlog.error(f"Executing failed on vmrun {command}: {completed.stderr}.")
+        return (completed.stdout, success)
+
+    def _list_snapshots(self) -> Optional[str]:
+        output, success = self._vmrun("listSnapshots")
+        return output if success else None
+
+    def _create_snapshots(self, snapshot_name: str) -> bool:
+        assert isinstance(snapshot_name, str)
+        _, success = self._vmrun("snapshot", snapshot_name)
         return success
 
     def _run_bash(self, text: str, tolerance: Iterable[int] = []) -> bool:
@@ -114,9 +150,15 @@ class VManager(Manager):
         )
 
     def _request(self, query: str, param: Dict["str", Any]) -> requests.Response:
-        request_method, pathname = re.search(r'(GET|POST)(.+)', query).groups()
+        # query string example: "POST:8080/api/version"
+        # correspond to request.post(f"http://{base}:{port}{path}")
+        reg_exp = r'(GET|POST)(:\d+)?(.+)'
+        request_method, port, pathname = re.search(reg_exp, query).groups()
+        if port is None:
+            port = f":{VManager.SERVER_PORT}"
+
         request = getattr(requests, request_method.lower())
-        url = self.controller.http_server + pathname
+        url = self.controller.http_server + port + pathname
 
         if request == "POST":
             if "header" not in param:
