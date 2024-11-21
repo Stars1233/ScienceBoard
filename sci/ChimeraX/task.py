@@ -41,23 +41,23 @@ class RawTask(Task):
         _, code = self.manager._call("close")
         return code and self.manager.clear_history()
 
-    def __clear(self) -> bool:
+    def _clear(self) -> bool:
         _, code = self.manager._call(f"clear")
         return code
 
-    def __open(self, name: str) -> bool:
+    def _open(self, name: str) -> bool:
         _, code = self.manager._call(f"open {name}")
         return code
 
-    def __turn(self, axis: str, angle: int) -> bool:
+    def _turn(self, axis: str, angle: int) -> bool:
         _, code = self.manager._call(f"turn {axis} {angle}")
         return code
 
-    def __alphafold_match(self, name: str) -> bool:
+    def _alphafold_match(self, name: str) -> bool:
         _, code = self.manager._call(f"alphafold match {name}")
         return code
 
-    def __color(self, style: str) -> bool:
+    def _color(self, style: str) -> bool:
         command = f"color {style}" if style != "rainbow" else style
         _, code = self.manager._call(command)
         return code

@@ -163,7 +163,7 @@ class Task:
     # according to self.sort (in {"Raw", "VM"})
     def init(self) -> bool:
         assert self.available
-        local_name = lambda func: f"_{self.__class__.__name__}__{func}"
+        local_name = lambda func: f"_{func}"
         global_name = lambda func: f"{self.sort.lower()}_{func}"
         func = lambda func, **kwargs: getattr(self, local_name(func))(**kwargs) \
             if hasattr(self, local_name(func)) \

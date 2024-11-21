@@ -68,7 +68,7 @@ class RawManager(Manager):
         ).json()
 
         if response["error"] is not None:
-            self.vlog.error(f"Error when executing {command}: {response['error']}")
+            self.vlog.error(f"Executing failed on {command}: {response['error']}.")
         return response
 
     def _call(self, command: str) -> Tuple[List[str], bool]:
@@ -160,7 +160,7 @@ class RawManager(Manager):
         self.process.kill()
         super().__exit__(exc_type, exc_value, traceback)
 
-    def __linux_show_window(self) -> None:
+    def _linux_show_window(self) -> None:
         # to disable Pylance syntax checker
         assert sys.platform == "linux"
         from wmctrl import Window
@@ -171,7 +171,7 @@ class RawManager(Manager):
         current_window.maximize()
         Manager.pause()
 
-    def __win32_show_window(self) -> None:
+    def _win32_show_window(self) -> None:
         # to disable Pylance syntax checker
         assert sys.platform == "win32"
         import win32gui, win32con
@@ -182,8 +182,7 @@ class RawManager(Manager):
         Manager.pause()
 
     def screenshot(self) -> Image.Image:
-        full_name = f"_{self.__class__.__name__}__{sys.platform}_show_window"
-        getattr(self, full_name)()
+        getattr(self, f"_{sys.platform}_show_window")()
         return ImageGrab.grab()
 
 

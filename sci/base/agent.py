@@ -112,7 +112,7 @@ class Model:
     top_p: float = 0.9
     temperature: float = 0.5
 
-    def __style_openai(self, messages: Dict) -> Response:
+    def _style_openai(self, messages: Dict) -> Response:
         headers = {
             "Content-Type": "application/json",
         }
@@ -145,8 +145,7 @@ class Model:
         ...
 
     def __call__(self, messages: Dict) -> Response:
-        full_name = f"_{self.__class__.__name__}__style_{self.model_style}"
-        return getattr(self, full_name)(messages)
+        return getattr(self, f"_style_{self.model_style}")(messages)
 
 
 class Access:

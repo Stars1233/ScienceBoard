@@ -87,7 +87,7 @@ class VManager(Manager):
 
         success = completed.returncode == 0
         if not success:
-            self.vlog.error(f"Error executing vmrun {command}: {completed.stderr}.")
+            self.vlog.error(f"Executing failed on vmrun {command}: {completed.stderr}.")
         return success
 
     def run_bash(self, text: str) -> bool:
