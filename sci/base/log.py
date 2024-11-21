@@ -478,7 +478,7 @@ class VirtualLog:
     def __exit__(self, exc_type, exc_value, traceback) -> None:
         self()
 
-    # use vlog.info() directly instead of vlog.log.adapter.info()
+    # use vlog.info() directly instead of vlog._log.adapter.info()
     def __getattr__(self, attr: str) -> Any:
         log = Log(disabled=True) if self._log is None else self._log
         return getattr(log, attr)

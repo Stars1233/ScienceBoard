@@ -1,7 +1,9 @@
 import sys
+import os
+import subprocess
 
 from io import BytesIO
-from typing import Optional, Union, Tuple
+from typing import Optional, Union, List, Tuple
 from typing import Self, NoReturn, Callable, Any
 
 from PIL import Image
@@ -23,27 +25,28 @@ class VManager(Manager):
     ) -> None:
         super().__init__()
 
-        if path is None:
-            self.__init_vm()
+        self.path = self.__init_vm() if path is None else path
+        assert os.path.exists(self.path)
+
+        assert isinstance(headless, bool)
+        self.headless = headless
 
         # prevent DesktopEnv from loading immediately
-        assert isinstance(headless, bool)
         self.env = lambda: DesktopEnv(
             provider_name="vmware",
             region=None,
             path_to_vm=path,
             action_space="pyautogui",
-            headless=headless,
+            headless=self.headless,
         )
 
         assert isinstance(a11y_tree_limit, int)
         self.a11y_tree_limit = a11y_tree_limit
 
-    def __init_vm(self) -> None:
+    def __init_vm(self) -> str:
         # TODO: download file to VM_PATH
         # TODO: take snapshot of INIT_NAME
-        self.path = ...
-        raise NotImplementedError
+        return "/path/to/vm"
 
     @staticmethod
     def _env_handler(method: Callable) -> Callable:
@@ -51,6 +54,30 @@ class VManager(Manager):
             assert isinstance(self.env, DesktopEnv)
             return method(self, *args, **kwargs)
         return env_wrapper
+
+    @_env_handler
+    def vmrun(self, command: str, *args: str) -> bool:
+        assert isinstance(command, str)
+        for arg in args:
+            assert isinstance(arg, str)
+
+        completed = subprocess.run([
+            "vmrun",
+            "-T",
+            "ws",
+            "-gu",
+            "user",
+            "-gp",
+            "password",
+            command,
+            self.path,
+            *args
+        ], shell=True, text=True, capture_output=True, encoding="utf-8")
+
+        success = completed.returncode == 0
+        if not success:
+            self.vlog.error(f"Error executing vmrun {command}: {completed.stderr}.")
+        return success
 
     @_env_handler
     def __call__(self, code: str) -> None:
