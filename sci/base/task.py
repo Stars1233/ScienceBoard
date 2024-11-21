@@ -104,6 +104,11 @@ class Task:
         self.instruction = self.config["instruction"]
         assert isinstance(self.instruction, str)
 
+        assert "version" in self.config
+        self.version = self.config["version"]
+        assert isinstance(self.version, str)
+        assert self.version == self.manager.version
+
         assert "initialize" in self.config
         self.initialize = self.config["initialize"]
         assert isinstance(self.initialize, list)

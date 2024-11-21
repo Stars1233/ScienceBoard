@@ -15,6 +15,7 @@ from PIL import ImageGrab
 
 sys.dont_write_bytecode
 from ..base import Manager
+from ..vm import VManager
 
 # raw: supposed that ChimeraX is pre-installed on Linux
 #      and one of commands in SORT_MAP is runnable
@@ -184,3 +185,7 @@ class RawManager(Manager):
         full_name = f"_{self.__class__.__name__}__{sys.platform}_show_window"
         getattr(self, full_name)()
         return ImageGrab.grab()
+
+
+class VMManager(VManager):
+    ...

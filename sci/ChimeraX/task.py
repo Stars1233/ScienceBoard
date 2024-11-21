@@ -5,9 +5,10 @@ import json
 from typing import List, Dict, Union, Callable, Any
 
 sys.dont_write_bytecode = True
-from ..base import Task
 from ..base import utils
-from .chimerax import RawManager
+from ..base import Task
+from ..vm import VTask
+from .chimerax import RawManager, VMManager
 
 class RawTask(Task):
     def __init__(
@@ -22,11 +23,6 @@ class RawTask(Task):
         self.__check_config()
 
     def __check_config(self) -> None:
-        assert "version" in self.config
-        self.version = self.config["version"]
-        assert isinstance(self.version, str)
-        assert self.version == self.manager.version
-
         for eval_item in self.evaluate:
             if eval_item["type"] == Task.EARLY_STOP:
                 continue
@@ -153,3 +149,7 @@ class RawTask(Task):
                 self.vlog.info(f"Evaluation failed at {eval_type} of {eval_item['key']}.")
                 return False
         return True
+
+
+class VMTask(VTask):
+    ...
