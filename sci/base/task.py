@@ -1,9 +1,8 @@
 import sys
 import os
 import json
-import time
 
-from typing import Set, Union, Optional
+from typing import Set, Union, Optional, Any
 from typing import Iterable, Callable, NoReturn
 
 sys.dont_write_bytecode = True
@@ -146,6 +145,13 @@ class Task:
                 return False
         return _error_wrapper
 
+    @staticmethod
+    def _avail_handler(method: Callable) -> Callable:
+        def _avail_wrapper(self: "Task", *args, **kwargs) -> Any:
+            assert self.available
+            return method(self, *args, **kwargs)
+        return _avail_wrapper
+
     # do not use this method as much as posssible
     # try to customize each manager's own method of resetting
     def _init(self) -> bool:
@@ -160,8 +166,8 @@ class Task:
     # find local `func` first
     # then find `raw_func` or `vm_func` in .base.init
     # according to self.sort (in {"Raw", "VM"})
+    @_avail_handler
     def init(self) -> bool:
-        assert self.available
         local_name = lambda func: f"_{func}"
         global_name = lambda func: f"{self.sort.lower()}_{func}"
 
@@ -229,9 +235,9 @@ class Task:
             self.agent.dump_history()
         )
 
+    @_avail_handler
     @Log.record_handler
     def predict(self) -> staticmethod:
-        assert self.available
         try:
             self.agent._init(self.instruction, self.type_sort)
             for step_index in range(self.steps):
@@ -243,9 +249,9 @@ class Task:
     # in case Task().eval() is derectly called
     # if eval() of Task's subclass is called
     # result output will be written twice sometimes
+    @_avail_handler
     @Log.result_handler
     def eval(self, stop_type: staticmethod) -> Union[bool, NoReturn]:
-        assert self.available
         eval_index = 0
 
         while eval_index < len(self.evaluate):
@@ -280,8 +286,8 @@ class Task:
         self.vlog.info(f"Starting evaluation with stop type of {stop_type.__name__}.")
         return self.eval(stop_type)
 
+    @_avail_handler
     def __call__(self) -> bool:
-        assert self.available
         self.vlog.info(f"\033[1mTask: {self.instruction}\033[0m")
         if not self.manager.entered:
             with self.manager:

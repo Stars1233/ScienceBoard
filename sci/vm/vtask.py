@@ -16,7 +16,10 @@ class VTask(Task):
         **kwargs
     ) -> None:
         assert isinstance(manager, VManager)
+
+        # to enable Pylance type checker
         self.manager = manager
+
         super().__init__(config_path, manager, *args, **kwargs)
         self.__check_config()
 
@@ -49,10 +52,12 @@ class VTask(Task):
 
     @_request_factory("POST/setup/launch")
     def _launch(self, command: Union[str, List[str]], shell: bool = False) -> Dict:
-        assert isinstance(command, str) or isinstance(command, list)
+        isinstance(command, list)
         if isinstance(command, list):
             for part in command:
                 assert isinstance(part, str)
+        else:
+            assert isinstance(command, str)
 
         assert isinstance(shell, bool)
         return {
@@ -61,7 +66,3 @@ class VTask(Task):
                 "shell": shell
             }
         }
-
-    @Task._stop_handler
-    def eval(self) -> bool:
-        return True

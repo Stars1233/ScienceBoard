@@ -19,6 +19,10 @@ class RawTask(Task):
         **kwargs
     ) -> None:
         assert isinstance(manager, RawManager)
+
+        # to enable Pylance type checker
+        self.manager = manager
+
         super().__init__(config_path, manager, *args, **kwargs)
         self.__check_config()
 
@@ -63,7 +67,7 @@ class RawTask(Task):
         return code
 
     @Task._error_handler
-    def __eval_states(
+    def _eval_states(
         self,
         eval_item: Dict[str, Any],
         current_states: Dict[str, Any]
@@ -125,7 +129,7 @@ class RawTask(Task):
         return False
 
     @Task._error_handler
-    def __eval_info(
+    def _eval_info(
         self,
         eval_item: Dict[str, Any],
         current_states: Dict[str, Any]
@@ -143,8 +147,7 @@ class RawTask(Task):
         current_states = self.manager.states_dump()
         for eval_item in self.evaluate:
             eval_type = eval_item["type"]
-            method_name = f"_{self.__class__.__name__}__eval_{eval_type}"
-            eval_func = getattr(self, method_name)
+            eval_func = getattr(self, f"_eval_{eval_type}")
             if not eval_func(eval_item, current_states):
                 self.vlog.info(f"Evaluation failed at {eval_type} of {eval_item['key']}.")
                 return False
@@ -160,4 +163,11 @@ class VMTask(VTask):
         **kwargs
     ) -> None:
         assert isinstance(manager, VMManager)
+
+        # to enable Pylance type checker
+        self.manager = manager
         super().__init__(config_path, manager, *args, **kwargs)
+
+    @Task._stop_handler
+    def eval(self) -> bool:
+        return True

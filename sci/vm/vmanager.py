@@ -63,7 +63,7 @@ class VManager(Manager):
 
     @staticmethod
     def _env_handler(method: Callable) -> Callable:
-        def _env_wrapper(self: Self, *args, **kwargs) -> Any:
+        def _env_wrapper(self: "VManager", *args, **kwargs) -> Any:
             assert isinstance(self.env, DesktopEnv)
             return method(self, *args, **kwargs)
         return _env_wrapper
@@ -104,7 +104,7 @@ class VManager(Manager):
             self.vlog.error(f"Executing failed on vmrun {command}: {completed.stderr}.")
         return success
 
-    def run_bash(self, text: str, tolerance: Iterable[int] = []) -> bool:
+    def _run_bash(self, text: str, tolerance: Iterable[int] = []) -> bool:
         assert isinstance(text, str)
         return self.__vmrun(
             "runScriptInGuest",
@@ -152,19 +152,19 @@ class VManager(Manager):
         self.env.close()
         super().__exit__(exc_type, exc_value, traceback)
 
-    @Manager._assert_handler
     @_env_handler
+    @Manager._assert_handler
     def textual(self) -> Optional[str]:
         return self.controller.get_terminal_output()
 
-    @Manager._assert_handler
     @_env_handler
+    @Manager._assert_handler
     def screenshot(self) -> Optional[Image.Image]:
         raw_screenshot = self.controller.get_screenshot()
         return Image.open(BytesIO(raw_screenshot))
 
-    @Manager._assert_handler
     @_env_handler
+    @Manager._assert_handler
     def a11y_tree(self) -> Optional[str]:
         raw_a11y_tree = self.controller.get_accessibility_tree()
         a11y_tree = utils.linearize(raw_a11y_tree)
