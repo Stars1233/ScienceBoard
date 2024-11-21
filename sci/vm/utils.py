@@ -1,5 +1,6 @@
 # extracted from OSWorld/mm_agents
 # ref: https://github.com/xlang-ai/OSWorld/blob/main/mm_agents/agent.py
+
 import xml.etree.ElementTree as ET
 from io import BytesIO
 from typing import Tuple, List

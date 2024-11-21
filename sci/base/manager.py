@@ -1,5 +1,6 @@
 import sys
 import os
+import time
 import tempfile
 
 from typing import Union, Tuple, Callable, Self, NoReturn, TypeVar
@@ -27,6 +28,12 @@ T = TypeVar("T")
 #   - set_of_marks(): get som of app
 #   - record_start() / record_stop(): record video for log
 class Manager:
+    ACTION_INTERVAL = 1
+
+    @staticmethod
+    def pause() -> None:        
+        time.sleep(Manager.ACTION_INTERVAL)
+
     def __init__(self) -> None:
         self.entered = False
         self.vlog = VirtualLog()

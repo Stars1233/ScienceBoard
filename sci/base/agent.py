@@ -174,7 +174,7 @@ class Primitive:
 
     @staticmethod
     def WAIT() -> None:
-        time.sleep(Agent.WAIT_TIME)
+        Agent.pause()
 
     @staticmethod
     def TIMEOUT() -> None:
@@ -223,6 +223,10 @@ class Overflow:
 
 class Agent:
     WAIT_TIME = 5
+
+    @staticmethod
+    def pause() -> None:
+        time.sleep(Agent.WAIT_TIME)
 
     SYSTEM_INST = lambda inst: f"You are asked to complete the following task: {inst}"
     USER_FLATTERY = "What's the next step that you will do to help with the task?"

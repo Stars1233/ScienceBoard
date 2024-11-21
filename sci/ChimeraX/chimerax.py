@@ -171,7 +171,7 @@ class RawManager(Manager):
             if window.pid == self.process.pid
         ][0]
         current_window.maximize()
-        time.sleep(1)
+        Manager.pause()
 
     def __win32_show_window(self) -> None:
         # to disable Pylance syntax checker
@@ -179,9 +179,9 @@ class RawManager(Manager):
         import win32gui, win32con
         hwnd = win32gui.FindWindow(None, "ChimeraX")
         win32gui.ShowWindow(hwnd, win32con.SW_MINIMIZE)
-        time.sleep(1)
+        Manager.pause()
         win32gui.ShowWindow(hwnd, win32con.SW_MAXIMIZE)
-        time.sleep(1)
+        Manager.pause()
 
     def screenshot(self) -> Image.Image:
         full_name = f"_{self.__class__.__name__}__{sys.platform}_show_window"

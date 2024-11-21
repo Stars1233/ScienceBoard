@@ -1,3 +1,5 @@
+VM_USERNAME = "user"
+VM_PASSWORD = "password"
 
 ANTIQUOT_CHIMERAX_RAW = lambda inst: f"""
 You are an agent which follow my instruction and perform desktop computer tasks as instructed.

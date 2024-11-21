@@ -16,6 +16,7 @@ from .base import Log
 from .base import VirtualLog
 
 from .vm import VManager
+from .vm import VTask
 
 from .Tester import Counter
 from .Tester import Automata

@@ -147,7 +147,7 @@ class Task:
     def _init(self) -> bool:
         try:
             self.manager.__exit__(None, None, None)
-            time.sleep(Task.ACTION_INTERVAL)
+            Manager.pause()
             self.manager.__enter__()
             return True
         except:
@@ -177,7 +177,7 @@ class Task:
             # if error occurred / do not return True
             # then stop init and retry in next iteration
             for init_item in self.initialize:
-                time.sleep(Task.ACTION_INTERVAL)
+                Manager.pause()
                 succeed = False
                 try:
                     succeed = func(**init_item)
@@ -215,7 +215,7 @@ class Task:
         self.vlog.info(f"Response {step_index + 1}/{self.steps}: {response_content.text}")
 
         for code_like in response_codes:
-            time.sleep(Task.ACTION_INTERVAL)
+            Manager.pause()
             code_like(self.manager)
         self.vlog.save(
             step_index,

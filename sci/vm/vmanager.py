@@ -11,7 +11,7 @@ from desktop_env.desktop_env import DesktopEnv
 
 sys.dont_write_bytecode
 from ..base import Manager
-from . import utils
+from ..Prompts import *
 
 class VManager(Manager):
     VM_PATH = "./vmware"
@@ -66,9 +66,9 @@ class VManager(Manager):
             "-T",
             "ws",
             "-gu",
-            "user",
+            VM_USERNAME,
             "-gp",
-            "password",
+            VM_PASSWORD,
             command,
             self.path,
             *args
