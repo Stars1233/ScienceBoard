@@ -1,11 +1,13 @@
 import sys
 import os
+import re
 import subprocess
 
 from io import BytesIO
-from typing import Optional, Union, List, Tuple
-from typing import Self, NoReturn, Callable, Any
+from typing import Optional, Union, Iterable, Tuple, Dict, Any
+from typing import Self, NoReturn, Callable
 
+import requests
 from PIL import Image
 from desktop_env.desktop_env import DesktopEnv
 
@@ -66,8 +68,20 @@ class VManager(Manager):
             return method(self, *args, **kwargs)
         return _env_wrapper
 
+    # hard to use, try OSWorld's service instead
     @_env_handler
-    def __vmrun(self, command: str, *args: str) -> bool:
+    def __vmrun(
+        self,
+        command: str,
+        *args: str,
+        tolerance: Iterable[int] = []
+    ) -> bool:
+        assert isinstance(tolerance, Iterable)
+        for return_code in tolerance:
+            assert isinstance(return_code, int)
+        tolerance = set(tolerance)
+        tolerance.add(0)
+
         assert isinstance(command, str)
         for arg in args:
             assert isinstance(arg, str)
@@ -85,20 +99,31 @@ class VManager(Manager):
             *args
         ], text=True, capture_output=True, encoding="utf-8")
 
-        success = completed.returncode == 0
+        success = completed.returncode not in tolerance
         if not success:
             self.vlog.error(f"Executing failed on vmrun {command}: {completed.stderr}.")
         return success
 
-    def run_bash(self, text: str) -> bool:
+    def run_bash(self, text: str, tolerance: Iterable[int] = []) -> bool:
         assert isinstance(text, str)
-        return self.__vmrun("runScriptInGuest", "/usr/bin/bash", text)
+        return self.__vmrun(
+            "runScriptInGuest",
+            "/usr/bin/bash",
+            text,
+            tolerance=tolerance
+        )
 
-    def run_program(self, program: str, *args: str) -> bool:
-        assert isinstance(program, str)
-        for arg in args:
-            assert isinstance(arg, str)
-        return self.__vmrun("runProgramInGuest", program, *args)
+    def _request(self, query: str, param: Dict["str", Any]) -> requests.Response:
+        request_method, pathname = re.search(r'(GET|POST)(.+)', query).groups()
+        request = getattr(requests, request_method.lower())
+        url = self.controller.http_server + pathname
+
+        if request == "POST":
+            if "header" not in param:
+                param["header"] = {}
+            if "Content-Type" not in param["header"]:
+                param["header"]["Content-Type"] = "application/json"
+        return request(url, **param)
 
     @_env_handler
     def __call__(self, code: str) -> None:

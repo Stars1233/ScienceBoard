@@ -8,8 +8,7 @@
     "initialize": [
         {
             "func": "launch",
-            "program": "google",
-            "args": []
+            "command": "google-chrome"
         }
     ],
     "evaluate": []
