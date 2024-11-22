@@ -37,8 +37,12 @@
 2. Install toolshed of ChimeraX-states:
 
     ```
-    ...
+    wget https://github.com/ShiinaHiiragi/chimerax-states/archive/refs/tags/0.5.zip -P ~/Downloads
+    unzip ~/Downloads/0.5.zip -d ~/Downloads
+    flatpak run edu.ucsf.rbvi.ChimeraX --nogui --exit --cmd "devel install ~/Downloads/chimerax-states-0.5 exit true"
     ```
+
+3. (Optional) Load some of .cif files in advance to avoid bad connection.
 
 ### Kalgebra
 
@@ -53,7 +57,7 @@
 2. Attach a `__VERSION__` file under :
 
     ```shell
-    echo "1.0" >> __VERSION__
+    echo "0.1" >> __VERSION__
     ```
 
 3. Compress vmware files:
@@ -61,3 +65,5 @@
     ```shell
     cd ~/Downloads/Ubuntu-x86; zip -r ../Ubuntu-x86.zip *; cd -
     ```
+
+## References
