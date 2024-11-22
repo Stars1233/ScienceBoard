@@ -44,7 +44,7 @@ class Log:
         "\033[1;94mID=%(domain)-s "
         "\033[1;92m%(module)s::%(funcName)s@%(filename)s:%(lineno)d"
         "\033[1;91m] "
-        "\033[0;1m%(log)s"
+        "\033[1;30m%(log)s"
         "\033[0m%(message)s"
     )
 
@@ -101,7 +101,7 @@ class Log:
     @property
     def result_file_path(self) -> str:
         assert self.file_handler is not None
-        return os.path.join(self.save_path, self.RESULT_FILENAME)
+        return os.path.join(self.save_path, Log.RESULT_FILENAME)
 
     @property
     def record_file_path(self) -> str:

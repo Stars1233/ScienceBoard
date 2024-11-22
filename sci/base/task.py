@@ -172,11 +172,10 @@ class Task:
         global_name = lambda func: f"{self.sort.lower()}_{func}"
 
         def func(func: str, wait: int = 0, **kwargs):
-            result = getattr(
-                self,
-                local_name(func),
-                getattr(init, global_name(func))
-            )(**kwargs)
+            handler = getattr(self, local_name(func)) \
+                if hasattr(self, local_name(func)) \
+                else getattr(init, global_name(func))
+            result = handler(**kwargs)
             Manager.pause(wait)
             return result
 

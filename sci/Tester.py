@@ -106,6 +106,14 @@ class TaskInfo:
     def __call__(self) -> bool:
         return self.task()
 
+    # return True if the task has not been finished
+    def snoop(self, base_path: str) -> bool:
+        return not os.path.exists(os.path.join(
+            base_path,
+            self.ident,
+            Log.RESULT_FILENAME
+        ))
+
 
 class TaskGroup:
     def __init__(self, raw: List[TaskInfo]) -> None:
@@ -128,10 +136,18 @@ class TaskGroup:
             for task_info in group:
                 assert group[0].task.manager == task_info.task.manager
 
-    def __call__(self) -> Generator:
+    def __call__(self, base_path: str, ignore: bool) -> Generator:
+        assert isinstance(base_path, str)
+        assert isinstance(ignore, bool)
         self.__check()
+
         for group in self.groups:
-            with group[0].task.manager:
+            has_unfinished = any([item.snoop(base_path) for item in group])
+            if has_unfinished or not ignore:
+                with group[0].task.manager:
+                    for task_info in group:
+                        yield task_info
+            else:
                 for task_info in group:
                     yield task_info
 
@@ -263,7 +279,8 @@ class Tester:
     # as decorator has done all for it
     @_log_handler
     def __call__(self, counter: Counter):
-        for task_info in self.task_group() if self.optimize else self.task_info:
+        generator = self.task_group(self.logs_path, self.ignore)
+        for task_info in generator if self.optimize else self.task_info:
             with self.log(
                 base_path=self.logs_path,
                 ident=task_info.ident,
