@@ -4,7 +4,8 @@ import re
 import time
 import tempfile
 
-from typing import Union, Tuple, Callable, Self, NoReturn, TypeVar
+from typing import Union, Tuple, Optional
+from typing import Callable, Self, NoReturn, TypeVar
 from PIL import Image
 
 sys.dont_write_bytecode = True
@@ -32,8 +33,8 @@ class Manager:
     ACTION_INTERVAL = 1
 
     @staticmethod
-    def pause() -> None:        
-        time.sleep(Manager.ACTION_INTERVAL)
+    def pause(span: Optional[int] = None) -> None:
+        time.sleep(Manager.ACTION_INTERVAL if span is None else span)
 
     def __init__(self, version: str) -> None:
         self.entered = False

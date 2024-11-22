@@ -44,8 +44,9 @@ class VManager(Manager):
             provider_name="vmware",
             region=None,
             path_to_vm=self.path,
+            snapshot_name=VManager.INIT_NAME,
             action_space="pyautogui",
-            headless=self.headless,
+            headless=self.headless
         )
 
         assert isinstance(a11y_tree_limit, int)
@@ -162,11 +163,11 @@ class VManager(Manager):
         request = getattr(requests, request_method.lower())
         base = f"http://{self.controller.vm_ip}"
 
-        if request == "POST":
-            if "header" not in param:
-                param["header"] = {}
-            if "Content-Type" not in param["header"]:
-                param["header"]["Content-Type"] = "application/json"
+        if request_method == "POST":
+            if "headers" not in param:
+                param["headers"] = {}
+            if "Content-Type" not in param["headers"]:
+                param["headers"]["Content-Type"] = "application/json"
         return request(base + port + pathname, **param)
 
     @_env_handler

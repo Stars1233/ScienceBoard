@@ -36,8 +36,8 @@ class VTask(Task):
     @staticmethod
     def _request_factory(query: str):
         def _request_decorator(method: Callable) -> Callable:
-            def _request_wrapper(self: "VTask", *args, **kwargs) -> bool:
-                param: Dict["str", Any] = method(self, *args, **kwargs)
+            def _request_wrapper(self: "VTask", **kwargs) -> bool:
+                param: Dict["str", Any] = method(self, **kwargs)
                 try:
                     response = self.manager._request(query, param)
                     succeed = response.status_code == 200
@@ -50,7 +50,7 @@ class VTask(Task):
             return _request_wrapper
         return _request_decorator
 
-    # TODO: more steup functions
+    # TODO: more setup functions
     @_request_factory("POST/setup/launch")
     def _launch(self, command: Union[str, List[str]], shell: bool = False) -> Dict:
         isinstance(command, list)
@@ -67,3 +67,5 @@ class VTask(Task):
                 "shell": shell
             }
         }
+
+    # TODO: try startup

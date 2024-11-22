@@ -171,9 +171,14 @@ class Task:
         local_name = lambda func: f"_{func}"
         global_name = lambda func: f"{self.sort.lower()}_{func}"
 
-        func = lambda func, **kwargs: getattr(self, local_name(func))(**kwargs) \
-            if hasattr(self, local_name(func)) \
-            else getattr(init, global_name(func))(**kwargs)
+        def func(func: str, wait: int = 0, **kwargs):
+            result = getattr(
+                self,
+                local_name(func),
+                getattr(init, global_name(func))
+            )(**kwargs)
+            Manager.pause(wait)
+            return result
 
         # try `Task.CONFIG_RETRY` times
         # trigger assertion error if all fail
@@ -226,8 +231,9 @@ class Task:
         self.vlog.info(f"Response {step_index + 1}/{self.steps}: {response_content.text}")
 
         for code_like in response_codes:
-            Manager.pause()
             code_like(self.manager)
+            Manager.pause()
+
         self.vlog.save(
             step_index,
             obs,
