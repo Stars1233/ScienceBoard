@@ -235,7 +235,7 @@ class Log:
         self,
         file_handler: Optional[logging.FileHandler] = None
     ) -> None:
-        if self.file_handler is None:
+        if self.file_handler is None and file_handler is None:
             return
 
         if file_handler is None:

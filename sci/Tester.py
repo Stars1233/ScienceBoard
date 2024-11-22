@@ -271,8 +271,8 @@ class Tester:
                 dependent=False
             )
             method(self, local_counter)
-            self.log.callback()
             local_counter.callback()
+            self.log.callback()
         return _log_wrapper
 
     # there is no need to pass counter
