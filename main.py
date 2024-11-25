@@ -16,7 +16,8 @@ if __name__ == "__main__":
         logs_path="./logs",
         vm_path="/home/PJLAB/wangyian/Downloads/os-sci/vmware/Ubuntu.vmx",
         automata=automata,
-        debug=True
+        debug=True,
+        ignore=False
     )
 
     tester()

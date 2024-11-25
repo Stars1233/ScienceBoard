@@ -33,7 +33,7 @@ class VTask(Task):
     # requires VMManager to possess "port" attribute
     def __fill_port(self, command: str) -> str:
         assert isinstance(command, str)
-        return command.replace(VTask.PATH_LIKE, str(self.port)) \
+        return command.replace(VTask.PATH_LIKE, str(self.manager.port)) \
             if hasattr(self.manager, "port") else command
 
     def _init(self) -> bool:
@@ -61,13 +61,13 @@ class VTask(Task):
     # TODO: more setup functions
     @_request_factory("POST/setup/launch")
     def _launch(self, command: Union[str, List[str]], shell: bool = False) -> Dict:
+        assert isinstance(shell, bool)
         if isinstance(command, list):
             for index, part in enumerate(command):
                 command[index] = self.__fill_port(part)
         else:
             command = self.__fill_port(command)
 
-        assert isinstance(shell, bool)
         return {
             "json": {
                 "command": command,

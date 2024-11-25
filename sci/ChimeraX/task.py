@@ -171,4 +171,6 @@ class VMTask(VTask):
 
     @Task._stop_handler
     def eval(self) -> bool:
+        current_states = self.manager.states_dump()
+        print(current_states)
         return True
