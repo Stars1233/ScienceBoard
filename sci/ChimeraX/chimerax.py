@@ -83,7 +83,7 @@ class RawManager(Manager):
 
     def states_dump(self) -> dict:
         timestamp = str(int(time.time() * 1000))
-        self(f"states {self.temp_dir} {timestamp}")
+        assert self._call(f"states {self.temp_dir} {timestamp}")[1]
         return json.load(open(
             self.temp(f"{timestamp}.json"),
             mode="r",
@@ -126,8 +126,8 @@ class RawManager(Manager):
             zip_ref.extractall(self.temp_dir)
 
         if uninstall:
-            self("toolshed uninstall SessionStates")
-        self(f"devel install {bundle_dir_path}")
+            assert self._call("toolshed uninstall SessionStates")[1]
+        assert self._call(f"devel install {bundle_dir_path}")[1]
 
     def __prepare_env(self, desired_version: str) -> None:
         current_version = self.__check_version()
@@ -197,9 +197,9 @@ class VMManager(VManager):
         super().__init__(*args, **kwargs)
 
     def __call(self, command: str) -> Dict:
-        return super()._request(
-            f"POST:{self.port}/chimerax/run",
-            json={"command": command}
+        return self._request(
+            f"POST:{VManager.SERVER_PORT}/chimerax/run",
+            param={"json": {"command": command}}
         ).json()
 
     def _call(self, command: str) -> Tuple[List[str], bool]:
@@ -211,13 +211,12 @@ class VMManager(VManager):
 
     def states_dump(self) -> dict:
         timestamp = str(int(time.time() * 1000))
-        local_temp = self.temp(f"{timestamp}.json")
+        guest_dir = "/home/user/Downloads"
 
-        assert self._call(f"states /tmp {timestamp}")[1]
-        assert self._vmrun(
-            "CopyFileFromGuestToHost",
-            self.path,
-            f"/tmp/{timestamp}.json",
-            local_temp
-        )[1]
-        return json.load(open(local_temp, mode="r", encoding="utf-8"))
+        filename = f"{timestamp}.json"
+        guest_file = os.path.join(guest_dir, filename)
+        local_file = self.temp(filename)
+
+        assert self._call(f"states {guest_dir} {timestamp}")[1]
+        assert self._vmrun("CopyFileFromGuestToHost", guest_file, local_file)[1]
+        return json.load(open(local_file, mode="r", encoding="utf-8"))
