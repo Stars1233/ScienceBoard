@@ -10,6 +10,7 @@ from ..base import Task
 from ..vm import VTask
 from .chimerax import RawManager, VMManager
 
+
 class RawTask(Task):
     def __init__(
         self,
@@ -66,9 +67,36 @@ class RawTask(Task):
         _, code = self.manager._call(command)
         return code
 
+    @Task._stop_handler
+    def eval(self) -> bool:
+        return Public.eval(self)
+
+
+class VMTask(VTask):
+    def __init__(
+        self,
+        config_path: str,
+        manager: VMManager,
+        *args,
+        **kwargs
+    ) -> None:
+        assert isinstance(manager, VMManager)
+
+        # to enable Pylance type checker
+        self.manager = manager
+
+        super().__init__(config_path, manager, *args, **kwargs)
+
+    @Task._stop_handler
+    def eval(self) -> bool:
+        return Public.eval(self)
+
+
+class Public:
+    @staticmethod
     @Task._error_handler
     def _eval_states(
-        self,
+        _: Union[RawTask, VMTask],
         eval_item: Dict[str, Any],
         current_states: Dict[str, Any]
     ) -> bool:
@@ -128,49 +156,33 @@ class RawTask(Task):
             return value == raw_value
         return False
 
+    # prerequisite of calling Public._eval_info:
+    # - task.manager._call()
+    @staticmethod
     @Task._error_handler
     def _eval_info(
-        self,
+        task: Union[RawTask, VMTask],
         eval_item: Dict[str, Any],
-        current_states: Dict[str, Any]
+        _: Dict[str, Any]
     ) -> bool:
         key = eval_item["key"]
         value = eval_item["value"]
 
-        log_message, _ = self.manager._call(f"info {key}")
+        log_message, _ = task.manager._call(f"info {key}")
         nested_logs = [log.strip().split("\n") for log in log_message]
         info_list = [log for logs in nested_logs for log in logs if log != ""]
         return set(info_list) == set(value)
 
-    @Task._stop_handler
-    def eval(self) -> bool:
-        current_states = self.manager.states_dump()
-        for eval_item in self.evaluate:
+    # prerequisite of calling Public.eval:
+    # - task.evaluate
+    # - task.manager.status_dump()
+    @staticmethod
+    def eval(task: Union[RawTask, VMTask]) -> bool:
+        current_states = task.manager.states_dump()
+        for eval_item in task.evaluate:
             eval_type = eval_item["type"]
-            eval_func = getattr(self, f"_eval_{eval_type}")
-            if not eval_func(eval_item, current_states):
-                self.vlog.info(f"Evaluation failed at {eval_type} of {eval_item['key']}.")
+            eval_func = getattr(Public, f"_eval_{eval_type}")
+            if not eval_func(task, eval_item, current_states):
+                task.vlog.info(f"Evaluation failed at {eval_type} of {eval_item['key']}.")
                 return False
-        return True
-
-
-class VMTask(VTask):
-    def __init__(
-        self,
-        config_path: str,
-        manager: VMManager,
-        *args,
-        **kwargs
-    ) -> None:
-        assert isinstance(manager, VMManager)
-
-        # to enable Pylance type checker
-        self.manager = manager
-
-        super().__init__(config_path, manager, *args, **kwargs)
-
-    @Task._stop_handler
-    def eval(self) -> bool:
-        current_states = self.manager.states_dump()
-        print(current_states)
         return True
