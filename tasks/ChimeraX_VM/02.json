@@ -1,0 +1,36 @@
+{
+    "type": "ChimeraX",
+    "sort": "VM",
+    "steps": 5,
+    "instruction": "Load ~/Downloads/prot.cif in ChimeraX.",
+    "version": "0.1",
+    "snapshot": "sci_bench",
+    "initialize": [
+        {
+            "func": "launch",
+            "wait": 5,
+            "command": [
+                "flatpak",
+                "run",
+                "edu.ucsf.rbvi.ChimeraX",
+                "--cmd",
+                "remotecontrol rest start json true port «PORTLIKE»"
+            ]
+        },
+        {
+            "func": "clear"
+        },
+        {
+            "func": "download",
+            "url": "https://files.rcsb.org/download/3ppd.cif",
+            "path": "~/Downloads/prot.cif"
+        }
+    ],
+    "evaluate": [
+        {
+            "type": "states",
+            "key": "_state_containers.models._models.(1,)._name",
+            "value": "prot.cif"
+        }
+    ]
+}

@@ -1,0 +1,37 @@
+{
+    "type": "ChimeraX",
+    "sort": "VM",
+    "steps": 5,
+    "instruction": "Change the background to grey color in ChimeraX.",
+    "version": "0.1",
+    "snapshot": "sci_bench",
+    "initialize": [
+        {
+            "func": "launch",
+            "wait": 5,
+            "command": [
+                "flatpak",
+                "run",
+                "edu.ucsf.rbvi.ChimeraX",
+                "--cmd",
+                "remotecontrol rest start json true port «PORTLIKE»"
+            ]
+        },
+        {
+            "func": "open",
+            "name": "1dns"
+        },
+        {
+            "func": "turn",
+            "axis": "y",
+            "angle": 1
+        }
+    ],
+    "evaluate": [
+        {
+            "type": "states",
+            "key": "_state_containers.models._models.(1,)._atoms_drawing._draw_shape.bindings._opengl_context.window.view._background_rgba",
+            "value": "[0.5019608 0.5019608 0.5019608 0.       ]"
+        }
+    ]
+}

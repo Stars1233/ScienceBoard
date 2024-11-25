@@ -1,0 +1,38 @@
+{
+    "type": "ChimeraX",
+    "sort": "VM",
+    "steps": 5,
+    "instruction": "Add hydrogens with method of 'steric only' in ChimeraX.",
+    "version": "0.1",
+    "snapshot": "sci_bench",
+    "initialize": [
+        {
+            "func": "launch",
+            "wait": 5,
+            "command": [
+                "flatpak",
+                "run",
+                "edu.ucsf.rbvi.ChimeraX",
+                "--cmd",
+                "remotecontrol rest start json true port «PORTLIKE»"
+            ]
+        },
+        {
+            "func": "open",
+            "name": "4r0u"
+        },
+        {
+            "func": "turn",
+            "axis": "y",
+            "angle": 1
+        }
+    ],
+    "evaluate": [
+        {
+            "type": "states",
+            "find": "lambda key, value: key.endswith('page_source')",
+            "key": "lambda key: key",
+            "pattern": "termini: <br>61 hydrogens added"
+        }
+    ]
+}

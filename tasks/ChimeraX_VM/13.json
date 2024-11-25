@@ -1,0 +1,44 @@
+{
+    "type": "ChimeraX",
+    "sort": "VM",
+    "steps": 5,
+    "instruction": "Identify hydrogen bonds in radius 0.1Å in ChimeraX.",
+    "version": "0.1",
+    "snapshot": "sci_bench",
+    "initialize": [
+        {
+            "func": "launch",
+            "wait": 5,
+            "command": [
+                "flatpak",
+                "run",
+                "edu.ucsf.rbvi.ChimeraX",
+                "--cmd",
+                "remotecontrol rest start json true port «PORTLIKE»"
+            ]
+        },
+        {
+            "func": "open",
+            "name": "4tut"
+        },
+        {
+            "func": "turn",
+            "axis": "y",
+            "angle": 1
+        }
+    ],
+    "evaluate": [
+        {
+            "type": "states",
+            "find": "lambda key, value: key.endswith('._name') and value == 'hydrogen bonds'",
+            "key": "lambda key: '.'.join(key.split('.')[:-1] + ['_pbond_drawing', 'name'])",
+            "value": "pbonds"
+        },
+        {
+            "type": "states",
+            "find": "lambda key, value: key.endswith('._name') and value == 'hydrogen bonds'",
+            "key": "lambda key: '.'.join(key.split('.')[:-1] + ['_pbond_drawing', '_opaque_color_count'])",
+            "value": 12
+        }
+    ]
+}

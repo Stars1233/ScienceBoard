@@ -36,13 +36,32 @@
 
 2. Install toolshed of ChimeraX-states:
 
-    ```
+    ```shell
     wget https://github.com/ShiinaHiiragi/chimerax-states/archive/refs/tags/0.5.zip -P ~/Downloads
     unzip ~/Downloads/0.5.zip -d ~/Downloads
     flatpak run edu.ucsf.rbvi.ChimeraX --nogui --exit --cmd "devel install ~/Downloads/chimerax-states-0.5 exit true"
     ```
 
 3. (Optional) Load some of .cif files in advance to avoid bad connection.
+
+    ```shell
+    wget https://files.rcsb.org/download/1dns.cif -P /home/user/Downloads/ChimeraX/PDB
+    wget https://files.rcsb.org/download/2olx.cif -P /home/user/Downloads/ChimeraX/PDB
+    wget https://files.rcsb.org/download/3bna.cif -P /home/user/Downloads/ChimeraX/PDB
+    wget https://files.rcsb.org/download/3ppd.cif -P /home/user/Downloads/ChimeraX/PDB
+    wget https://files.rcsb.org/download/4r0u.cif -P /home/user/Downloads/ChimeraX/PDB
+    wget https://files.rcsb.org/download/4tut.cif -P /home/user/Downloads/ChimeraX/PDB
+    wget https://files.rcsb.org/download/102l.cif -P /home/user/Downloads/ChimeraX/PDB
+    wget https://files.rcsb.org/download/251d.cif -P /home/user/Downloads/ChimeraX/PDB
+    wget https://files.rcsb.org/download/2olx.cif -P /home/user/Downloads/ChimeraX/PDB
+    ```
+
+    and the following takes tons of time:
+
+    ```shell
+    flatpak run edu.ucsf.rbvi.ChimeraX --nogui --exit --cmd "alphafold match A8Z1J3"
+    flatpak run edu.ucsf.rbvi.ChimeraX --nogui --exit --cmd "clear"
+    ```
 
 ### Kalgebra
 
