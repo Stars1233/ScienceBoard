@@ -8,6 +8,8 @@ from .vmanager import VManager
 
 
 class VTask(Task):
+    PATH_LIKE = "«PORTLIKE»"
+
     def __init__(
         self,
         config_path: str,
@@ -27,6 +29,12 @@ class VTask(Task):
         self.snapshot = self.config["snapshot"] \
             if "snapshot" in self.config \
             else VManager.INIT_NAME
+
+    # requires VMManager to possess "port" attribute
+    def __fill_port(self, command: str) -> str:
+        assert isinstance(command, str)
+        return command.replace(VTask.PATH_LIKE, str(self.port)) \
+            if hasattr(self.manager, "port") else command
 
     def _init(self) -> bool:
         return self.manager.revert(self.snapshot)
@@ -53,12 +61,11 @@ class VTask(Task):
     # TODO: more setup functions
     @_request_factory("POST/setup/launch")
     def _launch(self, command: Union[str, List[str]], shell: bool = False) -> Dict:
-        isinstance(command, list)
         if isinstance(command, list):
-            for part in command:
-                assert isinstance(part, str)
+            for index, part in enumerate(command):
+                command[index] = self.__fill_port(part)
         else:
-            assert isinstance(command, str)
+            command = self.__fill_port(command)
 
         assert isinstance(shell, bool)
         return {

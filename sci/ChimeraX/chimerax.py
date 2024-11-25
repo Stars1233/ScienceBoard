@@ -185,4 +185,39 @@ class RawManager(Manager):
 
 
 class VMManager(VManager):
-    ...
+    def __init__(
+        self,
+        *args,
+        port: int = 8000,
+        **kwargs
+    ) -> None:
+        assert port in range(1024, 65536)
+        self.port = port
+
+        super().__init__(*args, **kwargs)
+
+    def __call(self, command: str) -> Dict:
+        return super()._request(
+            f"POST:{self.port}/chimerax/run",
+            json={"command": command}
+        ).json()
+
+    def _call(self, command: str) -> Tuple[List[str], bool]:
+        response = self.__call(command)
+        return (
+            response["log messages"]["note"],
+            response["error"] is None
+        )
+
+    def states_dump(self) -> dict:
+        timestamp = str(int(time.time() * 1000))
+        local_temp = self.temp(f"{timestamp}.json")
+
+        assert self._call(f"states /tmp {timestamp}")[1]
+        assert self._vmrun(
+            "CopyFileFromGuestToHost",
+            self.path,
+            f"/tmp/{timestamp}.json",
+            local_temp
+        )[1]
+        return json.load(open(local_temp, mode="r", encoding="utf-8"))

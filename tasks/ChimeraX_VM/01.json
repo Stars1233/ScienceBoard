@@ -14,7 +14,7 @@
                 "run",
                 "edu.ucsf.rbvi.ChimeraX",
                 "--cmd",
-                "remotecontrol rest start json true port 8080"
+                "remotecontrol rest start json true port «PORTLIKE»"
             ]
         }
     ],

@@ -17,7 +17,8 @@ def spawn_managers(vm_path: Optional[str] = None) -> Config:
         TypeSort("", Sort.VM): {
             "version": "0.1",
             "vm_path": vm_path,
-            "headless": False
+            "headless": False,
+            "port": 8000
         },
         TypeSort("ChimeraX", Sort.Raw): {
             "version": "0.5",
