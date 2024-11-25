@@ -175,6 +175,9 @@ class Task:
             handler = getattr(self, local_name(func)) \
                 if hasattr(self, local_name(func)) \
                 else getattr(init, global_name(func))
+            if handler.__name__.startswith(f"{TypeSort.Sort.VM.name}"):
+                kwargs["manager"] = self.manager
+
             result = handler(**kwargs)
             Manager.pause(wait)
             return result

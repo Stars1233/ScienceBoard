@@ -187,6 +187,8 @@ class Tester:
         self.agent.vlog.set(self.log)
 
         # manager in managers should not be Manager itself
+        assert isinstance(vm_path, str)
+        vm_path = os.path.expanduser(vm_path)
         self.modules = Presets.spawn_modules()
         self.manager_args = Presets.spawn_managers(vm_path)
         self.managers = {}
