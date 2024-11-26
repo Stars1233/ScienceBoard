@@ -70,7 +70,7 @@
 1. Substitute the original server file:
 
     ```shell
-    vmrun -T ws CopyFileFromHostToGuest ~/Downloads/Ubuntu-x86/Ubuntu.vmx ./server.py /home/user/server/main.py
+    vmrun -T ws CopyFileFromHostToGuest ~/Downloads/Ubuntu-x86/Ubuntu.vmx vm/server.py /home/user/server/main.py
     sudo systemctl restart osworld.service
     ```
 
