@@ -1,6 +1,7 @@
 import sys
 import os
 import json
+import traceback
 
 from typing import Set, Union, Optional, Any
 from typing import Iterable, Callable, NoReturn
@@ -175,7 +176,8 @@ class Task:
             handler = getattr(self, local_name(func)) \
                 if hasattr(self, local_name(func)) \
                 else getattr(init, global_name(func))
-            if handler.__name__.startswith(f"{TypeSort.Sort.VM.name}"):
+
+            if handler.__name__.startswith(TypeSort.Sort.VM.name.lower()):
                 kwargs["manager"] = self.manager
 
             result = handler(**kwargs)
@@ -199,6 +201,11 @@ class Task:
                 succeed = False
                 try:
                     succeed = func(**init_item)
+                except Exception:
+                    self.vlog.error(
+                        "Receiving error during initializing."
+                            + traceback.format_exc()
+                    )
                 finally:
                     if not succeed:
                         feedback = False

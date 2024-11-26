@@ -22,3 +22,7 @@ DO NOT introduce any unrelated models or easily close existing models, otherwise
 First give the current screenshot and previous things we did a short reflection, then RETURN ME THE CODE OR SPECIAL CODE I ASKED FOR. NEVER EVER RETURN ME ANYTHING ELSE.
 You are asked to complete the following task: {inst}
 """
+
+# contents of threatening:
+# - DO NOT close sessions
+# - NEVER try to reopen command line interface

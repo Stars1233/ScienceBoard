@@ -180,9 +180,11 @@ class VManager(Manager):
         assert isinstance(self.env, DesktopEnv)
         assert isinstance(snapshot_name, str)
 
+        self.vlog.info(f"Revert to snapshot of {snapshot_name}.")
         try:
             self.env.snapshot_name = snapshot_name
-            self.env.reset()
+            self.env._revert_to_snapshot()
+            self.env._start_emulator()
             return True
         except:
             return False

@@ -23,7 +23,7 @@
         {
             "func": "download",
             "url": "https://files.rcsb.org/download/3ppd.cif",
-            "path": "~/Downloads/prot.cif"
+            "path": "/home/user/Downloads/prot.cif"
         }
     ],
     "evaluate": [
