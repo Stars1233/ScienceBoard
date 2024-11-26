@@ -57,6 +57,7 @@ class TypeSort:
     def __call__(self, postfix: str) -> Any:
         return self.sort.name + postfix
 
+    # crucial for hash comparison
     def __eq__(self, __value: "TypeSort") -> bool:
         return self.__repr__() == __value.__repr__()
 

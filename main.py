@@ -11,12 +11,10 @@ if __name__ == "__main__":
         overflow_style="openai_lmdeploy"
     )
 
-    tester = Tester(
+    Tester(
         tasks_path="./tasks/ChimeraX_VM",
         logs_path="./logs",
         vm_path="/home/PJLAB/wangyian/Downloads/os-sci/vmware/Ubuntu.vmx",
         automata=automata,
         debug=True
-    )
-
-    tester()
+    )()
