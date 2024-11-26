@@ -7,6 +7,15 @@
     "snapshot": "sci_bench",
     "initialize": [
         {
+            "func": "execute",
+            "command": [
+                "rm",
+                "/home/user/.local/share/ChimeraX/commands",
+                "/home/user/.local/share/ChimeraX/file_history",
+                "/home/user/.local/share/ChimeraX/preregistration"
+            ]
+        },
+        {
             "func": "launch",
             "wait": 5,
             "command": [
@@ -30,6 +39,9 @@
             "func": "turn",
             "axis": "x",
             "angle": 514
+        },
+        {
+            "func": "destroy"
         }
     ],
     "evaluate": [

@@ -87,8 +87,8 @@ class VMTask(VTask):
 
         super().__init__(config_path, manager, *args, **kwargs)
 
-    def _clear(self) -> bool:
-        _, code = self.manager._call(f"clear")
+    def _destroy(self) -> bool:
+        _, code = self.manager._call(f"destroy")
         return code
 
     def _open(self, name: str) -> bool:

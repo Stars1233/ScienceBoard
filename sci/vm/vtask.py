@@ -58,7 +58,6 @@ class VTask(Task):
             return _request_wrapper
         return _request_decorator
 
-    # TODO: more setup functions
     @_request_factory("POST/setup/launch")
     def _launch(self, command: Union[str, List[str]], shell: bool = False) -> Dict:
         assert isinstance(shell, bool)
@@ -75,4 +74,16 @@ class VTask(Task):
             }
         }
 
-    # TODO: try startup
+    @_request_factory("POST/setup/execute")
+    def _execute(self, command: List[str], shell: bool = False) -> Dict:
+        assert isinstance(command, list)
+        assert isinstance(shell, bool)
+        for part in command:
+            assert isinstance(part, str)
+
+        return {
+            "json": {
+                "command": command,
+                "shell": shell
+            }
+        }

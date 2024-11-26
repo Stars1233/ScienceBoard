@@ -1,7 +1,6 @@
 import sys
 import os
 import urllib.request
-import tempfile
 
 from typing import TYPE_CHECKING
 
