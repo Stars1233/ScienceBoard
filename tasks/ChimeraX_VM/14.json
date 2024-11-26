@@ -2,7 +2,7 @@
     "type": "ChimeraX",
     "sort": "VM",
     "steps": 5,
-    "instruction": "Identify hydrogen bonds colored in dark red with distance tolerance of 0.6Å in ChimeraX.",
+    "instruction": "Identify hydrogen bonds colored in rgb (139, 0, 0) with distance tolerance of 0.6Å in ChimeraX.",
     "version": "0.1",
     "snapshot": "sci_bench",
     "initialize": [
