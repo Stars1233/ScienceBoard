@@ -17,11 +17,8 @@
         },
         {
             "func": "execute",
-            "command": [
-                "rm",
-                "-f",
-                "/home/user/.config/ChimeraX/clashes-*"
-            ]
+            "command": "rm -f /home/user/.config/ChimeraX/clashes-*",
+            "shell": true
         },
         {
             "func": "launch",

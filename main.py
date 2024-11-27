@@ -12,7 +12,7 @@ if __name__ == "__main__":
     )
 
     Tester(
-        tasks_path="./tasks/ChimeraX_VM",
+        tasks_path="./tasks/Field",
         logs_path="./logs",
         vm_path="/home/PJLAB/wangyian/Downloads/os-sci/vmware/Ubuntu.vmx",
         automata=automata,

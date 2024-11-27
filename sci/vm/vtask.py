@@ -1,4 +1,5 @@
 import sys
+import functools
 
 from typing import List, Dict, Union, Any, Callable
 
@@ -44,6 +45,7 @@ class VTask(Task):
     @staticmethod
     def _request_factory(query: str):
         def _request_decorator(method: Callable) -> Callable:
+            @functools.wraps(method)
             def _request_wrapper(self: "VTask", **kwargs) -> bool:
                 param: Dict["str", Any] = method(self, **kwargs)
                 try:
@@ -58,8 +60,8 @@ class VTask(Task):
             return _request_wrapper
         return _request_decorator
 
-    @_request_factory("POST/setup/launch")
-    def _launch(self, command: Union[str, List[str]], shell: bool = False) -> Dict:
+    @_request_factory("POST/setup/execute")
+    def _execute(self, command: Union[str, List[str]], shell: bool = False) -> Dict:
         assert isinstance(shell, bool)
         if isinstance(command, list):
             for index, part in enumerate(command):
@@ -74,16 +76,6 @@ class VTask(Task):
             }
         }
 
-    @_request_factory("POST/setup/execute")
-    def _execute(self, command: List[str], shell: bool = False) -> Dict:
-        assert isinstance(command, list)
-        assert isinstance(shell, bool)
-        for part in command:
-            assert isinstance(part, str)
-
-        return {
-            "json": {
-                "command": command,
-                "shell": shell
-            }
-        }
+    @_request_factory("POST/setup/launch")
+    def _launch(self, command: Union[str, List[str]], shell: bool = False) -> Dict:
+        return self._execute.__wrapped__(self, command, shell)
