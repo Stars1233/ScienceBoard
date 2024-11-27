@@ -46,7 +46,7 @@ class TypeSort:
     sort: Sort
 
     def __str__(self) -> str:
-        f"{self.type}_{self.sort.name}"
+        return f"{self.type}_{self.sort.name}"
 
     def __repr__(self) -> str:
         if self.sort == TypeSort.Sort.VM:

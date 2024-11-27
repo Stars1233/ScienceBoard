@@ -12,9 +12,9 @@ if __name__ == "__main__":
     )
 
     Tester(
-        tasks_path="./tasks/Field",
-        logs_path="./logs",
+        tasks_path="./tasks/ChimeraX_VM",
+        logs_path="./logs/",
         vm_path="/home/PJLAB/wangyian/Downloads/os-sci/vmware/Ubuntu.vmx",
         automata=automata,
-        debug=True
+        obs_types={"screenshot"}
     )()
