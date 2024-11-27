@@ -1,7 +1,7 @@
 {
     "type": "ChimeraX",
     "sort": "VM",
-    "steps": 5,
+    "steps": 10,
     "instruction": "Select all water molecules and draw their centroids with radius of 1Å in ChimeraX.",
     "version": "0.1",
     "snapshot": "sci_bench",

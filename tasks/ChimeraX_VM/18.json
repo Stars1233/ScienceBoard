@@ -1,7 +1,7 @@
 {
     "type": "ChimeraX",
     "sort": "VM",
-    "steps": 5,
+    "steps": 10,
     "instruction": "Render color key without border but with tick marks in ChimeraX.",
     "version": "0.1",
     "snapshot": "sci_bench",

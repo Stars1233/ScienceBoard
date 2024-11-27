@@ -1,7 +1,7 @@
 {
     "type": "ChimeraX",
     "sort": "VM",
-    "steps": 5,
+    "steps": 10,
     "instruction": "Toggle a scale bar of length 10 and thinkness 4 in ChimeraX.",
     "version": "0.1",
     "snapshot": "sci_bench",

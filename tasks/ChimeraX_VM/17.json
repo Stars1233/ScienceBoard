@@ -1,7 +1,7 @@
 {
     "type": "ChimeraX",
     "sort": "VM",
-    "steps": 5,
+    "steps": 10,
     "instruction": "Find all contacts in default settings in ChimeraX.",
     "version": "0.1",
     "snapshot": "sci_bench",
@@ -13,6 +13,14 @@
                 "/home/user/.local/share/ChimeraX/commands",
                 "/home/user/.local/share/ChimeraX/file_history",
                 "/home/user/.local/share/ChimeraX/preregistration"
+            ]
+        },
+        {
+            "func": "execute",
+            "command": [
+                "rm",
+                "-f",
+                "/home/user/.config/ChimeraX/contacts-*"
             ]
         },
         {
