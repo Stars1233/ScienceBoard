@@ -388,7 +388,7 @@ class Log:
         ]
         if len(filtered_text) == 1:
             traj_obj["a11y_tree"] = text_file_name
-            with open(text_file_path, mode="r", encoding="utf-8") as writable:
+            with open(text_file_path, mode="w", encoding="utf-8") as writable:
                 writable.write(filtered_text[0])
 
         # save screenshot (or SoM screenshot) to new file

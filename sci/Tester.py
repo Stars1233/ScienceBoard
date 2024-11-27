@@ -1,5 +1,7 @@
 import sys
 import os
+import re
+import copy
 import inspect
 import traceback
 
@@ -75,9 +77,26 @@ class Automata:
             if key in agent_params
         }
 
-    def __call__(self) -> Agent:
         model = Model(**self.model_args)
-        return Agent(model=model, **self.agent_args)
+        self.agent = Agent(model=model, **self.agent_args)
+
+    # insert <IMAGE_TOKEN> for DeepSeek-VL
+    # can also be used for staticmethod
+    # usage #1: Automata(...).func(...).func(...)
+    # usage #2: auto = Automata(...); auto = Automata.func(auto)
+    def image_token(self: "Automata", tag: str = "<IMAGE_TOKEN>") -> "Automata":
+        assert isinstance(tag, str)
+        self.agent.USER_OPENING = copy.deepcopy(Agent.USER_OPENING)
+        for key in self.agent.USER_OPENING:
+            if key == frozenset({Manager.screenshot.__name__}):
+                self.agent.USER_OPENING[key] += (tag + "\n")
+            elif Manager.screenshot.__name__ in key:
+                self.agent.USER_OPENING[key] = re.sub(
+                    "screenshot",
+                    f"screenshot {tag}",
+                    self.agent.USER_OPENING[key]
+                )
+        return self
 
 
 class TaskInfo:
@@ -183,7 +202,7 @@ class Tester:
         self.log = Log()
 
         assert isinstance(automata, Automata)
-        self.agent = automata()
+        self.agent = automata.agent
         self.agent.vlog.set(self.log)
 
         # manager in managers should not be Manager itself

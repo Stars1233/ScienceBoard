@@ -36,7 +36,8 @@
             "angle": 1
         },
         {
-            "func": "destroy"
+            "func": "destroy",
+            "wait": 2
         }
     ],
     "evaluate": [
