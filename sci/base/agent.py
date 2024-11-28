@@ -212,8 +212,7 @@ class Agent:
             *self.context[-context_count:]
         ]
 
-    def dump_payload(self, shorten: int = 0) -> Dict:
-        context_length = self.context_window - shorten
+    def dump_payload(self, context_length: int) -> Dict:
         return [
             asdict(message)
             for message in self.__dump(context_length * 2 + 1)
@@ -236,8 +235,9 @@ class Agent:
         for content in contents:
             assert isinstance(content, Content)
 
+        context_length = self.context_window - shorten
         self.context.append(self.model.message(role="user", content=contents))
-        response = self.model(messages=self.dump_payload(shorten))
+        response = self.model(messages=self.dump_payload(context_length))
 
         if response.status_code != 200:
             self.vlog.warning(f"Getting response code of {response.status_code}.")
@@ -249,6 +249,6 @@ class Agent:
             return self(contents, shorten + 1)
         assert not is_overflow, f"Tokens overflow when calling {self.model.model_name}"
 
-        response_message = self.model.access(response)
+        response_message = self.model.access(response, context_length)
         self.context.append(response_message)
         return response_message

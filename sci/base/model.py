@@ -78,8 +78,9 @@ class Message:
     style: ModelType
     role: RoleType
     content: List[Content]
+    context_window: Optional[int] = None
 
-    def _asdict(self, context: Optional[int] = None) -> Dict[str, Any]:
+    def _asdict(self, show_context: bool = False) -> Dict[str, Any]:
         result = {
             "role": self.role,
             "content": [
@@ -88,8 +89,8 @@ class Message:
             ]
         }
 
-        if context is not None:
-            result["context_length"] = context
+        if show_context:
+            result["context_window"] = self.context_window
         return result
 
     def __dict_factory_override__(self) -> Dict[str, Any]:
@@ -186,5 +187,7 @@ class Model:
     def _access_anthropic(response: Response) -> Message:
         raise NotImplementedError
 
-    def access(self, response: Response) -> Message:
-        return getattr(Model, f"_access_{self.model_style}")(response)
+    def access(self, response: Response, context_window: int) -> Message:
+        message: Message = getattr(Model, f"_access_{self.model_style}")(response)
+        message.context_window = context_window
+        return message
