@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Dict, Any
+from typing import Dict, Any, Callable
 from dataclasses import dataclass
 
 @dataclass
@@ -30,6 +30,16 @@ class TypeSort:
     def __hash__(self) -> int:
         return hash(self.__repr__())
 
+
+def error_factory(default_value):
+    def error_handler(method: Callable) -> Callable:
+        def error_wrapper(self, *args, **kwargs) -> bool:
+            try:
+                return method(self, *args, **kwargs)
+            except:
+                return default_value
+        return error_wrapper
+    return error_handler
 
 def getitem(obj: Dict, name: str, default: Any) -> Any:
     return obj[name] if name in obj else default

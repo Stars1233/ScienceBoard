@@ -68,7 +68,7 @@ class RawManager(Manager):
         ).json()
 
         if response["error"] is not None:
-            self.vlog.error(f"Executing failed on {command}: {response['error']}.")
+            self.vlog.error(f"Failed when executing {command}: {response['error']}.")
         return response
 
     def _call(self, command: str) -> Tuple[List[str], bool]:

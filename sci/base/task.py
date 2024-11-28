@@ -139,15 +139,6 @@ class Task:
         return _stop_wrapper
 
     @staticmethod
-    def _error_handler(method: Callable) -> Callable:
-        def _error_wrapper(self, *args) -> bool:
-            try:
-                return method(self, *args)
-            except:
-                return False
-        return _error_wrapper
-
-    @staticmethod
     def _avail_handler(method: Callable) -> Callable:
         def _avail_wrapper(self: "Task", *args, **kwargs) -> Any:
             assert self.available
@@ -204,7 +195,7 @@ class Task:
                     succeed = func(**init_item)
                 except Exception:
                     self.vlog.error(
-                        "Receiving error during initializing."
+                        "Error when initializing."
                             + traceback.format_exc()
                     )
                 finally:

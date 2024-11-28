@@ -1,3 +1,4 @@
+import sys
 import base64
 import dataclasses
 
@@ -11,6 +12,9 @@ from PIL import Image
 
 import requests
 from requests import Response
+
+sys.dont_write_bytecode = True
+from . import utils
 
 # modify asdict() for class Content
 # ref: https://stackoverflow.com/a/78289335
@@ -200,6 +204,7 @@ class Model:
             content=[TextContent(message["content"][0]["text"])]
         )
 
+    @utils.error_factory(None)
     def access(self, response: Response, context_window: int) -> Message:
         message: Message = getattr(Model, f"_access_{self.model_style}")(response)
         message.context_window = context_window

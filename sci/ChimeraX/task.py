@@ -115,7 +115,7 @@ class VMTask(VTask):
 
 class Public:
     @staticmethod
-    @Task._error_handler
+    @utils.error_factory(False)
     def _eval_states(
         _: Union[RawTask, VMTask],
         eval_item: Dict[str, Any],
@@ -180,7 +180,7 @@ class Public:
     # prerequisite of calling Public._eval_info:
     # - task.manager._call()
     @staticmethod
-    @Task._error_handler
+    @utils.error_factory(False)
     def _eval_info(
         task: Union[RawTask, VMTask],
         eval_item: Dict[str, Any],

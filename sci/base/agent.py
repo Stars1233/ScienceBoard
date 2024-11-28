@@ -1,6 +1,7 @@
 import sys
 import re
 import time
+import traceback
 import dataclasses
 
 from dataclasses import dataclass, asdict
@@ -89,19 +90,19 @@ class CodeLike:
 
 class Overflow:
     @staticmethod
+    @utils.error_factory(False)
     def openai_gpt(response: Response) -> bool:
-        return response.status_code != 200 \
-            and response.json()["error"]["code"] == "context_length_exceeded"
+        return response.json()["error"]["code"] == "context_length_exceeded"
 
     @staticmethod
+    @utils.error_factory(False)
     def openai_lmdeploy(response: Response) -> bool:
         return Model._access_openai(response).content[0].text == ""
 
     @staticmethod
+    @utils.error_factory(False)
     def anthropic(response: Response) -> bool:
-        response_object = response.json()
-        return response_object["type"] == "error" \
-            and response_object["error"]["type"] == "request_too_large"
+        return response.json()["error"]["type"] == "request_too_large"
 
 
 class Agent:
@@ -205,9 +206,11 @@ class Agent:
     def __call__(
         self,
         contents: List[Content],
-        shorten: int = 0
+        shorten: int = 0,
+        retry: int = 3
     ) -> Message:
         assert hasattr(self, "context"), "Call Agent.init() first"
+        assert retry > 0, f"Max reties exceeded when calling {self.model.model_name}"
 
         assert isinstance(contents, list)
         for content in contents:
@@ -217,16 +220,21 @@ class Agent:
         self.context.append(self.model.message(role="user", content=contents))
         response = self.model(messages=self.dump_payload(context_length))
 
-        if response.status_code != 200:
-            self.vlog.warning(f"Getting response code of {response.status_code}.")
-
         is_overflow = False if self.overflow_handler is None \
             else self.overflow_handler(response)
 
         if is_overflow and context_length > 0:
-            return self(contents, shorten + 1)
-        assert not is_overflow, f"Tokens overflow when calling {self.model.model_name}"
+            self.vlog.error(f"Overflow detected when requesting {self.model.model_name}.")
+            return self(contents, shorten + 1, retry)
+        assert not is_overflow, f"Unsolvable overflow when requesting {self.model.model_name}"
 
         response_message = self.model.access(response, context_length)
+        if response_message is None:
+            self.vlog.error(
+                f"Unexpected error when requesting {self.model.model_name}.\n"
+                    + response.text
+            )
+            return self(contents, shorten, retry - 1)
+
         self.context.append(response_message)
         return response_message
