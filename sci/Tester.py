@@ -192,6 +192,8 @@ class TaskGroup:
 
 
 class Tester:
+    SHUTDOWN_INTERVAL = 10
+
     def __init__(
         self,
         tasks_path: str,
@@ -314,6 +316,7 @@ class Tester:
             method(self, local_counter)
             local_counter.callback()
             self.log.callback()
+            Manager.pause(Tester.SHUTDOWN_INTERVAL)
         return _log_wrapper
 
     # there is no need to pass counter
