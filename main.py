@@ -34,6 +34,7 @@ qwen_vl = Automata(
     context_window=2
 )
 
+
 if __name__ == "__main__":
     Tester(
         tasks_path="./tasks/ChimeraX_VM",
@@ -41,20 +42,4 @@ if __name__ == "__main__":
         vm_path="/home/PJLAB/wangyian/Downloads/os-sci/vmware/Ubuntu.vmx",
         automata=gpt_4o,
         obs_types={"screenshot", "a11y_tree"}
-    )()
-
-    Tester(
-        tasks_path="./tasks/ChimeraX_VM",
-        logs_path="./logs/qwenvl-chimerax-vm-screenshot+a11y_tree",
-        vm_path="/home/PJLAB/wangyian/Downloads/os-sci/vmware/Ubuntu.vmx",
-        automata=qwen_vl,
-        obs_types={"screenshot", "a11y_tree"}
-    )()
-
-    Tester(
-        tasks_path="./tasks/ChimeraX_VM",
-        logs_path="./logs/qwenvl-chimerax-vm-a11y_tree",
-        vm_path="/home/PJLAB/wangyian/Downloads/os-sci/vmware/Ubuntu.vmx",
-        automata=qwen_vl,
-        obs_types={"a11y_tree"}
     )()
