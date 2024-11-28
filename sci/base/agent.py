@@ -1,28 +1,27 @@
 import sys
 import re
 import time
-import base64
-import requests
-
-from dataclasses import dataclass, asdict
-from requests import Response
-from io import BytesIO
+import dataclasses
 
 from enum import Enum
+from dataclasses import dataclass, asdict
+
 from typing import Optional, List, Dict, Set
-from typing import Callable, Literal, Any, Self, NoReturn
+from typing import Callable, Any, Self, NoReturn
 
 from PIL import Image
+from requests import Response
 
 sys.dont_write_bytecode = True
 from .manager import Manager
 from .log import VirtualLog
+from .model import Content, TextContent, ImageContent
+from .model import Message, Model
 from . import utils
 from .. import Prompts
 
 # modify asdict() for class Content
 # ref: https://stackoverflow.com/a/78289335
-import dataclasses
 _asdict_inner_actual = dataclasses._asdict_inner
 def _asdict_inner(obj, dict_factory):
     if dataclasses._is_dataclass_instance(obj):
@@ -63,123 +62,6 @@ class TypeSort:
 
     def __hash__(self) -> int:
         return hash(self.__repr__())
-
-
-@dataclass
-class Content:
-    type: Literal["text", "image_url"]
-    text: Optional[str] = None
-    image_url: Optional[Dict[str, str]] = None
-
-    @staticmethod
-    def text_content(text: str) -> Self:
-        return Content(type="text", text=text)
-
-    @staticmethod
-    def image_content(image: Image.Image) -> Self:
-        image.save(buffered:=BytesIO(), format="JPEG")
-        image_base64 = base64.b64encode(buffered.getvalue())
-
-        return Content(
-            type="image_url",
-            image_url={
-                "url": f"data:image/png;base64, {image_base64.decode()}",
-                "detail": "high"
-            }
-        )
-
-    def __dict_factory_override__(self) -> dict[str, Any]:
-        return {
-            key: getattr(self, key)
-            for key in self.__dataclass_fields__
-            if getattr(self, key) is not None
-        }
-
-
-@dataclass
-class Message:
-    role: Literal["system", "user", "assistant"]
-    content: List[Content]
-
-
-@dataclass
-class Model:
-    model_style: str
-    base_url: str
-    model_name: str
-    api_key: Optional[str] = None
-    proxy: Optional[str] = None
-    version: Optional[str] = None
-    max_tokens: int = 1500
-    top_p: float = 0.9
-    temperature: float = 0.5
-
-    @property
-    def proxies(self) -> Dict:
-        return None if self.proxy is None else {
-            "http": self.proxy,
-            "https": self.proxy
-        }
-
-    def _style_openai(self, messages: Dict) -> Response:
-        headers = {
-            "Content-Type": "application/json",
-        }
-
-        if self.api_key is not None:
-            headers["Authorization"] = f"Bearer {self.api_key}"
-
-        payload = {
-            "model": self.model_name,
-            "messages": messages,
-            "max_tokens": self.max_tokens,
-            "top_p": self.top_p,
-            "temperature": self.temperature
-        }
-
-        return requests.post(
-            self.base_url,
-            headers=headers,
-            proxies=self.proxies,
-            json=payload
-        )
-
-    def _style_anthropic(self, messages: Dict) -> Response:
-        assert self.api_key is not None
-        assert self.version is not None
-        headers = {
-            "x-api-key": self.api_key,
-            "anthropic-version": self.version,
-            "content-type": "application/json"
-        }
-
-        payload = {
-            "model": self.model,
-            "max_tokens": self.max_tokens,
-            "messages": messages,
-            "temperature": self.temperature,
-            "top_p": self.top_p
-        }
-
-        return requests.post(
-            self.base_url,
-            headers=headers,
-            proxies=self.proxies,
-            json=payload
-        )
-
-    def __call__(self, messages: Dict) -> Response:
-        return getattr(self, f"_style_{self.model_style}")(messages)
-
-
-class Access:
-    @staticmethod
-    def openai(response: Response) -> Message:
-        message = response.json()["choices"][0]["message"]
-        return Message(
-            role=message["role"],
-            content=[Content.text_content(message["content"])]
-        )
 
 
 class Primitive:
@@ -241,7 +123,8 @@ class Overflow:
 
     @staticmethod
     def openai_lmdeploy(response: Response) -> bool:
-        return Access.openai(response).content == ""
+        return Model._access_openai(response).content == ""
+        access_style: str = "openai",
 
 
 class Agent:
@@ -272,20 +155,12 @@ class Agent:
     def __init__(
         self,
         model: Model,
-        access_style: str = "openai",
         code_style: str = "antiquot",
         overflow_style: Optional[str] = None,
         context_window: int = 3
     ) -> None:
         assert isinstance(model, Model)
         self.model = model
-
-        assert hasattr(Access, access_style)
-        self.access_handler: Callable[
-            [Response],
-            Message
-        ] = getattr(Access, access_style)
-        self.access_style = access_style
 
         assert hasattr(CodeLike, f"extract_{code_style}")
         self.code_handler: Callable[
@@ -310,9 +185,9 @@ class Agent:
         prompt_name = f"{self.code_style}_{type_sort}".upper()
         system_inst = getattr(Prompts, prompt_name, self.SYSTEM_INST)
 
-        self.system_message: Message = Message(
+        self.system_message: Message = self.model.message(
             role="system",
-            content=[Content.text_content(system_inst(inst).strip())]
+            content=[TextContent(system_inst(inst).strip())]
         )
         self.context: List[Message] = []
 
@@ -326,24 +201,30 @@ class Agent:
             textual=textual,
             a11y_tree=a11y_tree
         )
-        contents = [Content.text_content(opening + Agent.USER_FLATTERY)]
+        contents = [TextContent(opening + Agent.USER_FLATTERY)]
 
         images = [item for _, item in obs.items() if isinstance(item, Image.Image)]
-        contents += [Content.image_content(image) for image in images]
+        contents += [ImageContent(image) for image in images]
         return contents
 
-    def __dump(self, context_count: int) -> Dict:
-        return [asdict(message) for message in [
+    def __dump(self, context_count: int) -> List[Message]:
+        return [
             self.system_message,
             *self.context[-context_count:]
-        ]]
+        ]
 
     def dump_payload(self, shorten: int = 0) -> Dict:
         context_length = self.context_window - shorten
-        return self.__dump(context_length * 2 + 1)
+        return [
+            asdict(message)
+            for message in self.__dump(context_length * 2 + 1)
+        ]
 
     def dump_history(self) -> Dict:
-        return self.__dump(len(self.context))
+        return [
+            message._asdict(self.context)
+            for message in self.__dump(len(self.context))
+        ]
 
     def __call__(
         self,
@@ -356,7 +237,7 @@ class Agent:
         for content in contents:
             assert isinstance(content, Content)
 
-        self.context.append(Message(role="user", content=contents))
+        self.context.append(self.model.message(role="user", content=contents))
         response = self.model(messages=self.dump_payload(shorten))
 
         if response.status_code != 200:
@@ -369,6 +250,6 @@ class Agent:
             return self(contents, shorten + 1)
         assert not is_overflow, f"Tokens overflow when calling {self.model.model_name}"
 
-        response_message = self.access_handler(response)
+        response_message = self.model.access(response)
         self.context.append(response_message)
         return response_message
