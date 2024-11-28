@@ -109,9 +109,17 @@ class Model:
     model_name: str
     api_key: Optional[str] = None
     proxy: Optional[str] = None
+    version: Optional[str] = None
     max_tokens: int = 1500
     top_p: float = 0.9
     temperature: float = 0.5
+
+    @property
+    def proxies(self) -> Dict:
+        return None if self.proxy is None else {
+            "http": self.proxy,
+            "https": self.proxy
+        }
 
     def _style_openai(self, messages: Dict) -> Response:
         headers = {
@@ -120,11 +128,6 @@ class Model:
 
         if self.api_key is not None:
             headers["Authorization"] = f"Bearer {self.api_key}"
-
-        proxies = None if self.proxy is None else {
-            "http": self.proxy,
-            "https": self.proxy
-        }
 
         payload = {
             "model": self.model_name,
@@ -137,13 +140,33 @@ class Model:
         return requests.post(
             self.base_url,
             headers=headers,
-            proxies=proxies,
+            proxies=self.proxies,
             json=payload
         )
 
-    # TODO
-    def __style_anthropic(self, messages: Dict) -> Response:
-        ...
+    def _style_anthropic(self, messages: Dict) -> Response:
+        assert self.api_key is not None
+        assert self.version is not None
+        headers = {
+            "x-api-key": self.api_key,
+            "anthropic-version": self.version,
+            "content-type": "application/json"
+        }
+
+        payload = {
+            "model": self.model,
+            "max_tokens": self.max_tokens,
+            "messages": messages,
+            "temperature": self.temperature,
+            "top_p": self.top_p
+        }
+
+        return requests.post(
+            self.base_url,
+            headers=headers,
+            proxies=self.proxies,
+            json=payload
+        )
 
     def __call__(self, messages: Dict) -> Response:
         return getattr(self, f"_style_{self.model_style}")(messages)
@@ -278,6 +301,7 @@ class Agent:
         self.overflow_style = overflow_style
 
         assert isinstance(context_window, int)
+        assert context_window >= 0
         self.context_window = context_window
 
         self.vlog = VirtualLog()
@@ -314,8 +338,9 @@ class Agent:
             *self.context[-context_count:]
         ]]
 
-    def dump_payload(self) -> Dict:
-        return self.__dump(self.context_window * 2 + 1)
+    def dump_payload(self, shorten: int = 0) -> Dict:
+        context_length = self.context_window - shorten
+        return self.__dump(context_length * 2 + 1)
 
     def dump_history(self) -> Dict:
         return self.__dump(len(self.context))
@@ -323,7 +348,7 @@ class Agent:
     def __call__(
         self,
         contents: List[Content],
-        shorten: bool = False
+        shorten: int = 0
     ) -> Message:
         assert hasattr(self, "context"), "Call Agent.init() first"
 
@@ -332,7 +357,7 @@ class Agent:
             assert isinstance(content, Content)
 
         self.context.append(Message(role="user", content=contents))
-        response = self.model(messages=self.dump_payload())
+        response = self.model(messages=self.dump_payload(shorten))
 
         if response.status_code != 200:
             self.vlog.warning(f"Getting response code of {response.status_code}.")
@@ -340,8 +365,8 @@ class Agent:
         is_overflow = False if self.overflow_handler is None \
             else self.overflow_handler(response)
 
-        if is_overflow and not shorten:
-            return self(contents, shorten)
+        if is_overflow and shorten < self.context_window:
+            return self(contents, shorten + 1)
         assert not is_overflow, f"Tokens overflow when calling {self.model.model_name}"
 
         response_message = self.access_handler(response)

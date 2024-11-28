@@ -99,7 +99,8 @@ class Automata:
         return self.agent
 
     # insert <IMAGE_TOKEN> for DeepSeek-VL
-    # usage: Automata(register=[Automata.image_token()], ...)
+    # usage #1: Automata(register=Automata.image_token(), ...)
+    # usage #2: Automata(register=[Automata.image_token(), ...], ...)
     @staticmethod
     def image_token(tag: str = "<IMAGE_TOKEN>") -> Callable[[Agent], None]:
         def _image_token(agent: Agent) -> None:
