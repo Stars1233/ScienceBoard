@@ -234,6 +234,7 @@ class Agent:
                 f"Unexpected error when requesting {self.model.model_name}.\n"
                     + response.text
             )
+            Manager.pause()
             return self(contents, shorten, retry - 1)
 
         self.context.append(response_message)
