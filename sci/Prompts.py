@@ -40,7 +40,7 @@ When you think you have to wait for some time, return ```WAIT```;
 When you think the task can not be done, return ```FAIL```, don't easily say ```FAIL```, try your best to do the task;
 When you think the task is done, return ```DONE```.
 
-My computer's password is 'password', feel free to use it when you need sudo rights;
+My computer's password is '{VM_PASSWORD}', feel free to use it when you need sudo rights;
 
 DO NOT introduce any unrelated models or easily close existing models, otherwise the task might be evaluated as FAILED.
 DO NOT close the current ChimeraX session, or every effort you made will be in vain.

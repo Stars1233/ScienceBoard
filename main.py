@@ -24,7 +24,8 @@ deepseek_vl = Automata(
     model_style="openai",
     base_url=os.environ["LOCAL_BASE_URL"],
     model_name=os.environ["DEEPSEEK_VL_NAME"],
-    overflow_style="openai_lmdeploy"
+    overflow_style="openai_lmdeploy",
+    register=Automata.image_token()
 )
 
 qwen_vl = Automata(
