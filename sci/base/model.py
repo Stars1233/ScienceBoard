@@ -44,6 +44,7 @@ class TextContent(Content):
     text: str
 
     # overwrite Content._asdict()
+    # asdict(TextContent(...)) will also be redirected here
     def _asdict(self, *args, **kwargs) -> Dict[str, Any]:
         return {
             "type": "text",
@@ -55,21 +56,29 @@ class TextContent(Content):
 class ImageContent(Content):
     image: Image.Image
 
-    def _openai(self) -> Dict[str, Any]:
+    @property
+    def base64_png(self):
         self.image.save(buffered:=BytesIO(), format="PNG")
-        image_base64 = base64.b64encode(buffered.getvalue())
+        return base64.b64encode(buffered.getvalue()).decode()
 
+    def _openai(self) -> Dict[str, Any]:
         return {
             "type": "image_url",
             "image_url": {
-                "url": f"data:image/png;base64, {image_base64.decode()}",
+                "url": f"data:image/png;base64, {self.base64_png}",
                 "detail": "high"
             }
         }
 
-    # TODO
     def _anthropic(self) -> Dict[str, Any]:
-        raise NotImplementedError
+        return {
+            "type": "image",
+            "source": {
+                "type": "base64",
+                "media_type": "image/png",
+                "data": self.base64_png
+            }
+        }
 
 
 @dataclass
