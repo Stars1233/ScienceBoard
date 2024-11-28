@@ -1,15 +1,16 @@
 import base64
-import requests
-
 import dataclasses
+
 from dataclasses import dataclass
-from requests import Response
 from io import BytesIO
 
 from typing import Optional, List, Dict
-from typing import Literal, Any, Self
+from typing import Literal, Any
 
 from PIL import Image
+
+import requests
+from requests import Response
 
 # modify asdict() for class Content
 # ref: https://stackoverflow.com/a/78289335
@@ -26,9 +27,12 @@ def _asdict_inner(obj, dict_factory):
 dataclasses._asdict_inner = _asdict_inner
 
 
+ModelType = Literal["openai", "anthropic"]
+RoleType = Literal["system", "user", "assistant"]
+
 @dataclass
 class Content:
-    def _asdict(self, style: str = "openai") -> Dict[str, Any]:
+    def _asdict(self, style: ModelType = "openai") -> Dict[str, Any]:
         return getattr(self, f"_{style}")()
 
     def __dict_factory_override__(self) -> Dict[str, Any]:
@@ -39,17 +43,12 @@ class Content:
 class TextContent(Content):
     text: str
 
-    def __asdict(self) -> Dict[str, Any]:
+    # overwrite Content._asdict()
+    def _asdict(self, *args, **kwargs) -> Dict[str, Any]:
         return {
             "type": "text",
             "text": self.text
         }
-
-    def _openai(self) -> Dict[str, Any]:
-        return self.__asdict()
-
-    def _anthropic(self) -> Dict[str, Any]:
-        return self.__asdict()
 
 
 @dataclass
@@ -76,8 +75,8 @@ class ImageContent(Content):
 @dataclass
 class Message:
     # message's style follows model_style
-    style: Literal["openai", "anthropic"]
-    role: Literal["system", "user", "assistant"]
+    style: ModelType
+    role: RoleType
     content: List[Content]
 
     def _asdict(self, context: Optional[int] = None) -> Dict[str, Any]:
@@ -99,7 +98,7 @@ class Message:
 
 @dataclass
 class Model:
-    model_style: str
+    model_style: ModelType
     base_url: str
     model_name: str
     api_key: Optional[str] = None

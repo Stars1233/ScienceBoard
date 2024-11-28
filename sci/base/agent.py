@@ -124,7 +124,6 @@ class Overflow:
     @staticmethod
     def openai_lmdeploy(response: Response) -> bool:
         return Model._access_openai(response).content == ""
-        access_style: str = "openai",
 
 
 class Agent:
@@ -222,7 +221,7 @@ class Agent:
 
     def dump_history(self) -> Dict:
         return [
-            message._asdict(self.context)
+            message._asdict(self.context_window)
             for message in self.__dump(len(self.context))
         ]
 
