@@ -11,7 +11,8 @@ from typing import Union, Optional, List, Set
 from typing import Iterable, Callable, Generator
 
 sys.dont_write_bytecode
-from . import TypeSort, Model, Agent
+from . import TypeSort
+from . import Model, Agent
 from . import Manager, Task
 from . import Log, VirtualLog
 from . import Presets

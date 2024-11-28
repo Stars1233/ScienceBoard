@@ -342,10 +342,13 @@ class Log:
             self.extra["log"] = log_name
 
     def __mod_url(self, obj: Any):
-        mod = lambda data: ", ".join([data.split(", ")[0], "..."])
+        is_target = lambda value: isinstance(value, str) and \
+            re.search(r'^data:image/[a-zA-Z]+;base64,', value) is not None
+        ellipsis = lambda data: ", ".join([data.split(", ")[0], "..."])
+
         if isinstance(obj, dict):
             return {
-                key: (mod(value) if key == "url" else self.__mod_url(value))
+                key: (ellipsis(value) if is_target(value) else self.__mod_url(value))
                 for key, value in obj.items()
             }
         elif isinstance(obj, list):

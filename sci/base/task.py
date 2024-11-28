@@ -7,9 +7,10 @@ from typing import Set, Union, Optional, Any
 from typing import Iterable, Callable, NoReturn
 
 sys.dont_write_bytecode = True
-from .agent import TypeSort, Agent, Primitive
+from .agent import Agent, Primitive
 from .manager import Manager
 from .log import Log, VirtualLog
+from .utils import TypeSort
 from . import init
 
 # base class for all tasks

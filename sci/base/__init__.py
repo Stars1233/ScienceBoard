@@ -2,6 +2,7 @@ import sys
 
 sys.dont_write_bytecode
 from . import utils
+from .utils import TypeSort
 
 from .model import Content
 from .model import TextContent
@@ -9,7 +10,6 @@ from .model import ImageContent
 from .model import Message
 from .model import Model
 
-from .agent import TypeSort
 from .agent import Primitive
 from .agent import CodeLike
 from .agent import Overflow

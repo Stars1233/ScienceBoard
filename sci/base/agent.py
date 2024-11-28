@@ -3,7 +3,6 @@ import re
 import time
 import dataclasses
 
-from enum import Enum
 from dataclasses import dataclass, asdict
 
 from typing import Optional, List, Dict, Set
@@ -17,6 +16,8 @@ from .manager import Manager
 from .log import VirtualLog
 from .model import Content, TextContent, ImageContent
 from .model import Message, Model
+from .utils import TypeSort
+
 from . import utils
 from .. import Prompts
 
@@ -33,35 +34,6 @@ def _asdict_inner(obj, dict_factory):
             return user_dict
     return _asdict_inner_actual(obj, dict_factory)
 dataclasses._asdict_inner = _asdict_inner
-
-
-@dataclass
-class TypeSort:
-    class Sort(Enum):
-        Raw = 0
-        VM = 1
-
-    type: str
-    sort: Sort
-
-    def __str__(self) -> str:
-        return f"{self.type}_{self.sort.name}"
-
-    def __repr__(self) -> str:
-        if self.sort == TypeSort.Sort.VM:
-            return self.sort.name
-        else:
-            return f"{self.sort.name}:{self.type}"
-
-    def __call__(self, postfix: str) -> Any:
-        return self.sort.name + postfix
-
-    # crucial for hash comparison
-    def __eq__(self, __value: "TypeSort") -> bool:
-        return self.__repr__() == __value.__repr__()
-
-    def __hash__(self) -> int:
-        return hash(self.__repr__())
 
 
 class Primitive:
