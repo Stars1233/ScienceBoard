@@ -224,7 +224,10 @@ class Agent:
             else self.overflow_handler(response)
 
         if is_overflow and context_length > 0:
-            self.vlog.error(f"Overflow detected when requesting {self.model.model_name}.")
+            self.vlog.error(
+                f"Overflow detected when requesting {self.model.model_name}; "
+                f"set context_window={context_length - 1}."
+            )
             return self(contents, shorten + 1, retry)
         assert not is_overflow, f"Unsolvable overflow when requesting {self.model.model_name}"
 
