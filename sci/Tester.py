@@ -7,7 +7,7 @@ import traceback
 
 from dataclasses import dataclass
 
-from typing import Optional, List, Set
+from typing import Union, Optional, List, Set
 from typing import Iterable, Callable, Generator
 
 sys.dont_write_bytecode
@@ -59,9 +59,22 @@ class Counter:
         self.vlog.info(self.__repr__())
 
 
-# Automata only receive keyword args from Model and Agent
+# Automata receive keyword args from Model and Agent
+# register is used for post-processing
 class Automata:
-    def __init__(self, **kwargs) -> None:
+    def __init__(
+        self,
+        register: Union[Callable, List[Callable]] = [],
+        **kwargs
+    ) -> None:
+        if isinstance(register, Iterable):
+            for handler in register:
+                assert hasattr(handler, "__call__")
+            self.register = register
+        else:
+            assert hasattr(register, "__call__")
+            self.register = [register]
+
         model_params = list(Model.__dataclass_fields__.keys())
         agent_params = list(inspect.signature(Agent).parameters)
         for key in kwargs:
@@ -77,26 +90,31 @@ class Automata:
             if key in agent_params
         }
 
+    def __call__(self) -> Agent:
         model = Model(**self.model_args)
-        self.agent = Agent(model=model, **self.agent_args)
+        if not hasattr(self, "agent"):
+            self.agent = Agent(model=model, **self.agent_args)
+            for handler in self.register:
+                handler(self.agent)
+        return self.agent
 
     # insert <IMAGE_TOKEN> for DeepSeek-VL
-    # can also be used for staticmethod
-    # usage #1: Automata(...).func(...).func(...)
-    # usage #2: auto = Automata(...); auto = Automata.func(auto)
-    def image_token(self: "Automata", tag: str = "<IMAGE_TOKEN>") -> "Automata":
-        assert isinstance(tag, str)
-        self.agent.USER_OPENING = copy.deepcopy(Agent.USER_OPENING)
-        for key in self.agent.USER_OPENING:
-            if key == frozenset({Manager.screenshot.__name__}):
-                self.agent.USER_OPENING[key] += (tag + "\n")
-            elif Manager.screenshot.__name__ in key:
-                self.agent.USER_OPENING[key] = re.sub(
-                    "screenshot",
-                    f"screenshot {tag}",
-                    self.agent.USER_OPENING[key]
-                )
-        return self
+    # usage: Automata(register=[Automata.image_token()], ...)
+    @staticmethod
+    def image_token(tag: str = "<IMAGE_TOKEN>") -> Callable[[Agent], None]:
+        def _image_token(agent: Agent) -> None:
+            assert isinstance(tag, str)
+            agent.USER_OPENING = copy.deepcopy(Agent.USER_OPENING)
+            for key in agent.USER_OPENING:
+                if key == frozenset({Manager.screenshot.__name__}):
+                    agent.USER_OPENING[key] += (tag + "\n")
+                elif Manager.screenshot.__name__ in key:
+                    agent.USER_OPENING[key] = re.sub(
+                        "screenshot",
+                        f"screenshot {tag}",
+                        agent.USER_OPENING[key]
+                    )
+        return _image_token
 
 
 class TaskInfo:
@@ -202,7 +220,7 @@ class Tester:
         self.log = Log()
 
         assert isinstance(automata, Automata)
-        self.agent = automata.agent
+        self.agent = automata()
         self.agent.vlog.set(self.log)
 
         # manager in managers should not be Manager itself
