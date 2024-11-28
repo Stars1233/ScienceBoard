@@ -89,7 +89,7 @@ class Message:
             ]
         }
 
-        if show_context:
+        if show_context and self.context_window is not None:
             result["context_window"] = self.context_window
         return result
 
@@ -123,7 +123,7 @@ class Model:
             "https": self.proxy
         }
 
-    def _style_openai(self, messages: Dict) -> Response:
+    def _request_openai(self, messages: Dict) -> Response:
         headers = {
             "Content-Type": "application/json",
         }
@@ -146,7 +146,7 @@ class Model:
             json=payload
         )
 
-    def _style_anthropic(self, messages: Dict) -> Response:
+    def _request_anthropic(self, messages: Dict) -> Response:
         assert self.api_key is not None
         assert self.version is not None
         headers = {
@@ -171,7 +171,7 @@ class Model:
         )
 
     def __call__(self, messages: Dict) -> Response:
-        return getattr(self, f"_style_{self.model_style}")(messages)
+        return getattr(self, f"_request_{self.model_style}")(messages)
 
     @staticmethod
     def _access_openai(response: Response) -> Message:

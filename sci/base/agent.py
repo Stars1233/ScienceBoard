@@ -123,7 +123,7 @@ class Overflow:
 
     @staticmethod
     def openai_lmdeploy(response: Response) -> bool:
-        return Model._access_openai(response).content == ""
+        return Model._access_openai(response).content[0].text == ""
 
 
 class Agent:
@@ -245,7 +245,7 @@ class Agent:
         is_overflow = False if self.overflow_handler is None \
             else self.overflow_handler(response)
 
-        if is_overflow and shorten < self.context_window:
+        if is_overflow and context_length > 0:
             return self(contents, shorten + 1)
         assert not is_overflow, f"Tokens overflow when calling {self.model.model_name}"
 
