@@ -97,6 +97,12 @@ class Overflow:
     def openai_lmdeploy(response: Response) -> bool:
         return Model._access_openai(response).content[0].text == ""
 
+    @staticmethod
+    def anthropic(response: Response) -> bool:
+        response_object = response.json()
+        return response_object["type"] == "error" \
+            and response_object["error"]["type"] == "request_too_large"
+
 
 class Agent:
     WAIT_TIME = 5

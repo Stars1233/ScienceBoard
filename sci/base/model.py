@@ -191,10 +191,14 @@ class Model:
             content=[TextContent(message["content"])]
         )
 
-    # TODO
     @staticmethod
     def _access_anthropic(response: Response) -> Message:
-        raise NotImplementedError
+        message = response.json()
+        return Message(
+            style="anthropic",
+            role=message["role"],
+            content=[TextContent(message["content"][0]["text"])]
+        )
 
     def access(self, response: Response, context_window: int) -> Message:
         message: Message = getattr(Model, f"_access_{self.model_style}")(response)
