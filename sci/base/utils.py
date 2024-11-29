@@ -1,5 +1,3 @@
-import inspect
-
 from enum import Enum
 from typing import Optional, Dict, Any
 from typing import Callable, ClassVar, Self
@@ -7,7 +5,7 @@ from dataclasses import dataclass
 
 class SortVM():
     def __get__(self, _, objtype=None) -> Optional["TypeSort"]:
-        if inspect.signature(objtype).parameters.__len__():
+        if hasattr(globals(), "TypeSort"):
             return TypeSort("", TypeSort.Sort.VM)
 
 
@@ -22,24 +20,24 @@ class TypeSort:
 
     VM: ClassVar[Optional[Self]] = SortVM()
 
-    def __str__(self) -> str:
-        return f"{self.type}_{self.sort.name}"
-
     def __repr__(self) -> str:
         if self.sort == TypeSort.Sort.VM:
             return self.sort.name
         else:
             return f"{self.sort.name}:{self.type}"
 
-    def __call__(self, postfix: str) -> Any:
-        return self.sort.name + postfix
+    def __hash__(self) -> int:
+        return hash(self.__repr__())
 
     # crucial for hash comparison
     def __eq__(self, __value: "TypeSort") -> bool:
         return self.__repr__() == __value.__repr__()
 
-    def __hash__(self) -> int:
-        return hash(self.__repr__())
+    def __str__(self) -> str:
+        return f"{self.type}_{self.sort.name}"
+
+    def __call__(self, postfix: str) -> Any:
+        return self.sort.name + postfix
 
 
 def error_factory(default_value):
