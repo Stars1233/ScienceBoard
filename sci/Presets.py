@@ -38,5 +38,5 @@ def spawn_modules(manager_args: Optional[Config] = None):
     return {
         type_sort.type: frozen[type_sort.type]
         for type_sort in manager_args
-        if len(type_sort.sort) == TypeSort.Sort.Raw
+        if type_sort.sort == TypeSort.Sort.Raw
     }

@@ -16,11 +16,6 @@
             ]
         },
         {
-            "func": "execute",
-            "command": "rm -f /home/user/.config/ChimeraX/contacts-*",
-            "shell": true
-        },
-        {
             "func": "launch",
             "wait": 5,
             "command": [

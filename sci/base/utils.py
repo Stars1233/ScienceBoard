@@ -1,3 +1,5 @@
+import inspect
+
 from enum import Enum
 from typing import Optional, Dict, Any
 from typing import Callable, ClassVar, Self
@@ -5,7 +7,7 @@ from dataclasses import dataclass
 
 class SortVM():
     def __get__(self, _, objtype=None) -> Optional["TypeSort"]:
-        if hasattr(globals(), "TypeSort"):
+        if inspect.signature(objtype).parameters.__len__():
             return TypeSort("", TypeSort.Sort.VM)
 
 
