@@ -14,7 +14,7 @@ def spawn_managers(vm_path: Optional[str] = None) -> Config:
     Sort = TypeSort.Sort
 
     return {
-        TypeSort("", Sort.VM): {
+        TypeSort.VM: {
             "version": "0.1",
             "vm_path": vm_path,
             "headless": True,
@@ -38,5 +38,5 @@ def spawn_modules(manager_args: Optional[Config] = None):
     return {
         type_sort.type: frozen[type_sort.type]
         for type_sort in manager_args
-        if len(type_sort.type) > 0
+        if len(type_sort.sort) == TypeSort.Sort.Raw
     }

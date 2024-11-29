@@ -1,6 +1,15 @@
+import inspect
+
 from enum import Enum
-from typing import Dict, Any, Callable
+from typing import Optional, Dict, Any
+from typing import Callable, ClassVar, Self
 from dataclasses import dataclass
+
+class SortVM():
+    def __get__(self, _, objtype=None) -> Optional["TypeSort"]:
+        if inspect.signature(objtype).parameters.__len__():
+            return TypeSort("", TypeSort.Sort.VM)
+
 
 @dataclass
 class TypeSort:
@@ -10,6 +19,8 @@ class TypeSort:
 
     type: str
     sort: Sort
+
+    VM: ClassVar[Optional[Self]] = SortVM()
 
     def __str__(self) -> str:
         return f"{self.type}_{self.sort.name}"

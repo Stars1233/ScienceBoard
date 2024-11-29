@@ -62,8 +62,11 @@ class Task:
         # for VMTask: use pre-defined observation set
         if obs_types is None:
             obs_types = {Manager.screenshot.__name__}
+
         assert isinstance(obs_types, Iterable)
-        assert frozenset(obs_types) in Agent.USER_OPENING
+        for obs_type in obs_types:
+            assert obs_type in dir(Manager)
+
         if self.type_sort.sort == TypeSort.Sort.VM:
             self.obs_types = set(obs_types)
         elif manager is not None:
