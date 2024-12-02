@@ -70,23 +70,19 @@
 1. Substitute the original server file:
 
     ```shell
-    vmrun -T ws CopyFileFromHostToGuest ~/Downloads/Ubuntu-x86/Ubuntu.vmx vm/server.py /home/user/server/main.py
+    vmrun -T ws CopyFileFromHostToGuest ~/Downloads/Ubuntu-x86/Ubuntu.vmx vm_config/config.ini /etc/systemd/system/osworld.service
+    vmrun -T ws CopyFileFromHostToGuest ~/Downloads/Ubuntu-x86/Ubuntu.vmx vm_config/server.py /home/user/server/main.py
+    sudo systemctl daemon-reload
     sudo systemctl restart osworld.service
     ```
 
-2. Take a snapshot with name of `sci_bench`:
-
-    ```shell
-    vmrun -T ws snapshot ~/Downloads/Ubuntu-x86/Ubuntu.vmx sci_bench
-    ```
-
-3. Attach a `__VERSION__` file under :
+2. Attach a `__VERSION__` file under :
 
     ```shell
     echo "0.1" >> __VERSION__
     ```
 
-4. Compress vmware files:
+3. Compress vmware files:
 
     ```shell
     cd ~/Downloads/Ubuntu-x86; zip -r ../Ubuntu-x86.zip *; cd -
