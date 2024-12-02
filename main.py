@@ -40,15 +40,7 @@ qwen_vl = Automata(
 if __name__ == "__main__":
     Tester(
         tasks_path="./tasks/ChimeraX_VM",
-        logs_path="./logs/gpt_4o-chimerax-vm-a11y_tree",
-        vm_path=os.environ["VM_PATH"],
-        automata=gpt_4o,
-        obs_types={"a11y_tree"}
-    )()
-
-    Tester(
-        tasks_path="./tasks/ChimeraX_VM",
-        logs_path="./logs/gpt_4o-chimerax-vm-set_of_marks",
+        logs_path="./logs/testing",
         vm_path=os.environ["VM_PATH"],
         automata=gpt_4o,
         obs_types={"set_of_marks"}
