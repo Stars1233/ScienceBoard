@@ -27,6 +27,11 @@
             ]
         },
         {
+            "func": "execute",
+            "command": "rm -f /home/user/.config/ChimeraX/ui-*",
+            "shell": true
+        },
+        {
             "func": "open",
             "name": "251d"
         },

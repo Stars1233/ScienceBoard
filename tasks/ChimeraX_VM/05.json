@@ -16,6 +16,11 @@
             ]
         },
         {
+            "func": "execute",
+            "command": "rm -f /home/user/.config/ChimeraX/ui-*",
+            "shell": true
+        },
+        {
             "func": "launch",
             "wait": 5,
             "command": [

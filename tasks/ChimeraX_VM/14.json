@@ -16,6 +16,11 @@
             ]
         },
         {
+            "func": "execute",
+            "command": "rm -f /home/user/.config/ChimeraX/ui-* /home/user/.config/ChimeraX/H-bond\\ GUI-*",
+            "shell": true
+        },
+        {
             "func": "launch",
             "wait": 5,
             "command": [

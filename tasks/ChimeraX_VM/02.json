@@ -16,6 +16,11 @@
             ]
         },
         {
+            "func": "execute",
+            "command": "rm -f /home/user/.config/ChimeraX/ui-*",
+            "shell": true
+        },
+        {
             "func": "launch",
             "wait": 5,
             "command": [
@@ -30,6 +35,10 @@
             "func": "download",
             "url": "https://files.rcsb.org/download/3ppd.cif",
             "path": "/home/user/Downloads/prot.cif"
+        },
+        {
+            "func": "destroy",
+            "wait": 2
         }
     ],
     "evaluate": [

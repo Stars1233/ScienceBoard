@@ -16,6 +16,16 @@
             ]
         },
         {
+            "func": "execute",
+            "command": "rm -f /home/user/.config/ChimeraX/ui-* /home/user/.config/ChimeraX/contacts-* /home/user/.config/ChimeraX/alphafold_database-*",
+            "shell": true
+        },
+        {
+            "func": "execute",
+            "command": "printf \"[DEFAULT]\nupdate_interval = 2147438648\" >> /home/user/.config/ChimeraX/alphafold_database-1",
+            "shell": true
+        },
+        {
             "func": "launch",
             "wait": 5,
             "command": [
