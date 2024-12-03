@@ -1,91 +1,20 @@
 import sys
-import re
-import time
-import traceback
-import dataclasses
 
-from dataclasses import dataclass, asdict
-
+from dataclasses import asdict
 from typing import Optional, List, Dict, Set
-from typing import Callable, Any, Self, NoReturn
+from typing import Callable, Any
 
 from PIL import Image
 from requests import Response
 
 sys.dont_write_bytecode = True
+from . import utils
 from .manager import Manager
 from .log import VirtualLog
 from .model import Content, TextContent, ImageContent
 from .model import Message, Model
 from .utils import TypeSort
-
-from . import utils
-from .. import Prompts
-
-# modify asdict() for class Content
-# ref: https://stackoverflow.com/a/78289335
-_asdict_inner_actual = dataclasses._asdict_inner
-def _asdict_inner(obj, dict_factory):
-    if dataclasses._is_dataclass_instance(obj):
-        if getattr(obj, "__dict_factory_override__", None):
-            user_dict = obj.__dict_factory_override__()
-            for key, value in user_dict.items():
-                if dataclasses._is_dataclass_instance(value):
-                    user_dict[key] = _asdict_inner(value, dict_factory)
-            return user_dict
-    return _asdict_inner_actual(obj, dict_factory)
-dataclasses._asdict_inner = _asdict_inner
-
-
-class Primitive:
-    class PlannedTermination(Exception):
-        def __init__(self, type: staticmethod) -> None:
-            self.type = type
-
-    @staticmethod
-    def DONE() -> NoReturn:
-        raise Primitive.PlannedTermination(Primitive.DONE)
-
-    @staticmethod
-    def FAIL() -> NoReturn:
-        raise Primitive.PlannedTermination(Primitive.FAIL)
-
-    @staticmethod
-    def WAIT() -> None:
-        Manager.pause(Agent.WAIT_TIME)
-
-    @staticmethod
-    def TIMEOUT() -> None:
-        ...
-
-
-@dataclass
-class CodeLike:
-    code: str
-
-    @staticmethod
-    def extract_antiquot(content: Content) -> List[Self]:
-        occurence = [
-            match.group(1).strip()
-            for match in re.finditer(
-                r'```(?:\w+\s+)?([\w\W]*?)```',
-                content.text
-            )
-        ]
-        return [CodeLike(code=code) for code in occurence]
-
-    @property
-    def PRIMITIVE(self) -> List[str]:
-        return [
-            key for key, value in Primitive.__dict__.items()
-            if isinstance(value, staticmethod)
-        ]
-
-    def __call__(self, manager: Manager) -> None:
-        if self.code in self.PRIMITIVE:
-            getattr(Primitive, self.code)()
-        else:
-            manager(self.code)
+from .prompt import Primitive, PromptFactory
 
 
 class Overflow:
@@ -106,8 +35,6 @@ class Overflow:
 
 
 class Agent:
-    WAIT_TIME = 5
-
     SYSTEM_INST = lambda inst: f"You are asked to complete the following task: {inst}"
     USER_FLATTERY = "What's the next step that you will do to help with the task?"
     USER_OPENING: Dict[Set[str], str] = {
@@ -133,19 +60,12 @@ class Agent:
     def __init__(
         self,
         model: Model,
-        code_style: str = "antiquot",
         overflow_style: Optional[str] = None,
-        context_window: int = 3
+        context_window: int = 3,
+        code_style: str = "antiquot"
     ) -> None:
         assert isinstance(model, Model)
         self.model = model
-
-        assert hasattr(CodeLike, f"extract_{code_style}")
-        self.code_handler: Callable[
-            [Content],
-            List[CodeLike]
-        ] = getattr(CodeLike, f"extract_{code_style}")
-        self.code_style = code_style
 
         assert overflow_style is None or hasattr(Overflow, overflow_style)
         self.overflow_handler: Optional[Callable[[Response], bool]] = None \
@@ -157,11 +77,13 @@ class Agent:
         assert context_window >= 0
         self.context_window = context_window
 
+        self.prompt_factory = PromptFactory(code_style)
         self.vlog = VirtualLog()
 
     def _init(self, inst: str, type_sort: Optional[TypeSort] = None) -> None:
-        prompt_name = f"{self.code_style}_{type_sort}".upper()
-        system_inst = getattr(Prompts, prompt_name, self.SYSTEM_INST)
+        # prompt_name = f"{self.code_style}_{type_sort}".upper()
+        # system_inst = getattr(Prompts, prompt_name, self.SYSTEM_INST)
+        system_inst = self.SYSTEM_INST
 
         self.system_message: Message = self.model.message(
             role="system",
@@ -237,7 +159,7 @@ class Agent:
                 f"Unexpected error when requesting {self.model.model_name}.\n"
                     + response.text
             )
-            Manager.pause(Agent.WAIT_TIME)
+            Manager.pause(Primitive.WAIT_TIME)
             return self(contents, shorten, retry - 1)
 
         self.context.append(response_message)

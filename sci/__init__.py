@@ -17,6 +17,7 @@ from .base import Model
 from .base import Primitive
 from .base import CodeLike
 from .base import Overflow
+from .base import PromptFactory
 from .base import Agent
 
 from .base import Manager

@@ -10,8 +10,10 @@ from .model import ImageContent
 from .model import Message
 from .model import Model
 
-from .agent import Primitive
-from .agent import CodeLike
+from .prompt import Primitive
+from .prompt import CodeLike
+from .prompt import PromptFactory
+
 from .agent import Overflow
 from .agent import Agent
 

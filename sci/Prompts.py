@@ -1,6 +1,11 @@
 VM_USERNAME = "user"
 VM_PASSWORD = "password"
 
+# take ChimeraX for instance, a set of prompts for a specific app should include following
+# `${type.upper()}_IS`: used for brief_intro in APP_INCENTIVE
+CHIMERAX_IS = "a molecular visualization software"
+
+
 ANTIQUOT_CHIMERAX_RAW = lambda inst: f"""
 You are an agent which follow my instruction and perform desktop computer tasks as instructed.
 You have good knowledge of ChimeraX, a molecular visualization software, and assume that your code will run directly in the CLI of ChimeraX.
@@ -19,6 +24,9 @@ When you think the task can not be done, return ```FAIL```, don't easily say ```
 When you think the task is done, return ```DONE```.
 
 DO NOT introduce any unrelated models or easily close existing models, otherwise the task might be evaluated as FAILED.
+DO NOT close the current ChimeraX session, or every effort you made will be in vain.
+NEVER try to reopen the command line interface in ChimeraX if it is hidden, because it has been deactivated and cannot do anything. But you are welcome to use it once it is presented.
+
 First give the current screenshot and previous things we did a short reflection, then RETURN ME THE CODE OR SPECIAL CODE I ASKED FOR. NEVER EVER RETURN ME ANYTHING ELSE.
 You are asked to complete the following task: {inst}
 """
