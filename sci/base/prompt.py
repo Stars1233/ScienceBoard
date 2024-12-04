@@ -39,7 +39,18 @@ dataclasses._asdict_inner = _asdict_inner
 
 # DO NOT DELETE DOCSTRINGS OF EACH PRIMITIVE!
 class Primitive:
+    class PrimitiveGetter:
+        def __get__(self, obj, obj_type=None):
+            return [
+                item for item in Primitive.__dict__
+                if isinstance(
+                    inspect.getattr_static(Primitive, item),
+                    staticmethod
+                ) and getattr(Primitive, item).__doc__ is not None
+            ]
+
     WAIT_TIME = 5
+    PRIMITIVES = PrimitiveGetter()
 
     class PlannedTermination(Exception):
         def __init__(self, type: staticmethod) -> None:
@@ -84,11 +95,10 @@ class CodeLike:
     @staticmethod
     def _tag_handler(method: Callable[[Content], List[Self]]) -> Callable:
         def _tag_wrapper(content: Content, tags: List[List[int]]) -> List[Self]:
-            CodeLike.parse_tags(tags)
-            return [
-                CodeLike.parse_tags(tags) + "\n\n" + code
-                for code in method(content)
-            ]
+            for code in (codes := method(content)):
+                if code.code not in Primitive.PRIMITIVES:
+                    code.code = CodeLike.parse_tags(tags) + "\n\n" + code.code
+            return codes
         return _tag_wrapper
 
     @_tag_handler
@@ -103,7 +113,6 @@ class CodeLike:
         ]
         return [CodeLike(code=code) for code in occurence]
 
-    @_tag_handler
     @staticmethod
     def wrap_antiquot(doc_str: str) -> str:
         return doc_str.replace("«", "```").replace("»", "```")
@@ -197,9 +206,7 @@ class PromptFactory:
     def _special_command(self) -> str:
         docs = [
             self.code_handler(getattr(Primitive, item).__doc__)
-            for item in Primitive.__dict__
-            if isinstance(inspect.getattr_static(Primitive, item), staticmethod) \
-                and getattr(Primitive, item).__doc__ is not None
+            for item in Primitive.PRIMITIVES
         ]
 
         return "\n".join([self.SPECIAL_OVERVIEW, *[

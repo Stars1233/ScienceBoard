@@ -6,8 +6,8 @@ from typing import Callable, ClassVar, Self
 from dataclasses import dataclass
 
 class SortVM():
-    def __get__(self, _, objtype=None) -> Optional["TypeSort"]:
-        if inspect.signature(objtype).parameters.__len__():
+    def __get__(self, _, obj_type=None) -> Optional["TypeSort"]:
+        if inspect.signature(obj_type).parameters.__len__():
             return TypeSort("", TypeSort.Sort.VM)
 
 
