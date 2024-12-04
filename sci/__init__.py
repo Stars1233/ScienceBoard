@@ -16,19 +16,23 @@ from .base import Model
 
 from .base import Primitive
 from .base import CodeLike
-from .base import Overflow
 from .base import PromptFactory
+
+from .base import Overflow
 from .base import Agent
 
-from .base import Manager
 from .base import OBS
+from .base import Manager
 from .base import Task
 
 from .vm import VManager
 from .vm import VTask
 
+from . import ChimeraX
+
 from .Tester import Counter
 from .Tester import Automata
+
 from .Tester import TaskInfo
 from .Tester import TaskGroup
 from .Tester import Tester
