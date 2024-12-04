@@ -2,7 +2,7 @@ import sys
 import os
 
 sys.dont_write_bytecode = True
-from sci import Automata, Tester
+from sci import OBS, Automata, Tester
 
 gpt_4o = Automata(
     model_style="openai",
@@ -44,5 +44,5 @@ if __name__ == "__main__":
         logs_path="./logs/gpt_4o-chimerax-vm-screenshot+a11y_tree",
         vm_path=os.environ["VM_PATH"],
         automata=gpt_4o,
-        obs_types={"screenshot", "a11y_tree"}
+        obs_types={OBS.screenshot, OBS.a11y_tree}
     )()
