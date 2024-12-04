@@ -1,7 +1,7 @@
 import sys
 
 from dataclasses import asdict
-from typing import Optional, List, Dict, Set
+from typing import Optional, List, Dict, FrozenSet
 from typing import Callable, Any
 
 from PIL import Image
@@ -36,7 +36,7 @@ class Overflow:
 
 class Agent:
     USER_FLATTERY = "What's the next step that you will do to help with the task?"
-    USER_OPENING: Dict[Set[str], str] = {
+    USER_OPENING: Dict[FrozenSet[str], str] = {
         frozenset({
             Manager.textual.__name__
         }): "Given the terminal output as below:\n{textual}\n",
@@ -86,10 +86,13 @@ class Agent:
         self.prompt_factory = PromptFactory(code_style)
         self.vlog = VirtualLog()
 
-    def _init(self, inst: str, type_sort: Optional[TypeSort] = None) -> None:
-        # prompt_name = f"{self.code_style}_{type_sort}".upper()
-        # system_inst = getattr(Prompts, prompt_name, self.SYSTEM_INST)
-        system_inst = self.prompt_factory(type_sort)
+    def _init(
+        self,
+        obs_keys: FrozenSet[str],
+        inst: str,
+        type_sort: Optional[TypeSort] = None,
+    ) -> None:
+        system_inst = self.prompt_factory(obs_keys, type_sort)
 
         self.system_message: Message = self.model.message(
             role="system",
@@ -99,11 +102,19 @@ class Agent:
 
     # crucial: obs here may not be the same as in Task
     # e.g. Task.obs_types=SoM -> Agent._step(obs={SoM, A11yTree})
-    def _step(self, obs: Dict[str, Any]) -> List[Content]:
+    def _step(
+        self,
+        obs: Dict[str, Any],
+        init_kwargs: Optional[Dict] = None
+    ) -> List[Content]:
+        obs_keys = frozenset(obs.keys())
+        if init_kwargs is not None:
+            self._init(obs_keys=obs_keys, **init_kwargs)
+
         textual = utils.getitem(obs, Manager.textual.__name__, None)
         a11y_tree = utils.getitem(obs, Manager.a11y_tree.__name__, None)
 
-        opening = self.USER_OPENING[frozenset(obs.keys())].format(
+        opening = self.USER_OPENING[obs_keys].format(
             textual=textual,
             a11y_tree=a11y_tree
         )

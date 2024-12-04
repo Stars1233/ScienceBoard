@@ -82,15 +82,19 @@ class Manager:
         return _assert_wrapper
 
     def textual(self) -> Union[str, NoReturn]:
+        """textual output from terminal"""
         raise NotImplementedError
 
     def screenshot(self) -> Union[Image.Image, NoReturn]:
+        """a screenshot"""
         raise NotImplementedError
 
     def a11y_tree(self) -> Union[str, NoReturn]:
+        """an accessibility tree, which is based on AT-SPI library"""
         raise NotImplementedError
 
     def set_of_marks(self) -> Union[Tuple[Image.Image, str], NoReturn]:
+        """a screenshot with interact-able elements marked with numerical tags"""
         raise NotImplementedError
 
     def record_start(self) -> None:

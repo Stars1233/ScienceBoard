@@ -10,7 +10,7 @@ import dataclasses
 
 from dataclasses import dataclass
 
-from typing import List
+from typing import List, FrozenSet
 from typing import Callable, Self, NoReturn
 
 sys.dont_write_bytecode = True
@@ -134,14 +134,26 @@ class PromptFactory:
         self.code_style = code_style
         self.code_handler: Callable[[str], str] = getattr(CodeLike, f"wrap_{code_style}")
 
-    def _intro(self, type_sort: TypeSort) -> str:
+    def _unfold(self, obs: FrozenSet[str]) -> str:
+        get_descr = lambda obs_name: getattr(Manager, obs_name).__doc__
+        obs = list(obs)
+
+        if len(obs) == 1:
+            return get_descr(obs[0])
+        else:
+            return "; ".join([
+                f"{index + 1}) {get_descr(item)}"
+                for index, item in enumerate(obs[:-1])
+            ]) + f"; and {len(obs)}) " + get_descr(obs[-1])
+
+    def _intro(self, obs: FrozenSet[str], type_sort: TypeSort) -> str:
         brief_intro_name = type_sort.type.upper() + "_IS"
         brief_intro = getattr(Prompts, brief_intro_name, self.APP_GENERAL)
 
         return "\n".join([
             self.GENERAL_INTRO,
             self.APP_INCENTIVE[type_sort.sort](type_sort.type, brief_intro),
-            self.OBS_INCENTIVE("TODO")
+            self.OBS_INCENTIVE(self._unfold(obs))
         ])
 
     def _general_command(self, type_sort: TypeSort) -> str:
@@ -189,9 +201,9 @@ class PromptFactory:
             self.SYSTEM_INSTRUCTION(inst)
         ])
 
-    def __call__(self, type_sort: TypeSort) -> Callable[[str], str]:
+    def __call__(self, obs: FrozenSet[str], type_sort: TypeSort) -> Callable[[str], str]:
         return lambda inst: "\n\n".join([item for item in [
-            self._intro(type_sort),
+            self._intro(obs, type_sort),
             self._command(type_sort),
             self._warning(type_sort),
             self._ending()(inst)

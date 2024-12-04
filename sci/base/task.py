@@ -226,7 +226,12 @@ class Task:
             obs[Manager.a11y_tree.__name__] = a11y_tree
             obs[Manager.set_of_marks.__name__] = som
 
-        user_contents = self.agent._step(obs)
+        init_kwargs = {
+            "inst": self.instruction,
+            "type_sort": self.type_sort
+        } if step_index == 0 else None
+
+        user_contents = self.agent._step(obs, init_kwargs)
         response_message = self.agent(user_contents)
         assert len(response_message.content) == 1
 
@@ -249,7 +254,6 @@ class Task:
     @Log.record_handler
     def predict(self) -> staticmethod:
         try:
-            self.agent._init(self.instruction, self.type_sort)
             for step_index in range(self.steps):
                 self._step(step_index)
         except Primitive.PlannedTermination as early_stop:
