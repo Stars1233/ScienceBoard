@@ -14,7 +14,7 @@ from .log import VirtualLog
 from .model import Content, TextContent, ImageContent
 from .model import Message, Model
 from .utils import TypeSort
-from .prompt import Primitive, PromptFactory
+from .prompt import CodeLike, Primitive, PromptFactory
 
 
 class Overflow:
@@ -35,7 +35,6 @@ class Overflow:
 
 
 class Agent:
-    SYSTEM_INST = lambda inst: f"You are asked to complete the following task: {inst}"
     USER_FLATTERY = "What's the next step that you will do to help with the task?"
     USER_OPENING: Dict[Set[str], str] = {
         frozenset({
@@ -77,13 +76,20 @@ class Agent:
         assert context_window >= 0
         self.context_window = context_window
 
+        assert hasattr(CodeLike, f"extract_{code_style}")
+        self.code_style = code_style
+        self.code_handler: Callable[
+            [Content],
+            List[CodeLike]
+        ] = getattr(CodeLike, f"extract_{code_style}")
+
         self.prompt_factory = PromptFactory(code_style)
         self.vlog = VirtualLog()
 
     def _init(self, inst: str, type_sort: Optional[TypeSort] = None) -> None:
         # prompt_name = f"{self.code_style}_{type_sort}".upper()
         # system_inst = getattr(Prompts, prompt_name, self.SYSTEM_INST)
-        system_inst = self.SYSTEM_INST
+        system_inst = self.prompt_factory(type_sort)
 
         self.system_message: Message = self.model.message(
             role="system",

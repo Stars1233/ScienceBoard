@@ -1,4 +1,5 @@
 import sys
+import inspect
 
 sys.dont_write_bytecode = True
 from .utils import TypeSort
@@ -98,16 +99,16 @@ class CodeLike:
 
 
 class PromptFactory:
-    # first section: __intro
+    # first section: _intro
     GENERAL_INTRO = "You are an agent which follow my instruction and perform desktop computer tasks as instructed."
     APP_GENERAL = "an application of Ubuntu"
     APP_INCENTIVE = {
         RAW: lambda type, brief_intro: f"You have good knowledge of {type}, {brief_intro}, and assume that your code will run directly in the CLI of {type}.",
         VM: lambda type, brief_intro: f"You have good knowledge of {type}, {brief_intro}, and assume your code will run on a computer controlling the mouse and keyboard."
     }
-    OBS_INCENTIVE = lambda obs_descr: f"For each step, you will get an observation of the desktop by {obs_descr}, and you will predict actions of the next step based on that."
+    OBS_INCENTIVE = staticmethod(lambda obs_descr: f"For each step, you will get an observation of the desktop by {obs_descr}, and you will predict actions of the next step based on that.")
 
-    # second section: __general_command
+    # second section: _command = _general_command + _special_command
     RETURN_OVERVIEW = {
         RAW: lambda type: f"You are required to use {type} commands to perform the action grounded to the observation. DO NOT use the bash commands or and other codes that {type} itself does not support.",
         VM: lambda _: "You are required to use `pyautogui` to perform the action grounded to the observation, but DO NOT use the `pyautogui.locateCenterOnScreen` function to locate the element you want to operate with since we have no image of the element you want to operate with. DO NOT USE `pyautogui.screenshot()` to make screenshot."
@@ -119,48 +120,79 @@ class PromptFactory:
     RETURN_REGULATION = {
         "antiquot": "You ONLY need to return the code inside a code block, like this:\n```\n# your code here\n```"
     }
+    SPECIAL_OVERVIEW = "Specially, it is also allowed to return the following special code:"
 
-    # third section: __special_command
-    SPECIAL_OVERVIEW = "Specially, it is also allowed to return the following special code:",
-
-    # fourth section: __warning
+    # third section: _warning
     VM_GENERAL = "My computer's password is 'password', feel free to use it when you need sudo rights;"
 
-    # fifth section: __ending
+    # fourth section: _ending
     ENDING_ULTIMATUM = "First give the current observation and previous things we did a short reflection, then RETURN ME THE CODE OR SPECIAL CODE I ASKED FOR. NEVER EVER RETURN ME ANYTHING ELSE."
+    SYSTEM_INSTRUCTION = staticmethod(lambda inst: f"You are asked to complete the following task: {inst}")
 
     def __init__(self, code_style: str) -> None:
-        assert hasattr(CodeLike, f"extract_{code_style}")
-        self.code_handler: Callable[
-            [Content],
-            List[CodeLike]
-        ] = getattr(CodeLike, f"extract_{code_style}")
+        assert hasattr(CodeLike, f"wrap_{code_style}")
         self.code_style = code_style
+        self.code_handler: Callable[[str], str] = getattr(CodeLike, f"wrap_{code_style}")
 
-    def __intro(self, type_sort: TypeSort) -> str:
+    def _intro(self, type_sort: TypeSort) -> str:
         brief_intro_name = type_sort.type.upper() + "_IS"
         brief_intro = getattr(Prompts, brief_intro_name, self.APP_GENERAL)
 
         return "\n".join([
             self.GENERAL_INTRO,
             self.APP_INCENTIVE[type_sort.sort](type_sort.type, brief_intro),
-            self.OBS_INCENTIVE("# TODO")
+            self.OBS_INCENTIVE("TODO")
         ])
 
-    def __general_command(self, type_sort: TypeSort) -> str:
-        return "..."
+    def _general_command(self, type_sort: TypeSort) -> str:
+        return "\n".join([
+            self.RETURN_OVERVIEW[type_sort.sort](type_sort.type),
+            self.RETURN_SUPPLEMENT[type_sort.sort](type_sort.type),
+            self.RETURN_REGULATION[self.code_style]
+        ])
 
-    def __special_command(self) -> str:
-        return "..."
+    def _special_command(self) -> str:
+        docs = [
+            self.code_handler(getattr(Primitive, item).__doc__)
+            for item in Primitive.__dict__
+            if isinstance(inspect.getattr_static(Primitive, item), staticmethod) \
+                and getattr(Primitive, item).__doc__ is not None
+        ]
 
-    def __command(self, type_sort: TypeSort) -> str:
+        return "\n".join([self.SPECIAL_OVERVIEW, *[
+            item + ("." if index + 1 == len(docs) else ";")
+            for index, item in enumerate(docs)
+        ]])
+
+    def _command(self, type_sort: TypeSort) -> str:
         return "\n\n".join([
-            self.__general_command(type_sort),
-            self.__special_command()
+            self._general_command(type_sort),
+            self._special_command()
         ])
 
-    def __warning(self, type_sort: TypeSort) -> str:
-        ...
+    def _warning(self, type_sort: TypeSort) -> str:
+        vm_tips = [self.VM_GENERAL] if type_sort == TypeSort.VM else []
+        ex_tips = getattr(
+            Prompts,
+            str(type_sort).upper(),
+            getattr(
+                Prompts,
+                type_sort.type.upper(),
+                []
+            )
+        )
+        return "\n".join([*vm_tips, *ex_tips])
 
-    def __call__(self, type_sort: TypeSort) -> str:
-        return "..."
+    def _ending(self) -> Callable[[str], str]:
+        return lambda inst: "\n".join([
+            self.ENDING_ULTIMATUM,
+            self.SYSTEM_INSTRUCTION(inst)
+        ])
+
+    def __call__(self, type_sort: TypeSort) -> Callable[[str], str]:
+        return lambda inst: "\n\n".join([item for item in [
+            self._intro(type_sort),
+            self._command(type_sort),
+            self._warning(type_sort),
+            self._ending()(inst)
+        ] if len(item) > 0])
