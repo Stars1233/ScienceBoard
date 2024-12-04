@@ -27,6 +27,9 @@
             ]
         },
         {
+            "func": "clear_log"
+        },
+        {
             "func": "execute",
             "command": "rm -f /home/user/.config/ChimeraX/ui-*",
             "shell": true

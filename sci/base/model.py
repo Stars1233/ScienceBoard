@@ -223,6 +223,6 @@ class Model:
 
     @utils.error_factory(None)
     def access(self, response: Response, context_window: int) -> Message:
-        message: Message = getattr(Model, f"_access_{self.model_style}")(response)
+        message = getattr(Model, f"_access_{self.model_style}")(response)
         message.context_window = context_window
         return message

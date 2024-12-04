@@ -30,6 +30,9 @@
                 "--cmd",
                 "remotecontrol rest start json true port «PORTLIKE»"
             ]
+        },
+        {
+            "func": "clear_log"
         }
     ],
     "evaluate": [

@@ -108,6 +108,10 @@ class VMTask(VTask):
         _, code = self.manager._call(command)
         return code
 
+    def _clear_log(self) -> bool:
+        _, code = self.manager._call(f"log clear")
+        return code
+
     @Task._stop_handler
     def eval(self) -> bool:
         return Public.eval(self)

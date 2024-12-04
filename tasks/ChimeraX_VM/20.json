@@ -32,6 +32,9 @@
             ]
         },
         {
+            "func": "clear_log"
+        },
+        {
             "func": "open",
             "name": "4r0u"
         },

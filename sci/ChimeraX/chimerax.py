@@ -213,8 +213,7 @@ class VMManager(VManager):
         timestamp = str(int(time.time() * 1000))
         guest_dir = "/home/user/Downloads"
 
-        filename = f"{timestamp}.json"
-        guest_file = os.path.join(guest_dir, filename)
+        guest_file = os.path.join(guest_dir, filename:=f"{timestamp}.json")
         local_file = self.temp(filename)
 
         assert self._call(f"states {guest_dir} {timestamp}")[1]

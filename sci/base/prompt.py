@@ -123,16 +123,16 @@ class PromptFactory:
     SPECIAL_OVERVIEW = "Specially, it is also allowed to return the following special code:"
 
     # third section: _warning
-    VM_GENERAL = f"My computer's password is '{Prompts.VM_PASSWORD}', feel free to use it when you need sudo rights;"
+    VM_GENERAL = f"My computer's password is '{Prompts.VM_PASSWORD}', feel free to use it when you need sudo rights."
 
     # fourth section: _ending
     ENDING_ULTIMATUM = "First give the current observation and previous things we did a short reflection, then RETURN ME THE CODE OR SPECIAL CODE I ASKED FOR. NEVER EVER RETURN ME ANYTHING ELSE."
     SYSTEM_INSTRUCTION = staticmethod(lambda inst: f"You are asked to complete the following task: {inst}")
 
     def __init__(self, code_style: str) -> None:
-        assert hasattr(CodeLike, f"wrap_{code_style}")
+        assert hasattr(CodeLike, func_name:=f"wrap_{code_style}")
         self.code_style = code_style
-        self.code_handler: Callable[[str], str] = getattr(CodeLike, f"wrap_{code_style}")
+        self.code_handler: Callable[[str], str] = getattr(CodeLike, func_name)
 
     def _unfold(self, obs: FrozenSet[str]) -> str:
         get_descr = lambda obs_name: getattr(Manager, obs_name).__doc__
@@ -201,7 +201,11 @@ class PromptFactory:
             self.SYSTEM_INSTRUCTION(inst)
         ])
 
-    def __call__(self, obs: FrozenSet[str], type_sort: TypeSort) -> Callable[[str], str]:
+    def __call__(
+        self,
+        obs: FrozenSet[str],
+        type_sort: TypeSort
+    ) -> Callable[[str], str]:
         return lambda inst: "\n\n".join([item for item in [
             self._intro(obs, type_sort),
             self._command(type_sort),

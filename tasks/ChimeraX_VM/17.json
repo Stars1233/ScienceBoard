@@ -37,6 +37,9 @@
             ]
         },
         {
+            "func": "clear_log"
+        },
+        {
             "func": "alphafold_match",
             "name": "A8Z1J3"
         },
