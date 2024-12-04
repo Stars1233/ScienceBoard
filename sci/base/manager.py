@@ -102,3 +102,10 @@ class Manager:
 
     def record_stop(self, dest_path: str) -> None:
         self.vlog.warning(f"record_stop({dest_path}) is not implemented.")
+
+
+class OBS:
+    textual: Manager.textual.__name__
+    screenshot: Manager.screenshot.__name__
+    a11y_tree: Manager.a11y_tree.__name__
+    set_of_marks: Manager.set_of_marks.__name__

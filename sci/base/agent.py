@@ -1,6 +1,5 @@
 import sys
 
-from dataclasses import asdict
 from typing import Optional, List, Dict, FrozenSet
 from typing import Callable, Any
 
@@ -9,7 +8,7 @@ from requests import Response
 
 sys.dont_write_bytecode = True
 from . import utils
-from .manager import Manager
+from .manager import OBS, Manager
 from .log import VirtualLog
 from .model import Content, TextContent, ImageContent
 from .model import Message, Model
@@ -37,23 +36,11 @@ class Overflow:
 class Agent:
     USER_FLATTERY = "What's the next step that you will do to help with the task?"
     USER_OPENING: Dict[FrozenSet[str], str] = {
-        frozenset({
-            Manager.textual.__name__
-        }): "Given the terminal output as below:\n{textual}\n",
-        frozenset({
-            Manager.screenshot.__name__
-        }): "Given the screenshot as below. ",
-        frozenset({
-            Manager.a11y_tree.__name__
-        }): "Given the info from accessibility tree as below:\n{a11y_tree}\n",
-        frozenset({
-            Manager.a11y_tree.__name__,
-            Manager.set_of_marks.__name__
-        }): "Given the tagged screenshot and info from accessibility tree as below:\n{a11y_tree}\n",
-        frozenset({
-            Manager.screenshot.__name__,
-            Manager.a11y_tree.__name__
-        }): "Given the screenshot and info from accessibility tree as below:\n{a11y_tree}\n"
+        frozenset({OBS.textual}): "Given the terminal output as below:\n{textual}\n",
+        frozenset({OBS.screenshot}): "Given the screenshot as below. ",
+        frozenset({OBS.a11y_tree}): "Given the info from accessibility tree as below:\n{a11y_tree}\n",
+        frozenset({OBS.a11y_tree, OBS.set_of_marks}): "Given the tagged screenshot and info from accessibility tree as below:\n{a11y_tree}\n",
+        frozenset({OBS.screenshot, OBS.a11y_tree}): "Given the screenshot and info from accessibility tree as below:\n{a11y_tree}\n"
     }
 
     def __init__(
@@ -61,6 +48,7 @@ class Agent:
         model: Model,
         overflow_style: Optional[str] = None,
         context_window: int = 3,
+        hide_text: bool = False,
         code_style: str = "antiquot"
     ) -> None:
         assert isinstance(model, Model)
@@ -82,8 +70,11 @@ class Agent:
             [Content],
             List[CodeLike]
         ] = getattr(CodeLike, f"extract_{code_style}")
-
         self.prompt_factory = PromptFactory(code_style)
+
+        assert isinstance(hide_text, bool)
+        self.hide_text = hide_text
+
         self.vlog = VirtualLog()
 
     def _init(
@@ -111,16 +102,17 @@ class Agent:
         if init_kwargs is not None:
             self._init(obs_keys=obs_keys, **init_kwargs)
 
-        textual = utils.getitem(obs, Manager.textual.__name__, None)
-        a11y_tree = utils.getitem(obs, Manager.a11y_tree.__name__, None)
+        contents = [
+            TextContent(self.USER_OPENING[obs_keys] + Agent.USER_FLATTERY, {
+                OBS.textual: utils.getitem(obs, OBS.textual, None),
+                OBS.a11y_tree: utils.getitem(obs, OBS.a11y_tree, None)
+            })
+        ]
 
-        opening = self.USER_OPENING[obs_keys].format(
-            textual=textual,
-            a11y_tree=a11y_tree
-        )
-        contents = [TextContent(opening + Agent.USER_FLATTERY)]
-
-        images = [item for _, item in obs.items() if isinstance(item, Image.Image)]
+        images = [
+            item for _, item in obs.items()
+            if isinstance(item, Image.Image)
+        ]
         contents += [ImageContent(image) for image in images]
         return contents
 
@@ -131,14 +123,14 @@ class Agent:
         ]
 
     def dump_payload(self, context_length: int) -> Dict:
-        return [
-            asdict(message)
-            for message in self.__dump(context_length * 2 + 1)
-        ]
+        payload = self.__dump(context_length * 2 + 1)
+        return [message._asdict(hide_text=(
+            not index + 1 == len(payload) and self.hide_text
+        )) for index, message in enumerate(payload)]
 
     def dump_history(self) -> Dict:
         return [
-            message._asdict(self.context_window)
+            message._asdict(show_context=True)
             for message in self.__dump(len(self.context))
         ]
 

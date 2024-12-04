@@ -8,7 +8,7 @@ from typing import Iterable, Callable, NoReturn
 
 sys.dont_write_bytecode = True
 from .agent import Agent, Primitive
-from .manager import Manager
+from .manager import OBS, Manager
 from .log import Log, VirtualLog
 from .utils import TypeSort
 from . import init
@@ -61,7 +61,7 @@ class Task:
         # for RawTask: use textual() for CLI and screenshot() for GUI
         # for VMTask: use pre-defined observation set
         if obs_types is None:
-            obs_types = {Manager.screenshot.__name__}
+            obs_types = {OBS.screenshot}
 
         assert isinstance(obs_types, Iterable)
         for obs_type in obs_types:
@@ -71,9 +71,9 @@ class Task:
             self.obs_types = set(obs_types)
         elif manager is not None:
             self.obs_types = {
-                Manager.screenshot.__name__
+                OBS.screenshot
                 if Manager.is_gui
-                else Manager.textual.__name__
+                else OBS.textual
             }
 
         assert isinstance(debug, bool)
@@ -221,10 +221,10 @@ class Task:
         }
 
         # special cases: SoM -> SoM + A11y Tree
-        if Manager.set_of_marks.__name__ in obs:
-            som, a11y_tree = obs[Manager.set_of_marks.__name__]
-            obs[Manager.a11y_tree.__name__] = a11y_tree
-            obs[Manager.set_of_marks.__name__] = som
+        if OBS.set_of_marks in obs:
+            som, a11y_tree = obs[OBS.set_of_marks]
+            obs[OBS.a11y_tree] = a11y_tree
+            obs[OBS.set_of_marks] = som
 
         init_kwargs = {
             "inst": self.instruction,

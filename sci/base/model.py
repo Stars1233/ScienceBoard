@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from io import BytesIO
 
 from typing import Optional, List, Dict
-from typing import Literal, Any
+from typing import Literal, Any, ClassVar
 
 from PIL import Image
 
@@ -15,6 +15,7 @@ from requests import Response
 
 sys.dont_write_bytecode = True
 from . import utils
+from .manager import OBS
 
 # modify asdict() for class Content
 # ref: https://stackoverflow.com/a/78289335
@@ -36,8 +37,13 @@ RoleType = Literal["system", "user", "assistant"]
 
 @dataclass
 class Content:
-    def _asdict(self, style: ModelType = "openai") -> Dict[str, Any]:
-        return getattr(self, f"_{style}")()
+    def _asdict(
+        self,
+        style: ModelType = "openai",
+        hide_text: bool = False,
+        **_
+    ) -> Dict[str, Any]:
+        return getattr(self, f"_{style}")(hide_text=hide_text)
 
     def __dict_factory_override__(self) -> Dict[str, Any]:
         return self._asdict()
@@ -45,14 +51,21 @@ class Content:
 
 @dataclass
 class TextContent(Content):
+    PLACEHOLDER: ClassVar[str] = "..."
     text: str
+    args: Dict[str, str] = {}
 
     # overwrite Content._asdict()
     # asdict(TextContent(...)) will also be redirected here
-    def _asdict(self, *args, **kwargs) -> Dict[str, Any]:
+    def _asdict(self, hide_text: bool = False, **_) -> Dict[str, Any]:
+        args = {
+            OBS.textual: TextContent.PLACEHOLDER,
+            OBS.a11y_tree: TextContent.PLACEHOLDER
+        } if hide_text else self.args
+
         return {
             "type": "text",
-            "text": self.text
+            "text": self.text.format(**args)
         }
 
 
@@ -65,7 +78,7 @@ class ImageContent(Content):
         self.image.save(buffered:=BytesIO(), format="PNG")
         return base64.b64encode(buffered.getvalue()).decode()
 
-    def _openai(self) -> Dict[str, Any]:
+    def _openai(self, **_) -> Dict[str, Any]:
         return {
             "type": "image_url",
             "image_url": {
@@ -74,7 +87,7 @@ class ImageContent(Content):
             }
         }
 
-    def _anthropic(self) -> Dict[str, Any]:
+    def _anthropic(self, **_) -> Dict[str, Any]:
         return {
             "type": "image",
             "source": {
@@ -93,11 +106,15 @@ class Message:
     content: List[Content]
     context_window: Optional[int] = None
 
-    def _asdict(self, show_context: bool = False) -> Dict[str, Any]:
+    def _asdict(
+        self,
+        show_context: bool = False,
+        hide_text: bool = False
+    ) -> Dict[str, Any]:
         result = {
             "role": self.role,
             "content": [
-                content._asdict(self.style)
+                content._asdict(style=self.style, hide_text=hide_text)
                 for content in self.content
             ]
         }

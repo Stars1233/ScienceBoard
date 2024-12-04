@@ -10,7 +10,8 @@ gpt_4o = Automata(
     model_name="gpt-4o-2024-08-06",
     api_key=os.environ["OPENAI_API_KEY"],
     proxy=os.environ["HTTPX_PROXY"],
-    overflow_style="openai_gpt"
+    overflow_style="openai_gpt",
+    hide_text=True
 )
 
 internvl = Automata(

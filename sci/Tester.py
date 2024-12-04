@@ -15,7 +15,7 @@ from . import TypeSort
 from . import Model, Agent
 from . import Manager, Task
 from . import Log, VirtualLog
-from . import Presets
+from . import OBS, Presets
 
 
 @dataclass
@@ -108,9 +108,9 @@ class Automata:
             assert isinstance(tag, str)
             agent.USER_OPENING = copy.deepcopy(Agent.USER_OPENING)
             for key in agent.USER_OPENING:
-                if key == frozenset({Manager.screenshot.__name__}):
+                if key == frozenset({OBS.screenshot}):
                     agent.USER_OPENING[key] += (tag + "\n")
-                elif Manager.screenshot.__name__ in key:
+                elif OBS.screenshot in key:
                     agent.USER_OPENING[key] = re.sub(
                         "screenshot",
                         f"screenshot {tag}",
@@ -199,7 +199,7 @@ class Tester:
         tasks_path: str,
         logs_path: str,
         automata: Automata,
-        obs_types: Set[str] = {Manager.screenshot.__name__},
+        obs_types: Set[str] = {OBS.screenshot},
         vm_path: Optional[str] = None,
         ignore: bool = True,
         debug: bool = False,

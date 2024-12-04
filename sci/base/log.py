@@ -82,6 +82,7 @@ class Log:
     RECORD_FILENAME  = "record.mp4"
     REQUEST_FILENAME = "request.json"
     SIMP_FILENAME    = "request.simp.json"
+    PROMPT_FILENAME  = "prompt.txt"
 
     @property
     def save_path(self) -> Optional[str]:
@@ -117,6 +118,11 @@ class Log:
     def simp_file_path(self) -> str:
         assert self.file_handler is not None
         return os.path.join(self.save_path, self.SIMP_FILENAME)
+
+    @property
+    def prompt_file_path(self) -> str:
+        assert self.file_handler is not None
+        return os.path.join(self.save_path, self.PROMPT_FILENAME)
 
     def __init__(
         self,
@@ -414,6 +420,9 @@ class Log:
         with open(self.simp_file_path, mode="w", encoding="utf-8") as writable:
             request_simp = self.__mod_url(request)
             json.dump(request_simp, writable, ensure_ascii=False, indent=2)
+
+        with open(self.prompt_file_path, mode="w", encoding="utf-8") as writable:
+            writable.write(request[0]["content"][0]["text"])
 
     # should not be set as protected method
     # as they will be used by Task objects

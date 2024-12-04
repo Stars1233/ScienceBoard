@@ -21,6 +21,7 @@ from .base import PromptFactory
 from .base import Agent
 
 from .base import Manager
+from .base import OBS
 from .base import Task
 
 from .vm import VManager

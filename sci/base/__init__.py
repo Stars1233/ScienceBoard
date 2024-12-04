@@ -18,6 +18,8 @@ from .agent import Overflow
 from .agent import Agent
 
 from .manager import Manager
+from .manager import OBS
+
 from .task import Task
 from .log import Log
 from .log import VirtualLog
