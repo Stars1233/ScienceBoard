@@ -230,8 +230,9 @@ class VManager(Manager):
         assert raw_a11y_tree is not None
         assert raw_screenshot is not None
 
-        _, _, som, a11y_tree = utils.tag_screenshot(raw_screenshot, raw_a11y_tree)
+        tags_info, _, som, a11y_tree = utils.tag_screenshot(raw_screenshot, raw_a11y_tree)
         return (
+            tags_info,
             Image.open(BytesIO(som)),
             utils.trim(a11y_tree, self.a11y_tree_limit)
         )

@@ -64,12 +64,12 @@ class Agent:
         assert context_window >= 0
         self.context_window = context_window
 
-        assert hasattr(CodeLike, f"extract_{code_style}")
+        assert hasattr(CodeLike, handler_name:=f"extract_{code_style}")
         self.code_style = code_style
         self.code_handler: Callable[
             [Content],
             List[CodeLike]
-        ] = getattr(CodeLike, f"extract_{code_style}")
+        ] = getattr(CodeLike, handler_name)
         self.prompt_factory = PromptFactory(code_style)
 
         assert isinstance(hide_text, bool)

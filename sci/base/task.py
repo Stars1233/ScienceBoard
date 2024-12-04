@@ -221,8 +221,9 @@ class Task:
         }
 
         # special cases: SoM -> SoM + A11y Tree
+        tags = None
         if OBS.set_of_marks in obs:
-            som, a11y_tree = obs[OBS.set_of_marks]
+            tags, som, a11y_tree = obs[OBS.set_of_marks]
             obs[OBS.a11y_tree] = a11y_tree
             obs[OBS.set_of_marks] = som
 
@@ -236,8 +237,11 @@ class Task:
         assert len(response_message.content) == 1
 
         response_content = response_message.content[0]
-        response_codes = self.agent.code_handler(response_content)
-        self.vlog.info(f"Response {step_index + 1}/{self.steps}: {response_content.text}")
+        response_codes = self.agent.code_handler(response_content, tags)
+        self.vlog.info(
+            f"Response {step_index + 1}/{self.steps}: " \
+                + response_content.text
+        )
 
         for code_like in response_codes:
             code_like(self.manager)

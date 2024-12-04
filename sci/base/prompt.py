@@ -15,7 +15,7 @@ from typing import Callable, Self, NoReturn
 
 sys.dont_write_bytecode = True
 from .. import Prompts
-from .manager import Manager
+from .manager import OBS, Manager
 from .model import Content
 from .utils import TypeSort
 
@@ -70,6 +70,29 @@ class CodeLike:
     code: str
 
     @staticmethod
+    def parse_tags(tags):
+        tag_prefix = ""
+        for index, tag in enumerate(tags):
+            cord_x, cord_y, width, height = tag
+            tag_prefix += "tag_" + str(index + 1) + "=" + "({}, {})".format(
+                int(cord_x + width // 2),
+                int(cord_y + height // 2)
+            )
+            tag_prefix += "\n"
+        return tag_prefix.strip()
+
+    @staticmethod
+    def _tag_handler(method: Callable[[Content], List[Self]]) -> Callable:
+        def _tag_wrapper(content: Content, tags: List[List[int]]) -> List[Self]:
+            CodeLike.parse_tags(tags)
+            return [
+                CodeLike.parse_tags(tags) + "\n\n" + code
+                for code in method(content)
+            ]
+        return _tag_wrapper
+
+    @_tag_handler
+    @staticmethod
     def extract_antiquot(content: Content) -> List[Self]:
         occurence = [
             match.group(1).strip()
@@ -80,6 +103,7 @@ class CodeLike:
         ]
         return [CodeLike(code=code) for code in occurence]
 
+    @_tag_handler
     @staticmethod
     def wrap_antiquot(doc_str: str) -> str:
         return doc_str.replace("«", "```").replace("»", "```")
@@ -120,6 +144,13 @@ class PromptFactory:
     RETURN_REGULATION = {
         "antiquot": "You ONLY need to return the code inside a code block, like this:\n```\n# your code here\n```"
     }
+
+    SOM_SUPPLEMENT = [
+        "You can replace x, y in the code with the tag of elements you want to operate with, such as:",
+        "```python\npyautogui.moveTo(tag_3)\npyautogui.click(tag_2)\npyautogui.dragTo(tag_1, button='left')\n```",
+        "When you think you can directly output precise x and y coordinates or there is no tag on which you want to interact, you can also use them directly.",
+        "But you should be careful to ensure that the coordinates are correct."
+    ]
     SPECIAL_OVERVIEW = "Specially, it is also allowed to return the following special code:"
 
     # third section: _warning
@@ -176,9 +207,11 @@ class PromptFactory:
             for index, item in enumerate(docs)
         ]])
 
-    def _command(self, type_sort: TypeSort) -> str:
+    def _command(self, obs: FrozenSet[str], type_sort: TypeSort) -> str:
+        set_of_marks = self.SOM_SUPPLEMENT if OBS.set_of_marks in obs else []
         return "\n\n".join([
             self._general_command(type_sort),
+            *set_of_marks,
             self._special_command()
         ])
 
@@ -208,7 +241,7 @@ class PromptFactory:
     ) -> Callable[[str], str]:
         return lambda inst: "\n\n".join([item for item in [
             self._intro(obs, type_sort),
-            self._command(type_sort),
+            self._command(obs, type_sort),
             self._warning(type_sort),
             self._ending()(inst)
         ] if len(item) > 0])
