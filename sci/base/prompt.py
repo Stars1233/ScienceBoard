@@ -123,7 +123,7 @@ class PromptFactory:
     SPECIAL_OVERVIEW = "Specially, it is also allowed to return the following special code:"
 
     # third section: _warning
-    VM_GENERAL = "My computer's password is 'password', feel free to use it when you need sudo rights;"
+    VM_GENERAL = f"My computer's password is '{Prompts.VM_PASSWORD}', feel free to use it when you need sudo rights;"
 
     # fourth section: _ending
     ENDING_ULTIMATUM = "First give the current observation and previous things we did a short reflection, then RETURN ME THE CODE OR SPECIAL CODE I ASKED FOR. NEVER EVER RETURN ME ANYTHING ELSE."

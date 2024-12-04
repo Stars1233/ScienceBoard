@@ -64,7 +64,7 @@ class VManager(Manager):
         if self.__is_zip(vm_path):
             cwd = os.path.join(os.path.abspath("."), VManager.VM_PATH)
             with zipfile.ZipFile(vm_path, "r") as zip_ref:
-                GLOBAL_VLOG.info("Start to extract the .zip file...")
+                GLOBAL_VLOG.info("Starting to extract the .zip file...")
                 zip_ref.extractall(cwd)
                 GLOBAL_VLOG.info("Files were extracted successfully.")
                 vm_path = os.path.join(cwd, VManager.VMX_NAME)

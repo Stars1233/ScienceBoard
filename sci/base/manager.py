@@ -105,7 +105,7 @@ class Manager:
 
 
 class OBS:
-    textual: Manager.textual.__name__
-    screenshot: Manager.screenshot.__name__
-    a11y_tree: Manager.a11y_tree.__name__
-    set_of_marks: Manager.set_of_marks.__name__
+    textual = Manager.textual.__name__
+    screenshot = Manager.screenshot.__name__
+    a11y_tree = Manager.a11y_tree.__name__
+    set_of_marks = Manager.set_of_marks.__name__

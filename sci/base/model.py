@@ -2,7 +2,7 @@ import sys
 import base64
 import dataclasses
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from io import BytesIO
 
 from typing import Optional, List, Dict
@@ -53,7 +53,7 @@ class Content:
 class TextContent(Content):
     PLACEHOLDER: ClassVar[str] = "..."
     text: str
-    args: Dict[str, str] = {}
+    args: Dict[str, str] = field(default_factory=lambda: {})
 
     # overwrite Content._asdict()
     # asdict(TextContent(...)) will also be redirected here
