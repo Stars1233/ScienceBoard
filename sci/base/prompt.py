@@ -96,7 +96,7 @@ class CodeLike:
     def _tag_handler(method: Callable[[Content], List[Self]]) -> Callable:
         def _tag_wrapper(content: Content, tags: List[List[int]]) -> List[Self]:
             for code in (codes := method(content)):
-                if code.code not in Primitive.PRIMITIVES:
+                if tags is not None and code.code not in Primitive.PRIMITIVES:
                     code.code = CodeLike.parse_tags(tags) + "\n\n" + code.code
             return codes
         return _tag_wrapper
