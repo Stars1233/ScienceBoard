@@ -41,6 +41,9 @@ class TypeSort:
     def __call__(self, postfix: str) -> Any:
         return self.sort.name + postfix
 
+RawType = lambda type: TypeSort(type, TypeSort.Sort.Raw)
+VMType = lambda type: TypeSort(type, TypeSort.Sort.Raw)
+
 
 def error_factory(default_value):
     def error_handler(method: Callable) -> Callable:

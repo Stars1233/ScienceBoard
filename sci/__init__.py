@@ -3,6 +3,8 @@ import sys
 sys.dont_write_bytecode
 from .base import utils
 from .base import TypeSort
+from .base import RawType
+from .base import VMType
 
 from .base import Log
 from .base import VirtualLog

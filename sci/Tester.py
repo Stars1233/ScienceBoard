@@ -7,7 +7,7 @@ import traceback
 
 from dataclasses import dataclass
 
-from typing import Union, Optional, List, Set
+from typing import Union, Optional, List, Set, FrozenSet
 from typing import Iterable, Callable, Generator
 
 sys.dont_write_bytecode
@@ -117,6 +117,9 @@ class Automata:
                         agent.USER_OPENING[key]
                     )
         return _image_token
+
+    def prompt(self, obs: FrozenSet[str], type_sort: TypeSort) -> str:
+        return self().prompt_factory(obs, type_sort)("...")
 
 
 class TaskInfo:
