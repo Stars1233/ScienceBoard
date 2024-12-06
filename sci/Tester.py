@@ -92,8 +92,8 @@ class Automata:
         }
 
     def __call__(self) -> Agent:
-        model = Model(**self.model_args)
         if not hasattr(self, "agent"):
+            model = Model(**self.model_args)
             self.agent = Agent(model=model, **self.agent_args)
             for handler in self.register:
                 handler(self.agent)
