@@ -1,10 +1,11 @@
-# Staff Manual of VM Modification
+# Staff Manual of VM Image
 
 ## Preprocess
 
 1. Download the image of Ubuntu 22.04 LTS and install it on VMWare Workstation.
     - assuming the VM file to be under `/tmp/VM`;
     - assuming username and password to be `user` and `password`;
+    - assuming `cwd` to be root directory of this repository;
 
 2. (GUEST) Disable options of 'Blank Screen':
 
@@ -51,14 +52,11 @@
     wget https://files.rcsb.org/download/102l.cif -P /home/user/Downloads/ChimeraX/PDB
     wget https://files.rcsb.org/download/251d.cif -P /home/user/Downloads/ChimeraX/PDB
     wget https://files.rcsb.org/download/2olx.cif -P /home/user/Downloads/ChimeraX/PDB
-    ```
-
-    and the following takes tons of time:
-
-    ```shell
     flatpak run edu.ucsf.rbvi.ChimeraX --nogui --exit --cmd "alphafold match A8Z1J3"
     flatpak run edu.ucsf.rbvi.ChimeraX --nogui --exit --cmd "clear"
     ```
+
+    or use `pack.deb` mentioned after.
 
 ### Kalgebra
 1. (GUEST) Download `aqt` and `QT 6.5.0`:
@@ -69,6 +67,23 @@
     ```
 
 2. (HOST) Compile KAlgebra
+
+### Alternative for OPTIONAL
+1. (HOST) Pack the cache and move the file into guest OS:
+
+    ```shell
+    chmod 755 -R vm_config/pack
+    cd vm_config/; dpkg-deb --build pack; cd -
+    vmrun -T ws -gu user -gp password CopyFileFromHostToGuest /tmp/VM/Ubuntu.vmx vm_config/pack.deb /home/user/Downloads/pack.deb
+    ```
+
+2. (GUEST) Unpack the cache and change permissions of directories:
+
+    ```shell
+    sudo dpkg -i /home/user/Downloads/pack.deb
+    sudo chmod 777 -R /home/user/Downloads/ChimeraX/
+    rm /home/user/Downloads/pack.deb
+    ```
 
 ## Postprocess
 1. (HOST) Move server files into guest OS:
