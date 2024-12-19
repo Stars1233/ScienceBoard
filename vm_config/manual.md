@@ -22,22 +22,30 @@
     sudo apt install open-vm-tools-desktop
     ```
 
+4. (GUEST) Install `pip` and symlink for `python`:
+
+    ```shell
+    sudo apt install python-is-python3
+    sudo apt install python3-pip
+    ```
+
 ## Applications
 ### ChimeraX
 
-1. (GUEST) Download ChimeraX:
+1. (GUEST) Download `ChimeraX-1.8.flatpak` at [Web Browser](https://www.cgl.ucsf.edu/chimerax/cgi-bin/secure/chimerax-get.py?file=1.8%2Fflatpak%2FChimeraX-1.8.flatpak) in Guest OS, then execute
 
     ```shell
-    wget https://www.cgl.ucsf.edu/chimerax/cgi-bin/secure/chimerax-get.py?ident=OHeQer2RS7p7%2FOByqnlA%2BPxiuVBVQt361Rxx3wrmnvMqqejLdiY%3D&file=1.8%2Fflatpak%2FChimeraX-1.8.flatpak&choice=Notified -P ~/Downloads
-    sudo flatpak install ~/Downloads/ChimeraX-1.8.flatpak
+    sudo apt install flatpak
+    flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+    sudo flatpak install /home/user/Downloads/ChimeraX-1.8.flatpak
     ```
 
 2. (GUEST) Install toolshed of ChimeraX-states:
 
     ```shell
-    wget https://github.com/ShiinaHiiragi/chimerax-states/archive/refs/tags/0.5.zip -P ~/Downloads
-    unzip ~/Downloads/0.5.zip -d ~/Downloads
-    flatpak run edu.ucsf.rbvi.ChimeraX --nogui --exit --cmd "devel install ~/Downloads/chimerax-states-0.5 exit true"
+    wget https://github.com/ShiinaHiiragi/chimerax-states/archive/refs/tags/0.5.zip -P /home/user/Downloads
+    unzip /home/user/Downloads/0.5.zip -d /home/user/Downloads
+    flatpak run edu.ucsf.rbvi.ChimeraX --nogui --exit --cmd "devel install /home/user/Downloads/chimerax-states-0.5 exit true"
     ```
 
 3. (GUEST | OPTIONAL) Load some of .cif files in advance to avoid bad connection.
@@ -99,7 +107,12 @@
 
     ```shell
     sudo mv /home/user/server/osworld.service /etc/systemd/system
+    pip install python-xlib lxml pyautogui Flask numpy
+    sudo apt install python3-tk python3-dev
+    gsettings set org.gnome.desktop.interface toolkit-accessibility true
+
     sudo systemctl daemon-reload
+    sudo systemctl enable osworld.service
     sudo systemctl restart osworld.service
     ```
 
