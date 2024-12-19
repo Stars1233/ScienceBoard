@@ -15,10 +15,12 @@ class RawManager(Manager):
         raise NotImplementedError
 
     def __enter__(self) -> Self:
+        ...
         return super().__enter__()
 
     def __exit__(self, exc_type, exc_value, traceback) -> None:
+        ...
         return super().__exit__(exc_type, exc_value, traceback)
 
     def screenshot(self) -> Image.Image:
-        return ImageGrab.grab()
+        raise NotImplementedError

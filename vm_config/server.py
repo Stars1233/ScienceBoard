@@ -261,13 +261,6 @@ MAX_WIDTH = 1024
 MAX_CALLS = 5000
 
 
-def _get_libreoffice_version() -> Tuple[int, ...]:
-    """Function to get the LibreOffice version as a tuple of integers."""
-    result = subprocess.run("libreoffice --version", shell=True, text=True, stdout=subprocess.PIPE)
-    version_str = result.stdout.split()[1]  # Assuming version is the second word in the command output
-    return tuple(map(int, version_str.split(".")))
-
-
 def _create_atspi_node(node: Accessible, depth: int = 0, flag: Optional[str] = None) -> _Element:
     node_name = node.name
     attribute_dict: Dict[str, Any] = {"name": node_name}
@@ -388,8 +381,7 @@ def _create_atspi_node(node: Accessible, depth: int = 0, flag: Optional[str] = N
         # Maximum row: 104 8576
         # Maximun sheet: 1 0000
 
-        global libreoffice_version_tuple
-        MAXIMUN_COLUMN = 1024 if libreoffice_version_tuple < (7, 4) else 16384
+        MAXIMUN_COLUMN = 1024
         MAX_ROW = 104_8576
 
         index_base = 0
@@ -673,9 +665,6 @@ def get_accessibility_tree():
 
     # AT-SPI works for KDE as well
     if os_name == "Linux":
-        global libreoffice_version_tuple
-        libreoffice_version_tuple = _get_libreoffice_version()
-
         desktop: Accessible = pyatspi.Registry.getDesktop(0)
         xml_node = lxml.etree.Element("desktop-frame", nsmap=_accessibility_ns_map_ubuntu)
         with concurrent.futures.ThreadPoolExecutor() as executor:
