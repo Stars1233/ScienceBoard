@@ -2,7 +2,9 @@
 
 ## Preprocess
 
-1. Download the image of Ubuntu 22.04 LTS and install it on VMWare Workstation. Assuming the VM file to be under `/tmp/VM`.
+1. Download the image of Ubuntu 22.04 LTS and install it on VMWare Workstation.
+    - assuming the VM file to be under `/tmp/VM`;
+    - assuming username and password to be `user` and `password`;
 
 2. (GUEST) Disable options of 'Blank Screen':
 
@@ -69,26 +71,27 @@
 2. (HOST) Compile KAlgebra
 
 ## Postprocess
-
 1. (HOST) Move server files into guest OS:
 
     ```shell
-    vmrun -T ws CopyFileFromHostToGuest /tmp/VM/Ubuntu.vmx vm_config/config.ini /etc/systemd/system/osworld.service
-    vmrun -T ws CopyFileFromHostToGuest /tmp/VM/Ubuntu.vmx vm_config/server.py /home/user/server/main.py
-    vmrun -T ws CopyFileFromHostToGuest /tmp/VM/Ubuntu.vmx vm_config/pyxcursor.py /home/user/server/pyxcursor.py
+    vmrun -T ws -gu user -gp password runProgramInGuest /tmp/VM/Ubuntu.vmx /usr/bin/bash -c "mkdir /home/user/server"
+    vmrun -T ws -gu user -gp password CopyFileFromHostToGuest /tmp/VM/Ubuntu.vmx vm_config/config.ini /home/user/server/osworld.service
+    vmrun -T ws -gu user -gp password CopyFileFromHostToGuest /tmp/VM/Ubuntu.vmx vm_config/server.py /home/user/server/main.py
+    vmrun -T ws -gu user -gp password CopyFileFromHostToGuest /tmp/VM/Ubuntu.vmx vm_config/pyxcursor.py /home/user/server/pyxcursor.py
     ```
 
     (GUEST) start daemon process:
 
     ```shell
+    sudo mv /home/user/server/osworld.service /etc/systemd/system
     sudo systemctl daemon-reload
     sudo systemctl restart osworld.service
     ```
 
-2. (HOST) Attach a `__VERSION__` file under :
+2. (HOST) Attach a `__VERSION__` file under VM directory:
 
     ```shell
-    echo "0.1" >> __VERSION__
+    echo "0.1" >> /tmp/VM/__VERSION__
     ```
 
 3. (HOST) Compress vmware files:
