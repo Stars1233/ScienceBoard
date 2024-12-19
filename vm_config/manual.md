@@ -71,7 +71,9 @@
 
     ```shell
     pip install aqtinstall
-    sudo aqt install-qt linux desktop 6.5.0 gcc_64 -m all -O /home/user
+    echo "export PATH=\$PATH:/home/user/.local/bin" >> /home/user/.bashrc
+    source /home/user/.bashrc
+    aqt install-qt linux desktop 6.5.0 gcc_64 -m all -O /home/user
     ```
 
 2. (HOST) Compile KAlgebra
