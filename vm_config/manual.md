@@ -2,22 +2,16 @@
 
 ## Preprocess
 
-1. Download Ubuntu-x86.zip, extract and load it via VMWare:
+1. Download Image of Ubuntu 22.04 LTS and install it on VMWare Workstation.
 
-    ```shell
-    wget https://huggingface.co/datasets/xlangai/ubuntu_osworld/resolve/main/Ubuntu-x86.zip -P ~/Downloads
-    unzip ~/Downloads/Ubuntu-x86.zip -d ~/Downloads/Ubuntu-x86
-    vmrun -T ws start ~/Downloads/Ubuntu-x86/Ubuntu.vmx
-    ```
-
-2. (VMWare) Disable 'Blank Screen':
+2. Disable 'Blank Screen':
 
     ```shell
     gsettings set org.gnome.desktop.session idle-delay 0
     gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-ac-type 'nothing'
     ```
 
-3. (VMWare) Change sources of `apt` if necessary:
+3. Change sources of `apt` if necessary:
 
     ```shell
     sudo sed -i "s/hk\.//g" /etc/apt/sources.list
@@ -64,6 +58,14 @@
     ```
 
 ### Kalgebra
+1. Download `aqt` and `QT 6.5.0`
+
+    ```shell
+    pip install aqtinstall
+    sudo aqt install-qt linux desktop 6.5.0 gcc_64 -m all -O /home/user
+    ```
+
+2. Compile KAlgebra
 
 ## Postprocess
 
