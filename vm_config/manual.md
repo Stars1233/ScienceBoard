@@ -11,11 +11,12 @@
     gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-ac-type 'nothing'
     ```
 
-3. Change sources of `apt` if necessary:
+3. Change sources of `apt` if necessary and install `vm-tools`:
 
     ```shell
-    sudo sed -i "s/hk\.//g" /etc/apt/sources.list
+    sudo sed -i "s/cn\.//g" /etc/apt/sources.list
     sudo apt update
+    sudo apt install open-vm-tools-desktop
     ```
 
 ## Applications

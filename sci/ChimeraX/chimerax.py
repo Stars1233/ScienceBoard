@@ -8,7 +8,8 @@ import requests
 import subprocess
 import urllib.request
 
-from typing import List, Dict, Tuple, Optional, Callable
+from typing import List, Dict, Tuple, Optional
+from typing import Callable, Self
 
 from PIL import Image
 from PIL import ImageGrab
@@ -134,7 +135,7 @@ class RawManager(Manager):
         if current_version != desired_version:
             self.__install_bundle(desired_version, current_version is not None)
 
-    def __enter__(self) -> "RawManager":
+    def __enter__(self) -> Self:
         nogui = [] if self.gui else ["--nogui"]
         startup_commands = [self.path] \
             if self.path is not None \
