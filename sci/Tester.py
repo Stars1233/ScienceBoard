@@ -9,8 +9,8 @@ import traceback
 
 from dataclasses import dataclass
 
-from typing import Union, Optional, List, Set, FrozenSet
-from typing import Iterable, Callable, Generator
+from typing import Union, Optional, List, Set, Dict, Any
+from typing import Iterable, Callable, Generator, FrozenSet
 
 sys.dont_write_bytecode
 from . import TypeSort
@@ -340,7 +340,7 @@ class Tester:
     # there is no need to pass counter
     # as decorator has done all for it
     @_log_handler
-    def __call__(self, counter: Counter):
+    def __call__(self, counter: Counter) -> None:
         generator = self.task_group(self.logs_path, self.ignore)
         for task_info in generator if self.optimize else self.task_info:
             with self.log(
@@ -355,3 +355,18 @@ class Tester:
                     counter._pass() if task_info() else counter._fail()
                 except Exception:
                     counter._skip()
+
+    # alternative for multiple Tester(...)()
+    @staticmethod
+    def plan(params: List[Dict[str, Any]]) -> None:
+        testers = []
+        assert isinstance(params, list)
+        for param in params:
+            assert isinstance(param, dict)
+            testers.append(Tester(**param))
+
+        for tester in testers:
+            try:
+                tester()
+            except Exception:
+                traceback.print_exc()

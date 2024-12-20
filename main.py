@@ -39,34 +39,36 @@ qwen_vl = Automata(
 
 
 if __name__ == "__main__":
+    # #1
+    Tester.plan([
+        {
+            "tasks_path": "./tasks/ChimeraX_VM",
+            "logs_path": "./logs/gpt_4o-chimerax-vm-screenshot",
+            "vm_path": os.environ["VM_PATH"],
+            "automata": gpt_4o,
+            "obs_types": {OBS.screenshot}
+        },
+        {
+            "tasks_path": "./tasks/ChimeraX_VM",
+            "logs_path": "./logs/gpt_4o-chimerax-vm-a11y_tree",
+            "vm_path": os.environ["VM_PATH"],
+            "automata": gpt_4o,
+            "obs_types": {OBS.a11y_tree}
+        },
+        {
+            "tasks_path": "./tasks/ChimeraX_VM",
+            "logs_path": "./logs/gpt_4o-chimerax-vm-screenshot+a11y_tree",
+            "vm_path": os.environ["VM_PATH"],
+            "automata": gpt_4o,
+            "obs_types": {OBS.screenshot, OBS.a11y_tree}
+        }
+    ])
+
+    # #2
     Tester(
         tasks_path="./tasks/ChimeraX_VM",
         logs_path="./logs/gpt_4o-chimerax-vm-set_of_marks",
         vm_path=os.environ["VM_PATH"],
         automata=gpt_4o,
         obs_types={OBS.set_of_marks}
-    )()
-
-    Tester(
-        tasks_path="./tasks/ChimeraX_VM",
-        logs_path="./logs/gpt_4o-chimerax-vm-screenshot+a11y_tree",
-        vm_path=os.environ["VM_PATH"],
-        automata=gpt_4o,
-        obs_types={OBS.screenshot, OBS.a11y_tree}
-    )()
-
-    Tester(
-        tasks_path="./tasks/ChimeraX_VM",
-        logs_path="./logs/gpt_4o-chimerax-vm-a11y_tree",
-        vm_path=os.environ["VM_PATH"],
-        automata=gpt_4o,
-        obs_types={OBS.a11y_tree}
-    )()
-
-    Tester(
-        tasks_path="./tasks/ChimeraX_VM",
-        logs_path="./logs/gpt_4o-chimerax-vm-screenshot",
-        vm_path=os.environ["VM_PATH"],
-        automata=gpt_4o,
-        obs_types={OBS.screenshot}
     )()
