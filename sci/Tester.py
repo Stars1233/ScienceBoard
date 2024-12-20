@@ -219,7 +219,7 @@ class Tester:
             task_filename = os.path.split(tasks_path)[1]
             new_path = os.path.join(self.__temp_dir.name, task_filename)
 
-            shutil.move(tasks_path, new_path)
+            shutil.copyfile(tasks_path, new_path)
             self.tasks_path = self.__temp_dir.name
         else:
             self.__temp_dir = None
