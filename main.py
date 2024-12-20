@@ -39,7 +39,7 @@ qwen_vl = Automata(
 
 
 if __name__ == "__main__":
-    # #1
+    # execute tasks one by one
     Tester.plan([
         {
             "tasks_path": "./tasks/ChimeraX_VM",
@@ -64,7 +64,7 @@ if __name__ == "__main__":
         }
     ])
 
-    # #2
+    # alternative for Tester.plan
     Tester(
         tasks_path="./tasks/ChimeraX_VM",
         logs_path="./logs/gpt_4o-chimerax-vm-set_of_marks",
