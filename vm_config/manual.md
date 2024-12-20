@@ -48,7 +48,7 @@
     flatpak run edu.ucsf.rbvi.ChimeraX --nogui --exit --cmd "devel install /home/user/Downloads/chimerax-states-0.5 exit true"
     ```
 
-3. (GUEST | OPTIONAL) Load some of .cif files in advance to avoid bad connection.
+3. (GUEST | OPTIONAL) Load some of .cif files in advance to avoid bad connection:
 
     ```shell
     wget https://files.rcsb.org/download/1dns.cif -P /home/user/Downloads/ChimeraX/PDB
@@ -64,7 +64,7 @@
     flatpak run edu.ucsf.rbvi.ChimeraX --nogui --exit --cmd "clear"
     ```
 
-    or use `pack.deb` mentioned after.
+    **or use `pack.deb` mentioned after**.
 
 ### Kalgebra
 1. (GUEST) Download `aqt` and `QT 6.5.0`:
@@ -76,7 +76,13 @@
     aqt install-qt linux desktop 6.5.0 gcc_64 -m all -O /home/user
     ```
 
-2. (HOST) Compile KAlgebra
+2. (GUEST) Download `kalgebra-kai.deb` and install it:
+
+    ```shell
+    wget https://github.com/ShiinaHiiragi/kalgebra/releases/download/0.1/kalgebra-kai.deb -P /home/user/Downloads
+    sudo dpkg -i /home/user/Downloads/kalgebra-kai.deb
+    LD_LIBRARY_PATH=/home/user/6.5.0/gcc_64/lib /app/bin/kalgebra
+    ```
 
 ### Alternative for OPTIONAL
 1. (HOST) Pack the cache and move the file into guest OS:

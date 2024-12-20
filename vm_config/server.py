@@ -275,7 +275,7 @@ def _create_atspi_node(node: Accessible, depth: int = 0, flag: Optional[str] = N
         attribute_dict["{{{:}}}{:}".format(_accessibility_ns_map_ubuntu["st"], state_name)] = "true"
 
     #  Attributes
-    attributes: Dict[str, str] = node.get_attributes()
+    attributes: Dict[str, str] = node.get_attributes() or {}
     for attribute_name, attribute_value in attributes.items():
         if len(attribute_name) == 0:
             continue
