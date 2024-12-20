@@ -2,7 +2,9 @@ import sys
 import os
 import re
 import copy
+import shutil
 import inspect
+import tempfile
 import traceback
 
 from dataclasses import dataclass
@@ -211,8 +213,17 @@ class Tester:
         assert isinstance(tasks_path, str)
         tasks_path = os.path.expanduser(tasks_path)
         assert os.path.exists(tasks_path)
-        assert os.path.isdir(tasks_path)
-        self.tasks_path = tasks_path
+
+        if os.path.isfile(tasks_path):
+            self.__temp_dir = tempfile.TemporaryDirectory()
+            task_filename = os.path.split(tasks_path)[1]
+            new_path = os.path.join(self.__temp_dir.name, task_filename)
+
+            shutil.move(tasks_path, new_path)
+            self.tasks_path = self.__temp_dir.name
+        else:
+            self.__temp_dir = None
+            self.tasks_path = tasks_path
 
         # process log first
         assert isinstance(logs_path, str)
@@ -255,6 +266,10 @@ class Tester:
         self.task_info: List[TaskInfo] = []
         self.__traverse()
         self.task_group = TaskGroup(sorted(self.task_info))
+
+    def __del__(self) -> None:
+        if self.__temp_dir is not None:
+            self.__temp_dir.cleanup()
 
     def __manager(self, type_sort: TypeSort):
         if type_sort in self.managers:
