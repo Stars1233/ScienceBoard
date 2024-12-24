@@ -2,7 +2,6 @@ import sys
 from typing import Self
 
 from PIL import Image
-from PIL import ImageGrab
 
 sys.dont_write_bytecode
 from ..base import Manager
