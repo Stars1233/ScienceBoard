@@ -13,9 +13,8 @@ class RawTask(Task):
         *args,
         **kwargs
     ) -> None:
-        assert isinstance(manager, RawManager)
-
         # to enable Pylance type checker
+        assert isinstance(manager, RawManager)
         self.manager = manager
 
         super().__init__(config_path, manager, *args, **kwargs)

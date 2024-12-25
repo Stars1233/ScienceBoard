@@ -27,3 +27,4 @@ from .manager import OBS
 from .manager import Manager
 
 from .task import Task
+from .task import TaskMixin

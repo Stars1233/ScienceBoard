@@ -6,87 +6,12 @@ from typing import List, Dict, Union, Callable, Any
 
 sys.dont_write_bytecode = True
 from ..base import utils
-from ..base import Task
+from ..base import Task, TaskMixin
 from ..vm import VTask
 from .chimerax import RawManager, VMManager
 
 
-class RawTask(Task):
-    def __init__(
-        self,
-        config_path: str,
-        manager: RawManager,
-        *args,
-        **kwargs
-    ) -> None:
-        assert isinstance(manager, RawManager)
-
-        # to enable Pylance type checker
-        self.manager = manager
-
-        super().__init__(config_path, manager, *args, **kwargs)
-        self.__check_config()
-
-    def __check_config(self) -> None:
-        for eval_item in self.evaluate:
-            if eval_item["type"] == Task.EARLY_STOP:
-                continue
-
-            assert eval_item["type"] in ("info", "states")
-            assert "key" in eval_item
-            if eval_item["type"] == "info":
-                assert "value" in eval_item
-                assert isinstance(eval_item["value"], list)
-                for sub_item in eval_item["value"]:
-                    assert isinstance(sub_item, str)
-            elif eval_item["type"] == "states":
-                assert "value" in eval_item or "pattern" in eval_item
-
-    def _init(self) -> bool:
-        _, code = self.manager._call("close")
-        return code and self.manager.clear_history()
-
-    def _clear(self) -> bool:
-        _, code = self.manager._call(f"clear")
-        return code
-
-    def _open(self, name: str) -> bool:
-        _, code = self.manager._call(f"open {name}")
-        return code
-
-    def _turn(self, axis: str, angle: int) -> bool:
-        _, code = self.manager._call(f"turn {axis} {angle}")
-        return code
-
-    def _alphafold_match(self, name: str) -> bool:
-        _, code = self.manager._call(f"alphafold match {name}")
-        return code
-
-    def _color(self, style: str) -> bool:
-        command = f"color {style}" if style != "rainbow" else style
-        _, code = self.manager._call(command)
-        return code
-
-    @Task._stop_handler
-    def eval(self) -> bool:
-        return Public.eval(self)
-
-
-class VMTask(VTask):
-    def __init__(
-        self,
-        config_path: str,
-        manager: VMManager,
-        *args,
-        **kwargs
-    ) -> None:
-        assert isinstance(manager, VMManager)
-
-        # to enable Pylance type checker
-        self.manager = manager
-
-        super().__init__(config_path, manager, *args, **kwargs)
-
+class Mixin(TaskMixin):
     def _destroy(self) -> bool:
         _, code = self.manager._call(f"destroy")
         return code
@@ -111,6 +36,62 @@ class VMTask(VTask):
     def _clear_log(self) -> bool:
         _, code = self.manager._call(f"log clear")
         return code
+
+
+class RawTask(Task):
+    def __init__(
+        self,
+        config_path: str,
+        manager: RawManager,
+        *args,
+        **kwargs
+    ) -> None:
+        # to enable Pylance type checker
+        assert isinstance(manager, RawManager)
+        self.manager = manager
+
+        super().__init__(config_path, manager, *args, **kwargs)
+        self.__check_config()
+        Mixin.install(self)
+
+    def __check_config(self) -> None:
+        for eval_item in self.evaluate:
+            if eval_item["type"] == Task.EARLY_STOP:
+                continue
+
+            assert eval_item["type"] in ("info", "states")
+            assert "key" in eval_item
+            if eval_item["type"] == "info":
+                assert "value" in eval_item
+                assert isinstance(eval_item["value"], list)
+                for sub_item in eval_item["value"]:
+                    assert isinstance(sub_item, str)
+            elif eval_item["type"] == "states":
+                assert "value" in eval_item or "pattern" in eval_item
+
+    def _init(self) -> bool:
+        _, code = self.manager._call("close")
+        return code and self.manager.clear_history()
+
+    @Task._stop_handler
+    def eval(self) -> bool:
+        return Public.eval(self)
+
+
+class VMTask(VTask):
+    def __init__(
+        self,
+        config_path: str,
+        manager: VMManager,
+        *args,
+        **kwargs
+    ) -> None:
+        # to enable Pylance type checker
+        assert isinstance(manager, VMManager)
+        self.manager = manager
+
+        super().__init__(config_path, manager, *args, **kwargs)
+        Mixin.install(self)
 
     @Task._stop_handler
     def eval(self) -> bool:

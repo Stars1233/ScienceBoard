@@ -25,7 +25,9 @@ from .base import Agent
 
 from .base import OBS
 from .base import Manager
+
 from .base import Task
+from .base import TaskMixin
 
 from .vm import VManager
 from .vm import VTask
