@@ -1,10 +1,11 @@
 import sys
+import os
 
 from typing import Optional, Dict, Any, TypeAlias
 
 sys.dont_write_bytecode = True
 from . import TypeSort
-
+from .base.utils import getitem
 
 # preserved for potential comman kwargs
 # all args should have a default value
@@ -25,11 +26,18 @@ def spawn_managers(vm_path: Optional[str] = None) -> Config:
             "sort": "daily",
             "port": 8000,
             "gui": True
+        },
+        TypeSort.Raw("KAlgebra"): {
+            "version": "0.2",
+            "bin_path": getitem(os.environ, "KALG_BIN_PATH", None),
+            "lib_path": getitem(os.environ, "QT6_LIB_PATH", None),
+            "port": 8000
         }
     }
 
 def spawn_modules(manager_args: Optional[Config] = None):
     from . import ChimeraX
+    from . import KAlgebra
 
     frozen = locals()
     if manager_args == None:

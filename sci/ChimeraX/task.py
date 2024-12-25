@@ -11,67 +11,19 @@ from ..vm import VTask
 from .chimerax import RawManager, VMManager
 
 
-class RawTask(Task):
-    def __init__(
-        self,
-        config_path: str,
-        manager: RawManager,
-        *args,
-        **kwargs
-    ) -> None:
-        # to enable Pylance type checker
-        assert isinstance(manager, RawManager)
-        self.manager = manager
+class TaskPublic:
+    @Task._config_handler
+    def check_config(self, eval_item) -> None:
+        assert eval_item["type"] in ("info", "states")
+        assert "key" in eval_item
+        if eval_item["type"] == "info":
+            assert "value" in eval_item
+            assert isinstance(eval_item["value"], list)
+            for sub_item in eval_item["value"]:
+                assert isinstance(sub_item, str)
+        elif eval_item["type"] == "states":
+            assert "value" in eval_item or "pattern" in eval_item
 
-        super().__init__(config_path, manager, *args, **kwargs)
-        self.__check_config()
-        TaskMixin.install(self)
-
-    def __check_config(self) -> None:
-        for eval_item in self.evaluate:
-            if eval_item["type"] == Task.EARLY_STOP:
-                continue
-
-            assert eval_item["type"] in ("info", "states")
-            assert "key" in eval_item
-            if eval_item["type"] == "info":
-                assert "value" in eval_item
-                assert isinstance(eval_item["value"], list)
-                for sub_item in eval_item["value"]:
-                    assert isinstance(sub_item, str)
-            elif eval_item["type"] == "states":
-                assert "value" in eval_item or "pattern" in eval_item
-
-    def _init(self) -> bool:
-        _, code = self.manager._call("close")
-        return code and self.manager.clear_history()
-
-    @Task._stop_handler
-    def eval(self) -> bool:
-        return TaskPublic.eval(self)
-
-
-class VMTask(VTask):
-    def __init__(
-        self,
-        config_path: str,
-        manager: VMManager,
-        *args,
-        **kwargs
-    ) -> None:
-        # to enable Pylance type checker
-        assert isinstance(manager, VMManager)
-        self.manager = manager
-
-        super().__init__(config_path, manager, *args, **kwargs)
-        TaskMixin.install(self)
-
-    @Task._stop_handler
-    def eval(self) -> bool:
-        return TaskPublic.eval(self)
-
-
-class TaskMixin(Mixin):
     def _destroy(self) -> bool:
         _, code = self.manager._call(f"destroy")
         return code
@@ -97,12 +49,10 @@ class TaskMixin(Mixin):
         _, code = self.manager._call(f"log clear")
         return code
 
-
-class TaskPublic:
     @staticmethod
     @utils.error_factory(False)
     def _eval_states(
-        _: Union[RawTask, VMTask],
+        self: Union["RawTask", "VMTask"],
         eval_item: Dict[str, Any],
         current_states: Dict[str, Any]
     ) -> bool:
@@ -164,17 +114,16 @@ class TaskPublic:
 
     # prerequisite of calling TaskPublic._eval_info:
     # - task.manager._call()
-    @staticmethod
     @utils.error_factory(False)
     def _eval_info(
-        task: Union[RawTask, VMTask],
+        self: Union["RawTask", "VMTask"],
         eval_item: Dict[str, Any],
         _: Dict[str, Any]
     ) -> bool:
         key = eval_item["key"]
         value = eval_item["value"]
 
-        log_message, _ = task.manager._call(f"info {key}")
+        log_message, _ = self.manager._call(f"info {key}")
         nested_logs = [log.strip().split("\n") for log in log_message]
         info_list = [log for logs in nested_logs for log in logs if log != ""]
         return set(info_list) == set(value)
@@ -182,13 +131,57 @@ class TaskPublic:
     # prerequisite of calling TaskPublic.eval:
     # - task.evaluate
     # - task.manager.status_dump()
-    @staticmethod
-    def eval(task: Union[RawTask, VMTask]) -> bool:
-        current_states = task.manager.states_dump()
-        for eval_item in task.evaluate:
+    def public_eval(self: Union["RawTask", "VMTask"]) -> bool:
+        current_states = self.manager.states_dump()
+        for eval_item in self.evaluate:
             eval_type = eval_item["type"]
-            eval_func = getattr(TaskPublic, f"_eval_{eval_type}")
-            if not eval_func(task, eval_item, current_states):
-                task.vlog.info(f"Evaluation failed at {eval_type} of {eval_item['key']}.")
+            # eval_func is not bound method because of the decorator factory?
+            eval_func = getattr(self, f"_eval_{eval_type}")
+            if not eval_func(self, eval_item, current_states):
+                self.vlog.info(f"Evaluation failed at {eval_type} of {eval_item['key']}.")
                 return False
         return True
+
+
+class RawTask(Task, TaskPublic):
+    def __init__(
+        self,
+        config_path: str,
+        manager: RawManager,
+        *args,
+        **kwargs
+    ) -> None:
+        # to enable Pylance type checker
+        assert isinstance(manager, RawManager)
+        self.manager = manager
+
+        super().__init__(config_path, manager, *args, **kwargs)
+        self.check_config()
+
+    def _init(self) -> bool:
+        _, code = self.manager._call("close")
+        return code and self.manager.clear_history()
+
+    @Task._stop_handler
+    def eval(self) -> bool:
+        return self.public_eval()
+
+
+class VMTask(VTask, TaskPublic):
+    def __init__(
+        self,
+        config_path: str,
+        manager: VMManager,
+        *args,
+        **kwargs
+    ) -> None:
+        # to enable Pylance type checker
+        assert isinstance(manager, VMManager)
+        self.manager = manager
+
+        super().__init__(config_path, manager, *args, **kwargs)
+        self.check_config()
+
+    @Task._stop_handler
+    def eval(self) -> bool:
+        return self.public_eval()

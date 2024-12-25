@@ -149,6 +149,15 @@ class Task:
             return method(self, *args, **kwargs)
         return _avail_wrapper
 
+    @staticmethod
+    def _config_handler(method: Callable) -> Callable:
+        def _config_wrapper(self: "Task") -> None:
+            for eval_item in self.evaluate:
+                if eval_item["type"] == Task.EARLY_STOP:
+                    continue
+                method(self, eval_item)
+        return _config_wrapper
+
     # do not use this method as much as posssible
     # try to customize each manager's own method of resetting
     def _init(self) -> bool:
