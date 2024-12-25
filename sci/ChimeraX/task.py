@@ -131,7 +131,7 @@ class TaskPublic:
     # prerequisite of calling TaskPublic.eval:
     # - task.evaluate
     # - task.manager.status_dump()
-    def public_eval(self: Union["RawTask", "VMTask"]) -> bool:
+    def eval(self: Union["RawTask", "VMTask"]) -> bool:
         current_states = self.manager.states_dump()
         for eval_item in self.evaluate:
             eval_type = eval_item["type"]
@@ -164,7 +164,8 @@ class RawTask(Task, TaskPublic):
 
     @Task._stop_handler
     def eval(self) -> bool:
-        return self.public_eval()
+        # MRO: RawTask -> Task -> TaskPublic -> object
+        return super(Task, self).eval()
 
 
 class VMTask(VTask, TaskPublic):
@@ -184,4 +185,5 @@ class VMTask(VTask, TaskPublic):
 
     @Task._stop_handler
     def eval(self) -> bool:
-        return self.public_eval()
+        # MRO: VMTask -> VTask -> Task -> TaskPublic -> object
+        return super(Task, self).eval()

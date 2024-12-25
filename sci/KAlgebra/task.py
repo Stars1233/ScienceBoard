@@ -7,7 +7,12 @@ from .kalgebra import RawManager
 
 
 class TaskPublic:
-    ...
+    @Task._config_handler
+    def check_config(self, eval_item) -> None:
+        # TODO
+        assert eval_item["type"] in ("vars", "eqn")
+        assert "key" in eval_item
+        assert "value" in eval_item
 
 
 class RawTask(Task, TaskPublic):
@@ -23,10 +28,7 @@ class RawTask(Task, TaskPublic):
         self.manager = manager
 
         super().__init__(config_path, manager, *args, **kwargs)
-        self.__check_config()
-
-    def __check_config(self) -> None:
-        ...
+        self.check_config()
 
     @Task._stop_handler
     def eval(self) -> bool:
