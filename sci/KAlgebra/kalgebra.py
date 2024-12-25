@@ -11,13 +11,21 @@ sys.dont_write_bytecode
 from ..base import Manager
 
 
-class Remote:
+class ManagerPublic:
     def __init__(self, ip: str, port: int) -> None:
         # legality is not checked due to inner usage
         self.base_url = f"http://{ip}:{port}"
 
     def status_version(self) -> str:
         return requests.get(self.base_url + "/version").text
+
+    def status_vars(self) -> str:
+        return requests.get(self.base_url + "/vars").json()
+
+    def operate_tab(self, index: int) -> bool:
+        assert isinstance(index, int)
+        assert index >= 0 and index < 4
+        return requests.post(self.base_url + "/tab", json=index).text == "OK"
 
 
 class RawManager(Manager):
@@ -38,7 +46,7 @@ class RawManager(Manager):
 
         assert port in range(1024, 65536)
         self.port = port
-        self.remote = Remote("localhost", port)
+        self.remote = ManagerPublic("localhost", port)
 
     def __call__(self) -> None:
         raise NotImplementedError

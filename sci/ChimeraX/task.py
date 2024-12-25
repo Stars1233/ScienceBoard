@@ -11,33 +11,6 @@ from ..vm import VTask
 from .chimerax import RawManager, VMManager
 
 
-class TaskMixin(Mixin):
-    def _destroy(self) -> bool:
-        _, code = self.manager._call(f"destroy")
-        return code
-
-    def _open(self, name: str) -> bool:
-        _, code = self.manager._call(f"open {name}")
-        return code
-
-    def _turn(self, axis: str, angle: int) -> bool:
-        _, code = self.manager._call(f"turn {axis} {angle}")
-        return code
-
-    def _alphafold_match(self, name: str) -> bool:
-        _, code = self.manager._call(f"alphafold match {name}")
-        return code
-
-    def _color(self, style: str) -> bool:
-        command = f"color {style}" if style != "rainbow" else style
-        _, code = self.manager._call(command)
-        return code
-
-    def _clear_log(self) -> bool:
-        _, code = self.manager._call(f"log clear")
-        return code
-
-
 class RawTask(Task):
     def __init__(
         self,
@@ -75,7 +48,7 @@ class RawTask(Task):
 
     @Task._stop_handler
     def eval(self) -> bool:
-        return Public.eval(self)
+        return TaskPublic.eval(self)
 
 
 class VMTask(VTask):
@@ -95,10 +68,37 @@ class VMTask(VTask):
 
     @Task._stop_handler
     def eval(self) -> bool:
-        return Public.eval(self)
+        return TaskPublic.eval(self)
 
 
-class Public:
+class TaskMixin(Mixin):
+    def _destroy(self) -> bool:
+        _, code = self.manager._call(f"destroy")
+        return code
+
+    def _open(self, name: str) -> bool:
+        _, code = self.manager._call(f"open {name}")
+        return code
+
+    def _turn(self, axis: str, angle: int) -> bool:
+        _, code = self.manager._call(f"turn {axis} {angle}")
+        return code
+
+    def _alphafold_match(self, name: str) -> bool:
+        _, code = self.manager._call(f"alphafold match {name}")
+        return code
+
+    def _color(self, style: str) -> bool:
+        command = f"color {style}" if style != "rainbow" else style
+        _, code = self.manager._call(command)
+        return code
+
+    def _clear_log(self) -> bool:
+        _, code = self.manager._call(f"log clear")
+        return code
+
+
+class TaskPublic:
     @staticmethod
     @utils.error_factory(False)
     def _eval_states(
@@ -162,7 +162,7 @@ class Public:
             return value == raw_value
         return False
 
-    # prerequisite of calling Public._eval_info:
+    # prerequisite of calling TaskPublic._eval_info:
     # - task.manager._call()
     @staticmethod
     @utils.error_factory(False)
@@ -179,7 +179,7 @@ class Public:
         info_list = [log for logs in nested_logs for log in logs if log != ""]
         return set(info_list) == set(value)
 
-    # prerequisite of calling Public.eval:
+    # prerequisite of calling TaskPublic.eval:
     # - task.evaluate
     # - task.manager.status_dump()
     @staticmethod
@@ -187,7 +187,7 @@ class Public:
         current_states = task.manager.states_dump()
         for eval_item in task.evaluate:
             eval_type = eval_item["type"]
-            eval_func = getattr(Public, f"_eval_{eval_type}")
+            eval_func = getattr(TaskPublic, f"_eval_{eval_type}")
             if not eval_func(task, eval_item, current_states):
                 task.vlog.info(f"Evaluation failed at {eval_type} of {eval_item['key']}.")
                 return False
