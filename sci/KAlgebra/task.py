@@ -2,10 +2,15 @@ import sys
 
 sys.dont_write_bytecode = True
 from ..base import Task
+from ..vm import VTask
 from .kalgebra import RawManager
 
 
-class RawTask(Task):
+class TaskPublic:
+    ...
+
+
+class RawTask(Task, TaskPublic):
     def __init__(
         self,
         config_path: str,
@@ -26,3 +31,7 @@ class RawTask(Task):
     @Task._stop_handler
     def eval(self) -> bool:
         return False
+
+
+class VMTask(VTask, TaskPublic):
+    ...

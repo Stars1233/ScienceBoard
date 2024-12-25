@@ -18,9 +18,18 @@ sys.dont_write_bytecode
 from ..base import Manager
 from ..vm import VManager
 
+class ManagerPublic:
+    def _call(self, command: str) -> Tuple[List[str], bool]:
+        response = self._execute(command)
+        return (
+            response["log messages"]["note"],
+            response["error"] is None
+        )
+
+
 # raw: supposed that ChimeraX is pre-installed on Linux
 #      and one of commands in SORT_MAP is runnable
-class RawManager(Manager):
+class RawManager(Manager, ManagerPublic):
     SORT_MAP: Dict[str, List[str]] = {
         "stable": [
             "chimerax"
@@ -62,7 +71,7 @@ class RawManager(Manager):
         assert isinstance(gui, bool)
         self.gui = gui
 
-    def __call(self, command: str) -> Dict:
+    def _execute(self, command: str) -> Dict:
         response = requests.get(
             RawManager.BASE_URL(self.port),
             params={"command": command}
@@ -71,13 +80,6 @@ class RawManager(Manager):
         if response["error"] is not None:
             self.vlog.error(f"Failed when executing {command}: {response['error']}.")
         return response
-
-    def _call(self, command: str) -> Tuple[List[str], bool]:
-        response = self.__call(command)
-        return (
-            response["log messages"]["note"],
-            response["error"] is None
-        )
 
     def __call__(self, command: str) -> None:
         self.__call(command)
@@ -185,7 +187,7 @@ class RawManager(Manager):
         return ImageGrab.grab()
 
 
-class VMManager(VManager):
+class VMManager(VManager, ManagerPublic):
     def __init__(
         self,
         *args,
@@ -197,18 +199,11 @@ class VMManager(VManager):
         assert port in range(1024, 65536)
         self.port = port
 
-    def __call(self, command: str) -> Dict:
+    def _execute(self, command: str) -> Dict:
         return self._request(
             f"POST:{VManager.SERVER_PORT}/chimerax/run",
             param={"json": {"command": command}}
         ).json()
-
-    def _call(self, command: str) -> Tuple[List[str], bool]:
-        response = self.__call(command)
-        return (
-            response["log messages"]["note"],
-            response["error"] is None
-        )
 
     def states_dump(self) -> dict:
         timestamp = str(int(time.time() * 1000))
