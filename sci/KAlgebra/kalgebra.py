@@ -12,7 +12,7 @@ from ..base import Manager
 from ..vm import VManager
 
 
-class ManagerPublic:
+class ManagerMixin:
     def __init__(self, ip: str, port: int) -> None:
         # legality is not checked due to inner usage
         self.base_url = f"http://{ip}:{port}"
@@ -29,7 +29,7 @@ class ManagerPublic:
         return requests.post(self.base_url + "/tab", json=index).text == "OK"
 
 
-class RawManager(Manager, ManagerPublic):
+class RawManager(Manager, ManagerMixin):
     def __init__(
         self,
         bin_path: str,
@@ -39,7 +39,7 @@ class RawManager(Manager, ManagerPublic):
     ) -> None:
         super().__init__(version)
 
-        # MRO: RawManager -> Manager -> ManagerPublic -> Object
+        # MRO: RawManager -> Manager -> ManagerMixin -> Object
         assert port in range(1024, 65536)
         self.port = port
         super(Manager, self).__init__("localhost", port)
@@ -75,5 +75,5 @@ class RawManager(Manager, ManagerPublic):
         raise NotImplementedError
 
 
-class VMManager(VManager, ManagerPublic):
+class VMManager(VManager, ManagerMixin):
     ...

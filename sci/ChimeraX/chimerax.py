@@ -18,7 +18,7 @@ sys.dont_write_bytecode
 from ..base import Manager
 from ..vm import VManager
 
-class ManagerPublic:
+class ManagerMixin:
     def _call(self, command: str) -> Tuple[List[str], bool]:
         response = self._execute(command)
         return (
@@ -29,7 +29,7 @@ class ManagerPublic:
 
 # raw: supposed that ChimeraX is pre-installed on Linux
 #      and one of commands in SORT_MAP is runnable
-class RawManager(Manager, ManagerPublic):
+class RawManager(Manager, ManagerMixin):
     SORT_MAP: Dict[str, List[str]] = {
         "stable": [
             "chimerax"
@@ -187,7 +187,7 @@ class RawManager(Manager, ManagerPublic):
         return ImageGrab.grab()
 
 
-class VMManager(VManager, ManagerPublic):
+class VMManager(VManager, ManagerMixin):
     def __init__(
         self,
         *args,

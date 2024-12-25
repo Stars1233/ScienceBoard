@@ -11,7 +11,7 @@ from ..vm import VTask
 from .chimerax import RawManager, VMManager
 
 
-class TaskPublic:
+class TaskMixin:
     @Task._config_handler
     def check_config(self, eval_item) -> None:
         assert eval_item["type"] in ("info", "states")
@@ -112,7 +112,7 @@ class TaskPublic:
             return value == raw_value
         return False
 
-    # prerequisite of calling TaskPublic._eval_info:
+    # prerequisite of calling TaskMixin._eval_info:
     # - task.manager._call()
     @utils.error_factory(False)
     def _eval_info(
@@ -128,7 +128,7 @@ class TaskPublic:
         info_list = [log for logs in nested_logs for log in logs if log != ""]
         return set(info_list) == set(value)
 
-    # prerequisite of calling TaskPublic.eval:
+    # prerequisite of calling TaskMixin.eval:
     # - task.evaluate
     # - task.manager.status_dump()
     def eval(self: Union["RawTask", "VMTask"]) -> bool:
@@ -143,7 +143,7 @@ class TaskPublic:
         return True
 
 
-class RawTask(Task, TaskPublic):
+class RawTask(Task, TaskMixin):
     def __init__(
         self,
         config_path: str,
@@ -164,11 +164,11 @@ class RawTask(Task, TaskPublic):
 
     @Task._stop_handler
     def eval(self) -> bool:
-        # MRO: RawTask -> Task -> TaskPublic -> object
+        # MRO: RawTask -> Task -> TaskMixin -> object
         return super(Task, self).eval()
 
 
-class VMTask(VTask, TaskPublic):
+class VMTask(VTask, TaskMixin):
     def __init__(
         self,
         config_path: str,
@@ -185,5 +185,5 @@ class VMTask(VTask, TaskPublic):
 
     @Task._stop_handler
     def eval(self) -> bool:
-        # MRO: VMTask -> VTask -> Task -> TaskPublic -> object
+        # MRO: VMTask -> VTask -> Task -> TaskMixin -> object
         return super(Task, self).eval()

@@ -1,4 +1,5 @@
 import sys
+from typing import Union
 
 sys.dont_write_bytecode = True
 from ..base import Task
@@ -6,7 +7,7 @@ from ..vm import VTask
 from .kalgebra import RawManager
 
 
-class TaskPublic:
+class TaskMixin:
     @Task._config_handler
     def check_config(self, eval_item) -> None:
         # TODO
@@ -14,8 +15,10 @@ class TaskPublic:
         assert "key" in eval_item
         assert "value" in eval_item
 
+    def eval(self: Union["RawTask", "VMTask"]) -> bool:
+        return False
 
-class RawTask(Task, TaskPublic):
+class RawTask(Task, TaskMixin):
     def __init__(
         self,
         config_path: str,
@@ -32,8 +35,9 @@ class RawTask(Task, TaskPublic):
 
     @Task._stop_handler
     def eval(self) -> bool:
-        return False
+        # MRO: RawTask -> Task -> TaskMixin -> object
+        return super(Task, self).eval()
 
 
-class VMTask(VTask, TaskPublic):
+class VMTask(VTask, TaskMixin):
     ...
