@@ -322,12 +322,3 @@ class Task:
                 return self.__call()
         else:
             return self.__call()
-
-
-class Mixin():
-    @classmethod
-    def install(cls, this: Any) -> None:
-        for key, value in cls.__dict__.items():
-            if hasattr(value, "__call__") and re.match(r'^_[a-z]', key):
-                setattr(this.__class__, key, value)
-                setattr(this, key, value.__get__(this))

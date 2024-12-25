@@ -6,7 +6,7 @@ from typing import List, Dict, Union, Callable, Any
 
 sys.dont_write_bytecode = True
 from ..base import utils
-from ..base import Task, Mixin
+from ..base import Task
 from ..vm import VTask
 from .chimerax import RawManager, VMManager
 
