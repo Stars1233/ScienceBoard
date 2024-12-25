@@ -10,12 +10,23 @@ from PIL import Image
 sys.dont_write_bytecode
 from ..base import Manager
 
+
+class Remote:
+    def __init__(self, ip: str, port: int) -> None:
+        # legality is not checked due to inner usage
+        self.base_url = f"http://{ip}:{port}"
+
+    def status_version(self) -> str:
+        return requests.get(self.base_url + "/version").text
+
+
 class RawManager(Manager):
     def __init__(
         self,
         bin_path: str,
         lib_path: str,
-        version: str = "0.2"
+        version: str = "0.2",
+        port: int = 8000
     ) -> None:
         super().__init__(version)
 
@@ -25,6 +36,10 @@ class RawManager(Manager):
         assert os.path.isdir(lib_path)
         self.lib_path = lib_path
 
+        assert port in range(1024, 65536)
+        self.port = port
+        self.remote = Remote("localhost", port)
+
     def __call__(self) -> None:
         raise NotImplementedError
 
@@ -32,14 +47,14 @@ class RawManager(Manager):
         env = os.environ.copy()
         env["LD_LIBRARY_PATH"] = self.lib_path
         self.process = subprocess.Popen(
-            self.bin_path,
+            [self.bin_path, str(self.port)],
             env=env,
             stdout=subprocess.PIPE,
             text=True
         )
 
-        version = requests.get("http://localhost:8080/version").text
-        assert version == self.version
+        Manager.pause()
+        assert self.remote.status_version() == self.version
         return super().__enter__()
 
     def __exit__(self, exc_type, exc_value, traceback) -> None:
