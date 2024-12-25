@@ -21,7 +21,7 @@ from . import init
 #   - @Task._stop_handler
 #     eval(): evaluation of non-general eval-item
 # - subclass can also include:
-#   - __check_config(): more assertion of config.json
+#   - check_config(): more assertion of config.json
 #   - _init(): recover to init states of app
 class Task:
     CONFIG_RETRY = 5

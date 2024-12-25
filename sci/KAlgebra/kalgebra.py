@@ -9,6 +9,7 @@ from PIL import Image
 
 sys.dont_write_bytecode
 from ..base import Manager
+from ..vm import VManager
 
 
 class ManagerPublic:
@@ -28,7 +29,7 @@ class ManagerPublic:
         return requests.post(self.base_url + "/tab", json=index).text == "OK"
 
 
-class RawManager(Manager):
+class RawManager(Manager, ManagerPublic):
     def __init__(
         self,
         bin_path: str,
@@ -46,7 +47,9 @@ class RawManager(Manager):
 
         assert port in range(1024, 65536)
         self.port = port
-        self.remote = ManagerPublic("localhost", port)
+
+        # MRO: RawManager -> Manager -> ManagerPublic -> Object
+        super(Manager, self).__init__("localhost", port)
 
     def __call__(self) -> None:
         raise NotImplementedError
@@ -62,7 +65,7 @@ class RawManager(Manager):
         )
 
         Manager.pause()
-        assert self.remote.status_version() == self.version
+        assert self.status_version() == self.version
         return super().__enter__()
 
     def __exit__(self, exc_type, exc_value, traceback) -> None:
@@ -71,3 +74,6 @@ class RawManager(Manager):
 
     def screenshot(self) -> Image.Image:
         raise NotImplementedError
+
+class VMManager(VManager, ManagerPublic):
+    ...
