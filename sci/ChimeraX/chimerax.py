@@ -192,10 +192,10 @@ class VMManager(VManager):
         port: int = 8000,
         **kwargs
     ) -> None:
+        super().__init__(*args, **kwargs)
+
         assert port in range(1024, 65536)
         self.port = port
-
-        super().__init__(*args, **kwargs)
 
     def __call(self, command: str) -> Dict:
         return self._request(

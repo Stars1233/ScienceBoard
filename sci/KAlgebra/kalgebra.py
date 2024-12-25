@@ -39,17 +39,16 @@ class RawManager(Manager, ManagerPublic):
     ) -> None:
         super().__init__(version)
 
+        # MRO: RawManager -> Manager -> ManagerPublic -> Object
+        assert port in range(1024, 65536)
+        self.port = port
+        super(Manager, self).__init__("localhost", port)
+
         assert os.path.isfile(bin_path)
         self.bin_path = bin_path
 
         assert os.path.isdir(lib_path)
         self.lib_path = lib_path
-
-        assert port in range(1024, 65536)
-        self.port = port
-
-        # MRO: RawManager -> Manager -> ManagerPublic -> Object
-        super(Manager, self).__init__("localhost", port)
 
     def __call__(self) -> None:
         raise NotImplementedError
@@ -70,10 +69,11 @@ class RawManager(Manager, ManagerPublic):
 
     def __exit__(self, exc_type, exc_value, traceback) -> None:
         self.process.kill()
-        return super().__exit__(exc_type, exc_value, traceback)
+        super().__exit__(exc_type, exc_value, traceback)
 
     def screenshot(self) -> Image.Image:
         raise NotImplementedError
+
 
 class VMManager(VManager, ManagerPublic):
     ...
