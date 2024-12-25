@@ -21,6 +21,7 @@ class TypeSort:
     sort: Sort
 
     VM: ClassVar[Optional[Self]] = SortVM()
+    Raw: ClassVar[Callable] = lambda type: TypeSort(type, TypeSort.Sort.Raw)
 
     def __repr__(self) -> str:
         if self.sort == TypeSort.Sort.VM:

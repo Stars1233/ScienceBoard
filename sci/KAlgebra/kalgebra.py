@@ -15,7 +15,7 @@ class RawManager(Manager):
         self,
         bin_path: str,
         lib_path: str,
-        version: str = "0.1"
+        version: str = "0.2"
     ) -> None:
         super().__init__(version)
 
