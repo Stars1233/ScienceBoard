@@ -6,12 +6,12 @@ from typing import List, Dict, Union, Callable, Any
 
 sys.dont_write_bytecode = True
 from ..base import utils
-from ..base import Task, TaskMixin
+from ..base import Task, Mixin
 from ..vm import VTask
 from .chimerax import RawManager, VMManager
 
 
-class Mixin(TaskMixin):
+class TaskMixin(Mixin):
     def _destroy(self) -> bool:
         _, code = self.manager._call(f"destroy")
         return code
@@ -52,7 +52,7 @@ class RawTask(Task):
 
         super().__init__(config_path, manager, *args, **kwargs)
         self.__check_config()
-        Mixin.install(self)
+        TaskMixin.install(self)
 
     def __check_config(self) -> None:
         for eval_item in self.evaluate:
@@ -91,7 +91,7 @@ class VMTask(VTask):
         self.manager = manager
 
         super().__init__(config_path, manager, *args, **kwargs)
-        Mixin.install(self)
+        TaskMixin.install(self)
 
     @Task._stop_handler
     def eval(self) -> bool:

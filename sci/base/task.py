@@ -315,7 +315,7 @@ class Task:
             return self.__call()
 
 
-class TaskMixin():
+class Mixin():
     @classmethod
     def install(cls, this: Any) -> None:
         for key, value in cls.__dict__.items():
