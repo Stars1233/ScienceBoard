@@ -55,7 +55,11 @@ class TaskMixin:
         return code
 
     @error_factory(False)
-    def _eval_states(self, eval_item: Dict, current_states: Dict) -> bool:
+    def _eval_states(
+        self: Union["RawTask", "VMTask"],
+        eval_item: Dict[str, Any],
+        current_states: Dict[str, Any]
+    ) -> bool:
         find: str = getitem(eval_item, "find", None)
         key: str = eval_item["key"]
         value: str = getitem(eval_item, "value", None)
@@ -115,7 +119,11 @@ class TaskMixin:
     # prerequisite of calling TaskMixin._eval_info:
     # - task.manager._call()
     @error_factory(False)
-    def _eval_info(self, eval_item: Dict, _: Dict) -> bool:
+    def _eval_info(
+        self: Union["RawTask", "VMTask"],
+        eval_item: Dict[str, Any],
+        _: Dict[str, Any]
+    ) -> bool:
         key = eval_item["key"]
         value = eval_item["value"]
 

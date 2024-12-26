@@ -1,0 +1,16 @@
+{
+    "type": "KAlgebra",
+    "sort": "Raw",
+    "steps": 5,
+    "instruction": "Calculate the value of $\\log_{2}{3}$ and store the result in variable `p` in KAlgebra.",
+    "version": "0.2",
+    "snapshot": "sci_bench",
+    "initialize": [],
+    "evaluate": [
+        {
+            "type": "vars",
+            "key": "p",
+            "value": 1.58496250072
+        }
+    ]
+}
