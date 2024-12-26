@@ -21,6 +21,9 @@ class TaskMixin:
         assert "key" in eval_item
         assert "value" in eval_item
 
+    def _tab(self: Union["RawTask", "VMTask"], index: int) -> bool:
+        return self.manager.operate_tab(index)
+
     @staticmethod
     def _near(left: Any, right: Any) -> bool:
         return abs(float(left) - float(right)) <= 1e-6

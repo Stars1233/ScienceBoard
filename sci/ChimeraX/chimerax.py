@@ -9,7 +9,7 @@ import subprocess
 import urllib.request
 
 from typing import List, Dict, Tuple, Optional
-from typing import Callable, Self
+from typing import Callable, Self, Union
 
 from PIL import Image
 from PIL import ImageGrab
@@ -23,7 +23,10 @@ class ManagerMixin:
         # this class is not independent: _execute() needed
         raise
 
-    def _call(self, command: str) -> Tuple[List[str], bool]:
+    def _call(
+        self: Union["RawManager", "VMManager"],
+        command: str
+    ) -> Tuple[List[str], bool]:
         response = self._execute(command)
         return (
             response["log messages"]["note"],

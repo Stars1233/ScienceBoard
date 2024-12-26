@@ -29,28 +29,28 @@ class TaskMixin:
         elif eval_item["type"] == "states":
             assert "value" in eval_item or "pattern" in eval_item
 
-    def _destroy(self) -> bool:
+    def _destroy(self: Union["RawTask", "VMTask"]) -> bool:
         _, code = self.manager._call(f"destroy")
         return code
 
-    def _open(self, name: str) -> bool:
+    def _open(self: Union["RawTask", "VMTask"], name: str) -> bool:
         _, code = self.manager._call(f"open {name}")
         return code
 
-    def _turn(self, axis: str, angle: int) -> bool:
+    def _turn(self: Union["RawTask", "VMTask"], axis: str, angle: int) -> bool:
         _, code = self.manager._call(f"turn {axis} {angle}")
         return code
 
-    def _alphafold_match(self, name: str) -> bool:
+    def _alphafold_match(self: Union["RawTask", "VMTask"], name: str) -> bool:
         _, code = self.manager._call(f"alphafold match {name}")
         return code
 
-    def _color(self, style: str) -> bool:
+    def _color(self: Union["RawTask", "VMTask"], style: str) -> bool:
         command = f"color {style}" if style != "rainbow" else style
         _, code = self.manager._call(command)
         return code
 
-    def _clear_log(self) -> bool:
+    def _clear_log(self: Union["RawTask", "VMTask"]) -> bool:
         _, code = self.manager._call(f"log clear")
         return code
 
