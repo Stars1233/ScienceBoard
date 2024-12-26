@@ -1,4 +1,5 @@
 import sys
+import os
 import inspect
 
 from enum import Enum
@@ -53,6 +54,15 @@ def error_factory(default_value: Any):
             try:
                 return method(self, *args, **kwargs)
             except:
+                if "DEBUG_ERR_FACT" in os.environ:
+                    import traceback
+                    from .log import GLOBAL_VLOG
+                    GLOBAL_VLOG.error(
+                        "Error when evaluating."
+                            + "\n"
+                            + traceback.format_exc()
+                    )
+                    breakpoint()
                 return default_value
         return error_wrapper
     return error_handler
