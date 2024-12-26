@@ -4,8 +4,6 @@ from typing import Union
 sys.dont_write_bytecode = True
 from ..base import Task
 from ..vm import VTask
-
-from ..base.utils import want
 from .kalgebra import RawManager
 
 
@@ -42,7 +40,7 @@ class RawTask(Task, TaskMixin):
     @Task._stop_handler
     def eval(self) -> bool:
         # MRO: RawTask -> Task -> TaskMixin -> object
-        return want(TaskMixin).eval()
+        super(Task, self).eval()
 
 
 class VMTask(VTask, TaskMixin):

@@ -8,7 +8,7 @@ sys.dont_write_bytecode = True
 from ..base import Task
 from ..vm import VTask
 
-from ..base.utils import getitem, want, error_factory
+from ..base.utils import getitem, error_factory
 from .chimerax import RawManager, VMManager
 
 
@@ -166,7 +166,7 @@ class RawTask(Task, TaskMixin):
     @Task._stop_handler
     def eval(self) -> bool:
         # MRO: RawTask -> Task -> TaskMixin -> object
-        return want(TaskMixin).eval()
+        super(Task, self).eval()
 
 
 class VMTask(VTask, TaskMixin):
@@ -187,4 +187,4 @@ class VMTask(VTask, TaskMixin):
     @Task._stop_handler
     def eval(self) -> bool:
         # MRO: VMTask -> VTask -> Task -> TaskMixin -> object
-        return want(TaskMixin).eval()
+        return super(Task, self).eval()
