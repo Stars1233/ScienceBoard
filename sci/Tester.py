@@ -279,7 +279,9 @@ class Tester:
             self.modules[type_sort.type],
             type_sort(Manager.__name__)
         )
-        manager = manager_class(**self.manager_args[type_sort])
+
+        manager_args = self.manager_args[type_sort]()
+        manager = manager_class(**manager_args)
         self.managers[type_sort] = manager
         manager.vlog.set(self.log)
         return manager

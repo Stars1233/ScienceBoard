@@ -1,36 +1,35 @@
 import sys
 import os
 
-from typing import Optional, Dict, Any, TypeAlias
+from typing import Optional, Dict, Any
+from typing import Callable, TypeAlias
 
 sys.dont_write_bytecode = True
 from . import TypeSort
-from .base.utils import getitem
 
 # preserved for potential comman kwargs
 # all args should have a default value
 # should be consisted with Prompts' lambda
-Config: TypeAlias = Dict[TypeSort, Dict[str, Any]]
+# add lambda function for lazy loading
+Config: TypeAlias = Dict[TypeSort, Callable[[], Dict[str, Any]]]
 def spawn_managers(vm_path: Optional[str] = None) -> Config:
-    Sort = TypeSort.Sort
-
     return {
-        TypeSort.VM: {
+        TypeSort.VM: lambda: {
             "version": "0.1",
             "vm_path": vm_path,
             "headless": False,
             "port": 8000
         },
-        TypeSort.Raw("ChimeraX"): {
+        TypeSort.Raw("ChimeraX"): lambda: {
             "version": "0.5",
             "sort": "daily",
             "port": 8000,
             "gui": True
         },
-        TypeSort.Raw("KAlgebra"): {
+        TypeSort.Raw("KAlgebra"): lambda: {
             "version": "0.2",
-            "bin_path": getitem(os.environ, "KALG_BIN_PATH", None),
-            "lib_path": getitem(os.environ, "QT6_LIB_PATH", None),
+            "bin_path": os.environ["KALG_BIN_PATH"],
+            "lib_path": os.environ["QT6_LIB_PATH"],
             "port": 8000
         }
     }
