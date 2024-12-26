@@ -5,9 +5,10 @@ import json
 from typing import List, Dict, Union, Callable, Any
 
 sys.dont_write_bytecode = True
-from ..base import utils
 from ..base import Task
 from ..vm import VTask
+
+from ..base.utils import getitem, want, error_factory
 from .chimerax import RawManager, VMManager
 
 
@@ -50,16 +51,16 @@ class TaskMixin:
         return code
 
     @staticmethod
-    @utils.error_factory(False)
+    @error_factory(False)
     def _eval_states(
         self: Union["RawTask", "VMTask"],
         eval_item: Dict[str, Any],
         current_states: Dict[str, Any]
     ) -> bool:
-        find: str = utils.getitem(eval_item, "find", None)
+        find: str = getitem(eval_item, "find", None)
         key: str = eval_item["key"]
-        value: str = utils.getitem(eval_item, "value", None)
-        pattern: str = utils.getitem(eval_item, "pattern", None)
+        value: str = getitem(eval_item, "value", None)
+        pattern: str = getitem(eval_item, "pattern", None)
 
         # if value is set to null
         # check the inexistence of item
@@ -114,7 +115,7 @@ class TaskMixin:
 
     # prerequisite of calling TaskMixin._eval_info:
     # - task.manager._call()
-    @utils.error_factory(False)
+    @error_factory(False)
     def _eval_info(
         self: Union["RawTask", "VMTask"],
         eval_item: Dict[str, Any],
@@ -165,7 +166,7 @@ class RawTask(Task, TaskMixin):
     @Task._stop_handler
     def eval(self) -> bool:
         # MRO: RawTask -> Task -> TaskMixin -> object
-        return super(Task, self).eval()
+        return want(TaskMixin).eval()
 
 
 class VMTask(VTask, TaskMixin):
@@ -186,4 +187,4 @@ class VMTask(VTask, TaskMixin):
     @Task._stop_handler
     def eval(self) -> bool:
         # MRO: VMTask -> VTask -> Task -> TaskMixin -> object
-        return super(Task, self).eval()
+        return want(TaskMixin).eval()

@@ -1,3 +1,4 @@
+import sys
 import inspect
 
 from enum import Enum
@@ -46,7 +47,7 @@ RawType = lambda type: TypeSort(type, TypeSort.Sort.Raw)
 VMType = lambda type: TypeSort(type, TypeSort.Sort.Raw)
 
 
-def error_factory(default_value):
+def error_factory(default_value: Any):
     def error_handler(method: Callable) -> Callable:
         def error_wrapper(self, *args, **kwargs) -> bool:
             try:
@@ -58,3 +59,15 @@ def error_factory(default_value):
 
 def getitem(obj: Dict, name: str, default: Any) -> Any:
     return obj[name] if name in obj else default
+
+# if MRO is shaped like A -> B -> C -> D -> object, then
+# - `want(C)` in methods of A equals to `super(B, self)`
+# - `want(A)` in methods of A equals to `self`
+def want(cls):
+    self = sys._getframe(1).f_locals["self"]
+    mro_chain = self.__class__.mro()
+    cls_index = mro_chain.index(cls)
+    if cls_index > 0:
+        return super(mro_chain[cls_index - 1], self)
+    else:
+        return self

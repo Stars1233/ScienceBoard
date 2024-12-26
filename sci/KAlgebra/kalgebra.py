@@ -10,6 +10,7 @@ from PIL import Image
 sys.dont_write_bytecode
 from ..base import Manager
 from ..vm import VManager
+from ..base.utils import want
 
 
 class ManagerMixin:
@@ -43,7 +44,7 @@ class RawManager(Manager, ManagerMixin):
         self.port = port
 
         # MRO: RawManager -> Manager -> ManagerMixin -> Object
-        super(Manager, self).__init__("localhost", port)
+        want(ManagerMixin).__init__("localhost", port)
 
         assert os.path.isfile(bin_path)
         self.bin_path = bin_path
