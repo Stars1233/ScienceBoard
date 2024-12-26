@@ -39,9 +39,10 @@ class RawManager(Manager, ManagerMixin):
     ) -> None:
         super().__init__(version)
 
-        # MRO: RawManager -> Manager -> ManagerMixin -> Object
         assert port in range(1024, 65536)
         self.port = port
+
+        # MRO: RawManager -> Manager -> ManagerMixin -> Object
         super(Manager, self).__init__("localhost", port)
 
         assert os.path.isfile(bin_path)
