@@ -19,6 +19,10 @@ from ..base import Manager
 from ..vm import VManager
 
 class ManagerMixin:
+    def __init__(self) -> None:
+        # this class is not independent: _execute() needed
+        raise
+
     def _call(self, command: str) -> Tuple[List[str], bool]:
         response = self._execute(command)
         return (

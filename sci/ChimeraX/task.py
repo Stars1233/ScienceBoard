@@ -13,6 +13,10 @@ from .chimerax import RawManager, VMManager
 
 
 class TaskMixin:
+    def __init__(self) -> None:
+        # this class is not independent: manager, evaluate, vlog needed
+        raise
+
     @Task._config_handler
     def check_config(self, eval_item) -> None:
         assert eval_item["type"] in ("info", "states")
@@ -50,13 +54,8 @@ class TaskMixin:
         _, code = self.manager._call(f"log clear")
         return code
 
-    @staticmethod
     @error_factory(False)
-    def _eval_states(
-        self: Union["RawTask", "VMTask"],
-        eval_item: Dict[str, Any],
-        current_states: Dict[str, Any]
-    ) -> bool:
+    def _eval_states(self, eval_item: Dict, current_states: Dict) -> bool:
         find: str = getitem(eval_item, "find", None)
         key: str = eval_item["key"]
         value: str = getitem(eval_item, "value", None)
@@ -116,11 +115,7 @@ class TaskMixin:
     # prerequisite of calling TaskMixin._eval_info:
     # - task.manager._call()
     @error_factory(False)
-    def _eval_info(
-        self: Union["RawTask", "VMTask"],
-        eval_item: Dict[str, Any],
-        _: Dict[str, Any]
-    ) -> bool:
+    def _eval_info(self, eval_item: Dict, _: Dict) -> bool:
         key = eval_item["key"]
         value = eval_item["value"]
 
@@ -138,7 +133,7 @@ class TaskMixin:
             eval_type = eval_item["type"]
             # eval_func is not bound method because of the decorator factory?
             eval_func = getattr(self, f"_eval_{eval_type}")
-            if not eval_func(self, eval_item, current_states):
+            if not eval_func(eval_item, current_states):
                 self.vlog.info(f"Evaluation failed at {eval_type} of {eval_item['key']}.")
                 return False
         return True
@@ -166,7 +161,7 @@ class RawTask(Task, TaskMixin):
     @Task._stop_handler
     def eval(self) -> bool:
         # MRO: RawTask -> Task -> TaskMixin -> object
-        super(Task, self).eval()
+        return super(Task, self).eval()
 
 
 class VMTask(VTask, TaskMixin):

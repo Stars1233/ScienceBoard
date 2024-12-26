@@ -1,5 +1,5 @@
 import sys
-from typing import Union
+from typing import Dict, Union, Any
 
 sys.dont_write_bytecode = True
 from ..base import Task
@@ -8,6 +8,10 @@ from .kalgebra import RawManager
 
 
 class TaskMixin:
+    def __init__(self) -> None:
+        # TODO: this class is not independent: what's needed
+        raise
+
     @Task._config_handler
     def check_config(self, eval_item) -> None:
         # TODO
@@ -15,8 +19,20 @@ class TaskMixin:
         assert "key" in eval_item
         assert "value" in eval_item
 
-    def eval(self: Union["RawTask", "VMTask"]) -> bool:
+    def _eval_vars(self, eval_item: Dict[str, Any]) -> bool:
         return False
+
+    def _eval_eqn(self, eval_item: Dict[str, Any]) -> bool:
+        return False
+
+    def eval(self: Union["RawTask", "VMTask"]) -> bool:
+        for eval_item in self.evaluate:
+            eval_type = eval_item["type"]
+            eval_func = getattr(self, f"_eval_{eval_type}")
+            if not eval_func(self, eval_item):
+                self.vlog.info(f"Evaluation failed at {eval_type} of {eval_item['key']}.")
+                return False
+        return True
 
 class RawTask(Task, TaskMixin):
     def __init__(
@@ -40,7 +56,7 @@ class RawTask(Task, TaskMixin):
     @Task._stop_handler
     def eval(self) -> bool:
         # MRO: RawTask -> Task -> TaskMixin -> object
-        super(Task, self).eval()
+        return super(Task, self).eval()
 
 
 class VMTask(VTask, TaskMixin):
