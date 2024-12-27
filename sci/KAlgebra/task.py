@@ -6,7 +6,7 @@ from ..base import Task
 from ..vm import VTask
 
 from ..base.utils import error_factory
-from .kalgebra import RawManager
+from .kalgebra import RawManager, VMManager
 
 
 class TaskMixin:
@@ -100,4 +100,16 @@ class RawTask(Task, TaskMixin):
 
 
 class VMTask(VTask, TaskMixin):
-    ...
+    def __init__(
+        self,
+        config_path: str,
+        manager: VMManager,
+        *args,
+        **kwargs
+    ) -> None:
+        # to enable Pylance type checker
+        assert isinstance(manager, VMManager)
+        self.manager = manager
+
+        super().__init__(config_path, manager, *args, **kwargs)
+        self.check_config()

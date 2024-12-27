@@ -88,4 +88,16 @@ class RawManager(Manager, ManagerMixin):
 
 
 class VMManager(VManager, ManagerMixin):
-    ...
+    def __init__(
+        self,
+        *args,
+        port: int = 8000,
+        **kwargs
+    ) -> None:
+        super().__init__(*args, **kwargs)
+
+        assert port in range(1024, 65536)
+        self.port = port
+
+        # MRO: VMManager -> VManager -> Manager -> ManagerMixin -> object
+        super(Manager, self).__init__(self.controller.vm_ip, port)

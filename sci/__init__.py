@@ -31,6 +31,7 @@ from .vm import VManager
 from .vm import VTask
 
 from . import ChimeraX
+from . import KAlgebra
 
 from .Tester import Counter
 from .Tester import Automata
