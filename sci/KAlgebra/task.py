@@ -11,21 +11,36 @@ from .kalgebra import RawManager
 
 class TaskMixin:
     def __init__(self) -> None:
-        # TODO: this class is not independent: what's needed
+        # this class is not independent: manager, evaluate, vlog needed
         raise
 
     @Task._config_handler
     def check_config(self, eval_item) -> None:
-        # TODO
-        assert eval_item["type"] in ("vars", "eqn")
+        assert eval_item["type"] in ("vars", "eqns")
+        numeral = (int, float)
+
         assert "key" in eval_item
+        key = eval_item["key"]
+        if not isinstance(key, str):
+            assert isinstance(key, list)
+            for item in key:
+                assert isinstance(item, list)
+                for sub_item in item:
+                    assert type(sub_item) in numeral
+
         assert "value" in eval_item
+        value = eval_item["value"]
+        if type(value) not in numeral:
+            assert isinstance(value, dict)
+            for sub_key, sub_value in value.items():
+                assert isinstance(sub_key, str)
+                assert type(sub_value) in (bool, str)
 
     def _tab(self: Union["RawTask", "VMTask"], index: int) -> bool:
         return self.manager.operate_tab(index)
 
     @staticmethod
-    def _near(left: Any, right: Any) -> bool:
+    def is_near(left: Any, right: Any) -> bool:
         return abs(float(left) - float(right)) <= 1e-6
 
     @error_factory(False)
@@ -33,17 +48,21 @@ class TaskMixin:
         self: Union["RawTask", "VMTask"],
         eval_item: Dict[str, Any]
     ) -> bool:
-        return TaskMixin._near(
+        return TaskMixin.is_near(
             self.manager.status_vars()[eval_item["key"]],
             eval_item["value"]
         )
 
     @error_factory(False)
-    def _eval_eqn(
+    def _eval_eqns(
         self: Union["RawTask", "VMTask"],
         eval_item: Dict[str, Any]
     ) -> bool:
-        return False
+        eqns = self.manager.status_func(eval_item["key"])
+        return any([all([
+            value == eqn[key]
+            for key, value in eval_item["value"].items()
+        ]) for eqn in eqns])
 
     def eval(self: Union["RawTask", "VMTask"]) -> bool:
         for eval_item in self.evaluate:

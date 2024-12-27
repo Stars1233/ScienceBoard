@@ -1,0 +1,26 @@
+{
+    "type": "KAlgebra",
+    "sort": "Raw",
+    "steps": 5,
+    "instruction": "Plot $f(x)=\\dfrac{1}{x^2}$ with exact black color in KAlgebra.",
+    "version": "0.2",
+    "snapshot": "sci_bench",
+    "initialize": [
+        {
+            "func": "tab",
+            "index": 1
+        }
+    ],
+    "evaluate": [
+        {
+            "type": "eqns",
+            "key": [[2, 0.25], [-1, -1], [16, 0.00390625]],
+            "value": {
+                "(2, 0.25)": true,
+                "(-1, -1)": false,
+                "(16, 0.00390625)": true,
+                "color": "#000000"
+            }
+        }
+    ]
+}

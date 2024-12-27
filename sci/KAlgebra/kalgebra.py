@@ -2,7 +2,7 @@ import sys
 import os
 import subprocess
 
-from typing import Self
+from typing import List, Dict, Union, Self
 
 import requests
 from PIL import Image
@@ -20,8 +20,19 @@ class ManagerMixin:
     def status_version(self) -> str:
         return requests.get(self.base_url + "/version").text
 
-    def status_vars(self) -> str:
+    def status_vars(self) -> Dict[str, str]:
         return requests.get(self.base_url + "/vars").json()
+
+    def status_func(
+        self,
+        points: List[List[float]]
+    ) -> List[Dict["str", Union[bool, str]]]:
+        if isinstance((result := requests.post(
+            self.base_url + f"/func/{len(points[0])}d",
+            json=points
+        ).json()), dict):
+            result = [result]
+        return result
 
     def operate_tab(self, index: int) -> bool:
         assert isinstance(index, int)
