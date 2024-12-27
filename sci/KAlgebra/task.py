@@ -25,6 +25,7 @@ class TaskMixin:
             assert isinstance(key, list)
             for item in key:
                 assert isinstance(item, list)
+                assert len(item) in (2, 3)
                 for sub_item in item:
                     assert type(sub_item) in numeral
 
