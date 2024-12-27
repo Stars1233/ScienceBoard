@@ -113,3 +113,8 @@ class VMTask(VTask, TaskMixin):
 
         super().__init__(config_path, manager, *args, **kwargs)
         self.check_config()
+
+    @Task._stop_handler
+    def eval(self) -> bool:
+        # MRO: VMTask -> VTask -> Task -> TaskMixin -> object
+        return super(Task, self).eval()
