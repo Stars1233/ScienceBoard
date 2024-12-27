@@ -74,6 +74,7 @@ class TaskMixin:
                 return False
         return True
 
+
 class RawTask(Task, TaskMixin):
     def __init__(
         self,
