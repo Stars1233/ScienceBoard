@@ -264,6 +264,14 @@ class Task:
             self.agent.dump_history()
         )
 
+    def __test_prompt(self) -> None:
+        obs = frozenset({OBS.screenshot if self.manager.is_gui else OBS.textual})
+        self.agent._init(obs, self.instruction, self.type_sort)
+        self.vlog.info(
+            "Sample of prompts: \n"
+                + self.agent.system_message.content[0].text
+        )
+
     @_avail_handler
     @Log.record_handler
     def predict(self) -> staticmethod:
@@ -303,6 +311,7 @@ class Task:
         if self.debug:
             # input value will be converted to stop_type
             # default to TIMEOUT
+            self.__test_prompt()
             primitive_text = self.vlog.input(
                 f"Finish task manually: ",
                 end=""

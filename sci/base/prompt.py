@@ -156,7 +156,7 @@ class PromptFactory:
 
     SOM_SUPPLEMENT = [
         "You can replace x, y in the code with the tag of elements you want to operate with, such as:",
-        "```python\npyautogui.moveTo(tag_3)\npyautogui.click(tag_2)\npyautogui.dragTo(tag_1, button='left')\n```",
+        "«\npyautogui.moveTo(tag_3)\npyautogui.click(tag_2)\npyautogui.dragTo(tag_1, button='left')\n»",
         "When you think you can directly output precise x and y coordinates or there is no tag on which you want to interact, you can also use them directly.",
         "But you should be careful to ensure that the coordinates are correct."
     ]
@@ -218,7 +218,7 @@ class PromptFactory:
         set_of_marks = self.SOM_SUPPLEMENT if OBS.set_of_marks in obs else []
         return "\n\n".join([
             self._general_command(type_sort),
-            *set_of_marks,
+            *[self.code_handler(item) for item in set_of_marks],
             self._special_command()
         ])
 
