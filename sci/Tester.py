@@ -11,10 +11,11 @@ from dataclasses import dataclass
 
 from typing import Union, Optional, List, Set, Dict, Any
 from typing import Iterable, Callable, Generator, FrozenSet
+from typing import NotRequired, TypedDict, Unpack
 
 sys.dont_write_bytecode
 from . import TypeSort
-from . import Model, Agent
+from . import Model, ModelType, Agent
 from . import Manager, Task
 from . import Log, VirtualLog
 from . import OBS, Presets
@@ -62,13 +63,30 @@ class Counter:
         self.vlog.info(self.__repr__())
 
 
+# type annotation for Automata
+class AutomataType(TypedDict):
+    model_style: ModelType
+    base_url: str
+    model_name: str
+    api_key: NotRequired[Optional[str]]
+    proxy: NotRequired[Optional[str]]
+    version: NotRequired[Optional[str]]
+    max_tokens: NotRequired[int]
+    top_p: NotRequired[float]
+    temperature: NotRequired[float]
+    overflow_style: NotRequired[Optional[str]]
+    context_window: NotRequired[int]
+    hide_text: NotRequired[bool]
+    code_style: NotRequired[str]
+
+
 # Automata receive keyword args from Model and Agent
 # register is used for post-processing
 class Automata:
     def __init__(
         self,
         register: Union[Callable, List[Callable]] = [],
-        **kwargs
+        **kwargs: Unpack[AutomataType]
     ) -> None:
         if isinstance(register, Iterable):
             for handler in register:
@@ -77,6 +95,9 @@ class Automata:
         else:
             assert hasattr(register, "__call__")
             self.register = [register]
+
+        if "model" in kwargs:
+            del kwargs["model"]
 
         model_params = list(Model.__dataclass_fields__.keys())
         agent_params = list(inspect.signature(Agent).parameters)
