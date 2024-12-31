@@ -16,6 +16,9 @@ from .base import ImageContent
 from .base import Message
 from .base import Model
 
+from .base import ModelType
+from .base import RoleType
+
 from .base import Primitive
 from .base import CodeLike
 from .base import PromptFactory
