@@ -23,6 +23,7 @@ class RawManager(Manager):
         self.lib_path = lib_path
         self.cwd_path = os.path.join(lib_path, "test/Mathlib")
         self.history: List = []
+        self.passed = False
 
         # download REPL and Mathlib
         if not os.path.exists(os.path.join(lib_path, ".git")):
@@ -32,22 +33,24 @@ class RawManager(Manager):
             assert os.system("lake exe cache get") == 0
             assert os.system("lake build Mathlib") == 0
 
-    def __read(self):
+    def __read(self) -> Dict:
         raw_outputs = ""
         while (line := self.process.stdout.readline()) == "\n": ...
         raw_outputs += line
 
         while (line := self.process.stdout.readline()) != "\n":
             raw_outputs += line
-        return raw_outputs
+        return json.loads(raw_outputs)
 
     def __call__(self, tactic: Dict[str, Union[str, int]]) -> None:
         input = json.dumps(tactic, ensure_ascii=False) + "\n\n"
         self.process.stdin.write(input)
         self.process.stdin.flush()
 
-        raw_output = self.__read()
-        print(raw_output)
+        output = self.__read()
+        self.history.append(output)
+        if len(output["goals"]) == 0:
+            self.passed = True
 
     def __enter__(self) -> Self:
         self.process = subprocess.Popen(
@@ -59,6 +62,8 @@ class RawManager(Manager):
             stderr=subprocess.PIPE,
             encoding="utf-8"
         )
+
+        self.passed = False
         return super().__enter__()
 
     def __exit__(self, exc_type, exc_value, traceback) -> None:

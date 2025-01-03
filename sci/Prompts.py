@@ -19,5 +19,8 @@ KALGEBRA = [
 
 LEAN_IS = "an interactive theorem prover"
 LEAN_RAW = [
-    "DO NOT forget to attach a field of proofState in the request object or your input will be ignored."
+    "The proof will be written in tactic mode, and you should apply ONE tactic each time, which returns a integer of proofState with all states stored.",
+    "You should submit an JSON with `tactic` and `proofState` (the first proofState is 0), such as `{\"tactic\": \"apply Int.natAbs\", \"proofState\": 0}`"
+    "DO NOT forget to attach a field of proofState in the request object or your input will be ignored.",
+    "DO NOT submit any Lean 3 code which the compiler of Lean 4 no longer supported."
 ]
