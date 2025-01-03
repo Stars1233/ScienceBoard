@@ -36,6 +36,9 @@ from .vm import VTask
 from . import ChimeraX
 from . import KAlgebra
 
+from . import Presets
+from . import Prompts
+
 from .Tester import Counter
 from .Tester import Automata
 
