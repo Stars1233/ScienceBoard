@@ -16,3 +16,8 @@ KALGEBRA_IS = "a mathematical graph calculator"
 KALGEBRA = [
     "Be aware that equations in 3D plotting is a bit different from normal mathematics. For example, the equation `x = y` is actually equivalent to `(x, y) -> x - y`, which means `z = x - y` in KAlgebra."
 ]
+
+LEAN_IS = "an interactive theorem prover"
+LEAN_RAW = [
+    "DO NOT forget to attach a field of proofState in the request object or your input will be ignored."
+]
