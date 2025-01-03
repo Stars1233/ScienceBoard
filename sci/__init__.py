@@ -1,4 +1,5 @@
 import sys
+from typing import Annotated
 
 sys.dont_write_bytecode
 from .base import utils
@@ -45,3 +46,6 @@ from .Tester import Automata
 from .Tester import TaskInfo
 from .Tester import TaskGroup
 from .Tester import Tester
+
+# DO NOT IMPORT TEMPLATE
+Template = NotImplemented
