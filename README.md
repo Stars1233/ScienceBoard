@@ -12,5 +12,6 @@
     - `DEEPSEEK_VL_NAME`: model name of DeepSeek-VL
     - `QWEN_VL_NAME`: model name of QWen-VL
 3. Raw Apps
+    - `LEAN_LIB_PATH`: path for Lean 4 REPL
     - `QT6_LIB_PATH`: dynamic library directory for Qt6
     - `KALG_BIN_PATH`: executable binary file of KAlgebra
