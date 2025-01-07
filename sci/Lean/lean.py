@@ -3,7 +3,7 @@ import os
 import json
 import subprocess
 
-from typing import Dict, List, Union, Self
+from typing import Dict, List, Optional, Union, Self
 
 sys.dont_write_bytecode
 from ..base import Manager
@@ -23,8 +23,12 @@ class RawManager(Manager):
 
         self.lib_path = lib_path
         self.cwd_path = os.path.join(lib_path, "test/Mathlib")
-        self.history: RawManager.Message = {}
-        self.passed = False
+        self.history: List[RawManager.Message] = []
+
+        # None:  proof state not yet entered
+        # False: proof not finished
+        # True:  proof finished
+        self.passed = None
 
         # download REPL and Mathlib
         if not os.path.exists(os.path.join(lib_path, ".git")):
@@ -43,28 +47,49 @@ class RawManager(Manager):
             raw_outputs += line
         return json.loads(raw_outputs)
 
-    def __call__(self, tactic: Message) -> None:
-        valid_cmd = ("cmd" in tactic) \
-            and isinstance(tactic["cmd"], str) \
-            and ("env" not in tactic or isinstance(tactic["env"], int))
+    def _call(self, query: Message) -> Message:
+        output = None
 
-        valid_tac = ("tactic" in tactic) \
-            and ("proofState" in tactic) \
-            and isinstance(tactic["proofState"], int)
+        valid_cmd = ("cmd" in query) \
+            and isinstance(query["cmd"], str) \
+            and ("env" not in query or type(query["env"]) in (int, type(None))) \
+            and len(query) in (1, 2)
 
-        if valid_cmd or valid_tac:
-            input = json.dumps(tactic, ensure_ascii=False) + "\n\n"
+        valid_tac = ("tactic" in query) \
+            and ("proofState" in query) \
+            and isinstance(query["proofState"], int) \
+            and len(query) == 2
+
+        if (self.passed is None and valid_cmd) \
+            or (self.passed is not None and valid_tac):
+            input = json.dumps(query, ensure_ascii=False) + "\n\n"
             self.process.stdin.write(input)
             self.process.stdin.flush()
+            output = self.__read()
 
-            self.history = self.__read()
-            if len(self.history["goals"]) == 0:
+            if self.passed is None and "sorries" in output:
+                assert len(output["sorries"]) == 1
+                self.passed = False
+                output = {
+                    "proofState": output["sorries"][0]["proofState"],
+                    "goals": output["sorries"][0]["goals"]
+                }
+
+            if self.passed is not None \
+                and "goals" in output \
+                and len(output["goals"]) == 0 \
+                and len(output) == 2:
                 self.passed = True
 
         else:
-            self.history = {
-                "message": "Could not parse as a valid JSON command."
-            }
+            output = {"message": "Could not parse as a valid JSON command."}
+
+        self.history.append(output)
+        return output
+
+    def __call__(self, tactic: Message) -> None:
+        assert self.passed is not None
+        self._call(tactic)
 
     def __enter__(self) -> Self:
         self.process = subprocess.Popen(
@@ -85,4 +110,5 @@ class RawManager(Manager):
         return super().__exit__(exc_type, exc_value, traceback)
 
     def textual(self) -> str:
-        return json.dumps(self.history, indent=2)
+        assert len(self.history) > 0
+        return json.dumps(self.history[-1], indent=2)
