@@ -33,19 +33,19 @@ class RawTask(Task, TaskMixin):
 
     # TEMP: check if they success
     def _import(self, libs: List[str]) -> bool:
-        self.manager._call({
+        output = self.manager._call({
             "cmd": f"import {' '.join(libs)}",
             "env": self.env
         })
-        self.env = self.manager.history[-1]["env"]
+        self.env = output["env"]
         return True
 
     def _open(self, libs: List[str]) -> bool:
-        self.manager._call({
+        output = self.manager._call({
             "cmd": f"open {' '.join(libs)}",
             "env": self.env
         })
-        self.env = self.manager.history[-1]["env"]
+        self.env = output["env"]
         return True
 
     def _query(self, expr) -> bool:

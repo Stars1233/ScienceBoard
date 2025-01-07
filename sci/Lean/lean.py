@@ -84,7 +84,7 @@ class RawManager(Manager):
         else:
             output = {"message": "Could not parse as a valid JSON command."}
 
-        if "proofState" in output:
+        if self.passed is not None:
             self.history.append(output)
         return output
 
