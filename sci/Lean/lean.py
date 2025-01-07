@@ -10,6 +10,7 @@ from ..base import Manager
 
 # simple encapsulation of Lean REPL
 class RawManager(Manager):
+    Message = Dict[str, Union[str, int]]
     REPL_URL = "https://github.com/leanprover-community/repl"
     TIMEOUT = 120
 
@@ -22,7 +23,7 @@ class RawManager(Manager):
 
         self.lib_path = lib_path
         self.cwd_path = os.path.join(lib_path, "test/Mathlib")
-        self.history: List = []
+        self.history: RawManager.Message = {}
         self.passed = False
 
         # download REPL and Mathlib
@@ -42,15 +43,28 @@ class RawManager(Manager):
             raw_outputs += line
         return json.loads(raw_outputs)
 
-    def __call__(self, tactic: Dict[str, Union[str, int]]) -> None:
-        input = json.dumps(tactic, ensure_ascii=False) + "\n\n"
-        self.process.stdin.write(input)
-        self.process.stdin.flush()
+    def __call__(self, tactic: Message) -> None:
+        valid_cmd = ("cmd" in tactic) \
+            and isinstance(tactic["cmd"], str) \
+            and ("env" not in tactic or isinstance(tactic["env"], int))
 
-        output = self.__read()
-        self.history.append(output)
-        if len(output["goals"]) == 0:
-            self.passed = True
+        valid_tac = ("tactic" in tactic) \
+            and ("proofState" in tactic) \
+            and isinstance(tactic["proofState"], int)
+
+        if valid_cmd or valid_tac:
+            input = json.dumps(tactic, ensure_ascii=False) + "\n\n"
+            self.process.stdin.write(input)
+            self.process.stdin.flush()
+
+            self.history = self.__read()
+            if len(self.history["goals"]) == 0:
+                self.passed = True
+
+        else:
+            self.history = {
+                "message": "Could not parse as a valid JSON command."
+            }
 
     def __enter__(self) -> Self:
         self.process = subprocess.Popen(
@@ -71,4 +85,4 @@ class RawManager(Manager):
         return super().__exit__(exc_type, exc_value, traceback)
 
     def textual(self) -> str:
-        return "..."
+        return json.dumps(self.history, indent=2)

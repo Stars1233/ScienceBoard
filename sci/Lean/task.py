@@ -6,7 +6,16 @@ from ..base import Task
 from .lean import RawManager
 
 
-class RawTask(Task):
+class TaskMixin:
+    def __init__(self) -> None:
+        raise
+
+    # do not use `@Task._config_handler`
+    def check_config(self: Task) -> None:
+        assert len(self.evaluate) > 0
+
+
+class RawTask(Task, TaskMixin):
     def __init__(
         self,
         config_path: str,
@@ -20,6 +29,7 @@ class RawTask(Task):
         self.env = None
 
         super().__init__(config_path, manager, *args, **kwargs)
+        self.check_config()
 
     # TEMP: check if they success
     def _import(self, libs: List[str]) -> bool:
