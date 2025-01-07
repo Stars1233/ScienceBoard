@@ -72,7 +72,7 @@ class RawManager(Manager):
                 self.passed = False
                 output = {
                     "proofState": output["sorries"][0]["proofState"],
-                    "goals": output["sorries"][0]["goals"]
+                    "goals": [output["sorries"][0]["goal"]]
                 }
 
             if self.passed is not None \
@@ -84,7 +84,8 @@ class RawManager(Manager):
         else:
             output = {"message": "Could not parse as a valid JSON command."}
 
-        self.history.append(output)
+        if "proofState" in output:
+            self.history.append(output)
         return output
 
     def __call__(self, tactic: Message) -> None:
@@ -102,7 +103,7 @@ class RawManager(Manager):
             encoding="utf-8"
         )
 
-        self.passed = False
+        self.passed = None
         return super().__enter__()
 
     def __exit__(self, exc_type, exc_value, traceback) -> None:
