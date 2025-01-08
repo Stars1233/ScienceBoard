@@ -21,16 +21,20 @@ class REPLInput:
         if isinstance(query, dict) \
             and ("cmd" in query) \
             and isinstance(query["cmd"], str) \
-            and ("env" not in query or type(query["env"]) in (int, type(None))) \
-            and len(query) in (1, 2):
+            and (
+                "env" not in query \
+                or query["env"] is None \
+                or (isinstance(query["env"], int) and query["env"] >= 0)
+            ) and all([key in ("cmd", "env") for key in query]):
             return REPLInputCommand(**query)
 
         elif isinstance(query, dict) \
             and ("tactic" in query) \
             and ("proofState" in query) \
+            and len(query) == 2 \
             and isinstance(query["tactic"], str) \
             and isinstance(query["proofState"], int) \
-            and len(query) == 2:
+            and query["proofState"] >= 0:
             return REPLInputTactic(**query)
 
         else:
