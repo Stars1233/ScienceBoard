@@ -6,8 +6,8 @@ import subprocess
 from typing import Dict, List, Union, Self
 
 sys.dont_write_bytecode
+from ..base import utils
 from ..base import Manager
-from ..base.utils import temp_chdir
 from .format import *
 
 
@@ -50,17 +50,17 @@ class RawManager(Manager):
     def __fetch(self) -> None:
         assert os.system(f"git clone {RawManager.REPL_URL} {self.lib_path}") == 0
 
-        with temp_chdir(self.lib_path):
+        with utils.temp_chdir(self.lib_path):
             self.__version()
             assert os.system("lake build repl") == 0
 
-        with temp_chdir(self.cwd_path):
+        with utils.temp_chdir(self.cwd_path):
             assert os.system("lake exe cache get") == 0
             assert os.system("lake build Mathlib") == 0
 
     def __version(self):
         tag_name = RawManager.VERSION_MAP[self.version]["tag"]
-        with temp_chdir(self.lib_path):
+        with utils.temp_chdir(self.lib_path):
             assert os.system(f"git checkout tags/{tag_name} --quiet") == 0
 
     def __read(self) -> Dict:
