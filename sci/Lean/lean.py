@@ -58,17 +58,11 @@ class RawManager(Manager):
             or (not tactic_only and isinstance(input, REPLInputCommand)):
             self.process.stdin.write(input.dumps())
             self.process.stdin.flush()
-            output = REPLOutput.from_dict(self.__read())
-
-            # if self.passed is not None \
-            #     and "goals" in output \
-            #     and len(output["goals"]) == 0 \
-            #     and len(output) == 2:
-            #     self.passed = True
+            output = REPLOutput.from_dict(input=input, output=self.__read())
 
         else:
             output = REPLOutput(
-                input=asdict(input),
+                input=input,
                 message="Could not parse as a valid JSON tactic."
             )
 

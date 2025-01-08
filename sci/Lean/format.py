@@ -57,10 +57,12 @@ class REPLOutput:
         return eliminate_nonetype(self)
 
     @staticmethod
-    def from_dict(input: REPLInput, output: dict) -> "REPLOutput":
-        return REPLOutputCommand(input=asdict(input), **output) \
+    def from_dict(input: Optional[REPLInput], output: dict) -> "REPLOutput":
+        input = None if input is None else asdict(input)
+
+        return REPLOutputCommand(input=input, **output) \
             if "env" in output \
-            else REPLOutputTactic(input=asdict(input), **output)
+            else REPLOutputTactic(input=input, **output)
 
     @staticmethod
     def from_sorry(sorry: dict) -> "REPLOutputTactic":
