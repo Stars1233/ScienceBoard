@@ -25,9 +25,7 @@ class RawManager(Manager):
 
         self.lib_path = lib_path
         self.cwd_path = os.path.join(lib_path, "test/Mathlib")
-
-        # TODO: reverse history
-        self.history: List[RawManager.Message] = []
+        self.history: List[Union[REPLOutput, REPLOutputTactic]] = []
 
         # download REPL and Mathlib
         if not os.path.exists(os.path.join(lib_path, ".git")):
@@ -62,14 +60,6 @@ class RawManager(Manager):
             self.process.stdin.flush()
             output = REPLOutput.from_dict(self.__read())
 
-            # if self.passed is None and "sorries" in output:
-            #     assert len(output["sorries"]) == 1
-            #     self.passed = False
-            #     output = {
-            #         "proofState": output["sorries"][0]["proofState"],
-            #         "goals": [output["sorries"][0]["goal"]]
-            #     }
-
             # if self.passed is not None \
             #     and "goals" in output \
             #     and len(output["goals"]) == 0 \
@@ -86,9 +76,11 @@ class RawManager(Manager):
 
     def __call__(self, tactic: str) -> None:
         output = self._call(json.loads(tactic), tactic_only=True)
-        self.history.append({
-            # ...
-        })
+
+        # panic here will cause skipping of the whole task
+        # but if this happened, there might be sth going wrong
+        assert type(output) in (REPLOutput, REPLOutputTactic)
+        self.history.append(output)
 
     def __enter__(self) -> Self:
         self.process = subprocess.Popen(
@@ -108,5 +100,4 @@ class RawManager(Manager):
         return super().__exit__(exc_type, exc_value, traceback)
 
     def textual(self) -> str:
-        assert len(self.history) > 0
-        return json.dumps(self.history[-1], indent=2)
+        return "\n".join([asdict(item) for item in self.history])

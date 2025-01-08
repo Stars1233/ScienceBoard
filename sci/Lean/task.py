@@ -38,7 +38,9 @@ class RawTask(Task, TaskMixin):
             "cmd": f"import {' '.join(libs)}",
             "env": self.env
         })
-        self.env = output["env"]
+        assert isinstance(output, REPLOutputCommand)
+
+        self.env = output.env
         return True
 
     def _open(self, libs: List[str]) -> bool:
@@ -46,20 +48,20 @@ class RawTask(Task, TaskMixin):
             "cmd": f"open {' '.join(libs)}",
             "env": self.env
         })
-        self.env = output["env"]
+        assert isinstance(output, REPLOutputCommand)
+
+        self.env = output.env
         return True
 
     def _query(self, expr) -> bool:
         output = self.manager._call({"cmd": expr, "env": self.env})
         assert isinstance(output, REPLOutputCommand)
         assert output.sorries is not None and len(output.sorries) == 1
-        sorry = output.sorries[0]
 
-        self.manager.history.append({
-            # ...
-        })
+        sorry = REPLOutput.from_sorry(output.sorries[0])
+        self.manager.history.append(sorry)
         return True
 
     @Task._stop_handler
     def eval(self) -> bool:
-        return self.manager.passed
+        return any([item.is_success() for item in self.manager.history])

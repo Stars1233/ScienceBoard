@@ -10,6 +10,9 @@ from ..base.override import *
 
 @dataclass
 class REPLInput:
+    def __dict_factory_override__(self) -> Dict[str, Any]:
+        return eliminate_nonetype(self)
+
     @staticmethod
     def from_dict(query: dict) -> Optional["REPLInput"]:
         if ("cmd" in query) \
@@ -27,9 +30,6 @@ class REPLInput:
 
         else:
             return None
-
-    def __dict_factory_override__(self) -> Dict[str, Any]:
-        return eliminate_nonetype(self)
 
     def dumps(self) -> str:
         return json.dumps(asdict(self)) + "\n\n"
@@ -53,12 +53,16 @@ class REPLOutput:
     message: Optional[str] = None
     messages: Optional[List] = None
 
+    def __dict_factory_override__(self) -> Dict[str, Any]:
+        return eliminate_nonetype(self)
+
     @staticmethod
     def from_dict(input: REPLInput, output: dict) -> "REPLOutput":
         return REPLOutputCommand(input=asdict(input), **output) \
             if "env" in output \
             else REPLOutputTactic(input=asdict(input), **output)
 
+    @staticmethod
     def from_sorry(sorry: dict) -> "REPLOutputTactic":
         return REPLOutputTactic(
             proofState=sorry["proofState"],
@@ -68,6 +72,9 @@ class REPLOutput:
     def is_error(self) -> bool:
         return self.message is not None \
             or any([item["severity"] == "error" for item in self.messages])
+
+    def is_success(self) -> bool:
+        return False
 
 
 @dataclass
