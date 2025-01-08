@@ -78,17 +78,17 @@ class RawManager(Manager):
         input = REPLInput.from_dict(query)
         output = None
 
-        if isinstance(input, REPLInputTactic) \
+        if (isinstance(input, REPLInputTactic) and "sorry" not in input.tactic) \
             or (not tactic_only and isinstance(input, REPLInputCommand)):
             self.process.stdin.write(input.dumps())
             self.process.stdin.flush()
             output = REPLOutput.from_dict(input=input, output=self.__read())
 
         else:
-            output = REPLOutput(
-                input=query,
-                message="Could not parse as a valid JSON tactic."
-            )
+            message = "Could not apply `sorry` in tactic mode." \
+                if (isinstance(input, REPLInputTactic) and "sorry" in input.tactic) \
+                else "Could not parse as a valid JSON tactic."
+            output = REPLOutput(input=query, message=message)
 
         return output
 
