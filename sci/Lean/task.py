@@ -36,6 +36,7 @@ class RawTask(Task, TaskMixin):
         self.opened: List[str] = []
         self.initial: Optional[REPLOutputTactic] = None
 
+        # LONG LIVE THE CLOSURE!!
         self.manager.set_headers(lambda _: filter(
             lambda item: item is not None,
             [self.header, self.origin]
@@ -60,7 +61,6 @@ class RawTask(Task, TaskMixin):
 
         return "Initial state of the problem: \n" + self.initial.dumps()
 
-    # TODO: check if they success
     def _import(self, libs: List[str]) -> bool:
         output = self.manager._call({
             "cmd": f"import {' '.join(libs)}",
