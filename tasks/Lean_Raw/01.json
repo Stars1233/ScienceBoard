@@ -2,20 +2,12 @@
     "type": "Lean",
     "sort": "Raw",
     "steps": 5,
-    "instruction": "theorem numbertheory_4x3m7y3neq2003 (x y : ℤ) : 4 * x^3 - 7 * y^3 ≠ 2003 := by sorry",
+    "instruction": "example : ∀ a b c : Nat, a = b → a = c → c = b := by sorry",
     "version": "0.1",
     "initialize": [
         {
-            "func": "import",
-            "libs": ["Mathlib"]
-        },
-        {
-            "func": "open",
-            "libs": ["BigOperators", "Real", "Nat", "Topology"]
-        },
-        {
             "func": "query",
-            "expr": "theorem numbertheory_4x3m7y3neq2003 (x y : ℤ) : 4 * x^3 - 7 * y^3 ≠ 2003 := by sorry"
+            "expr": "example : ∀ a b c : Nat, a = b → a = c → c = b := by sorry"
         }
     ],
     "evaluate": [

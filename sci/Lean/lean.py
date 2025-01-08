@@ -114,6 +114,7 @@ class RawManager(Manager):
             encoding="utf-8"
         )
 
+        self.history.clear()
         return super().__enter__()
 
     def __exit__(self, exc_type, exc_value, traceback) -> None:
