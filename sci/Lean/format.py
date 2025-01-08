@@ -18,13 +18,15 @@ class REPLInput:
 
     @staticmethod
     def from_dict(query: dict) -> Optional["REPLInput"]:
-        if ("cmd" in query) \
+        if isinstance(query, dict) \
+            and ("cmd" in query) \
             and isinstance(query["cmd"], str) \
             and ("env" not in query or type(query["env"]) in (int, type(None))) \
             and len(query) in (1, 2):
             return REPLInputCommand(**query)
 
-        elif ("tactic" in query) \
+        elif isinstance(query, dict) \
+            and ("tactic" in query) \
             and ("proofState" in query) \
             and isinstance(query["tactic"], str) \
             and isinstance(query["proofState"], int) \
@@ -49,7 +51,7 @@ class REPLInputTactic(REPLInput):
 
 @dataclass
 class REPLOutput:
-    input: Optional[Dict] = None
+    input: Optional[Any] = None
     message: Optional[str] = None
     messages: Optional[List] = None
 

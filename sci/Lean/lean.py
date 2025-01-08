@@ -62,14 +62,17 @@ class RawManager(Manager):
 
         else:
             output = REPLOutput(
-                input=input,
+                input=query,
                 message="Could not parse as a valid JSON tactic."
             )
 
         return output
 
     def __call__(self, tactic: str) -> None:
-        output = self._call(json.loads(tactic), tactic_only=True)
+        try:
+            tactic = json.loads(tactic)
+        except: ...
+        output = self._call(tactic, tactic_only=True)
 
         # panic here will cause skipping of the whole task
         # but if this happened, there might be sth going wrong
