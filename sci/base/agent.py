@@ -36,7 +36,7 @@ class Overflow:
 class Agent:
     USER_FLATTERY = "What's the next step that you will do to help with the task?"
     USER_OPENING: Dict[FrozenSet[str], str] = {
-        frozenset({OBS.textual}): "Given the terminal output as below:\n{textual}\n",
+        frozenset({OBS.textual}): "Given the textual information as below:\n{textual}\n",
         frozenset({OBS.screenshot}): "Given the screenshot as below. ",
         frozenset({OBS.a11y_tree}): "Given the info from accessibility tree as below:\n{a11y_tree}\n",
         frozenset({OBS.a11y_tree, OBS.set_of_marks}): "Given the tagged screenshot and info from accessibility tree as below:\n{a11y_tree}\n",

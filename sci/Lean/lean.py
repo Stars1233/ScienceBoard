@@ -25,11 +25,16 @@ class RawManager(Manager):
 
         self.lib_path = lib_path
         self.cwd_path = os.path.join(lib_path, "test/Mathlib")
+
+        self.set_headers(lambda _: [])
         self.history: List[Union[REPLOutput, REPLOutputTactic]] = []
 
         # download REPL and Mathlib
         if not os.path.exists(os.path.join(lib_path, ".git")):
             self.__fetch()
+
+    def set_headers(self, func) -> None:
+        setattr(self.__class__, "headers", property(func))
 
     def __fetch(self) -> None:
         assert os.system(f"git clone {RawManager.REPL_URL} {self.lib_path}") == 0
@@ -97,4 +102,6 @@ class RawManager(Manager):
         return super().__exit__(exc_type, exc_value, traceback)
 
     def textual(self) -> str:
-        return "\n".join([item.dumps() for item in self.history])
+        history_info = "Historical interactive records: \n" \
+            + "\n".join([item.dumps() for item in self.history])
+        return "\n\n".join([*self.headers, history_info])
