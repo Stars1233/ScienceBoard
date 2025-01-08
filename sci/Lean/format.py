@@ -13,6 +13,9 @@ class REPLInput:
     def __dict_factory_override__(self) -> Dict[str, Any]:
         return eliminate_nonetype(self)
 
+    def dumps(self) -> str:
+        return json.dumps(asdict(self)) + "\n\n"
+
     @staticmethod
     def from_dict(query: dict) -> Optional["REPLInput"]:
         if ("cmd" in query) \
@@ -30,9 +33,6 @@ class REPLInput:
 
         else:
             return None
-
-    def dumps(self) -> str:
-        return json.dumps(asdict(self)) + "\n\n"
 
 
 @dataclass
@@ -56,6 +56,9 @@ class REPLOutput:
     def __dict_factory_override__(self) -> Dict[str, Any]:
         return eliminate_nonetype(self)
 
+    def dumps(self) -> str:
+        return json.dumps(asdict(self))
+
     @staticmethod
     def from_dict(input: Optional[REPLInput], output: dict) -> "REPLOutput":
         input = None if input is None else asdict(input)
@@ -72,8 +75,10 @@ class REPLOutput:
         )
 
     def is_error(self) -> bool:
-        return self.message is not None \
-            or any([item["severity"] == "error" for item in self.messages])
+        message_error = self.message is not None
+        messages_error = self.messages is not None \
+            and any([item["severity"] == "error" for item in self.messages])
+        return message_error or messages_error
 
     def is_success(self) -> bool:
         return False

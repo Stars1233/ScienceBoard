@@ -94,4 +94,4 @@ class RawManager(Manager):
         return super().__exit__(exc_type, exc_value, traceback)
 
     def textual(self) -> str:
-        return "\n".join([asdict(item) for item in self.history])
+        return "\n".join([item.dumps() for item in self.history])
