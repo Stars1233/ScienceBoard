@@ -4,6 +4,7 @@ from typing import List
 sys.dont_write_bytecode = True
 from ..base import Task
 from .lean import RawManager
+from .format import *
 
 
 class TaskMixin:
