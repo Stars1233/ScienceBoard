@@ -25,12 +25,8 @@ class RawManager(Manager):
 
         self.lib_path = lib_path
         self.cwd_path = os.path.join(lib_path, "test/Mathlib")
-        self.history: List[RawManager.Message] = []
 
-        # None:  proof state not yet entered
-        # False: proof not finished
-        # True:  proof finished
-        # self.passed = None
+        self.history: List[RawManager.Message] = []
 
         # download REPL and Mathlib
         if not os.path.exists(os.path.join(lib_path, ".git")):
@@ -103,7 +99,6 @@ class RawManager(Manager):
             encoding="utf-8"
         )
 
-        self.passed = None
         return super().__enter__()
 
     def __exit__(self, exc_type, exc_value, traceback) -> None:

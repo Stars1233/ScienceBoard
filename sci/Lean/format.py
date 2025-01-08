@@ -3,6 +3,7 @@ import json
 from typing import List, Optional
 from dataclasses import dataclass, asdict
 
+
 @dataclass
 class REPLInput:
     @staticmethod

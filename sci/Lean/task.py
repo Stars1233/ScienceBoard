@@ -11,7 +11,7 @@ class TaskMixin:
     def __init__(self) -> None:
         raise
 
-    # do not use `@Task._config_handler`
+    # do not use `@Task._config_handler` here
     def check_config(self: Task) -> None:
         assert len(self.evaluate) > 0
 
@@ -32,7 +32,7 @@ class RawTask(Task, TaskMixin):
         super().__init__(config_path, manager, *args, **kwargs)
         self.check_config()
 
-    # TEMP: check if they success
+    # TODO: check if they success
     def _import(self, libs: List[str]) -> bool:
         output = self.manager._call({
             "cmd": f"import {' '.join(libs)}",
