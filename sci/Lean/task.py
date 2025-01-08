@@ -50,7 +50,14 @@ class RawTask(Task, TaskMixin):
         return True
 
     def _query(self, expr) -> bool:
-        self.manager._call({"cmd": expr, "env": self.env})
+        output = self.manager._call({"cmd": expr, "env": self.env})
+        assert isinstance(output, REPLOutputCommand)
+        assert output.sorries is not None and len(output.sorries) == 1
+        sorry = output.sorries[0]
+
+        self.manager.history.append({
+            # ...
+        })
         return True
 
     @Task._stop_handler

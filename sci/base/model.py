@@ -16,24 +16,11 @@ from requests import Response
 sys.dont_write_bytecode = True
 from . import utils
 from .manager import OBS
-
-# modify asdict() for class Content
-# ref: https://stackoverflow.com/a/78289335
-_asdict_inner_actual = dataclasses._asdict_inner
-def _asdict_inner(obj, dict_factory):
-    if dataclasses._is_dataclass_instance(obj):
-        if getattr(obj, "__dict_factory_override__", None):
-            user_dict = obj.__dict_factory_override__()
-            for key, value in user_dict.items():
-                if dataclasses._is_dataclass_instance(value):
-                    user_dict[key] = _asdict_inner(value, dict_factory)
-            return user_dict
-    return _asdict_inner_actual(obj, dict_factory)
-dataclasses._asdict_inner = _asdict_inner
-
+from .override import *
 
 ModelType = Literal["openai", "anthropic"]
 RoleType = Literal["system", "user", "assistant"]
+
 
 @dataclass
 class Content:

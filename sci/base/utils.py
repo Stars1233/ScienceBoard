@@ -7,7 +7,7 @@ from typing import Optional, Dict, Any
 from typing import Callable, ClassVar, Self
 from dataclasses import dataclass
 
-class SortVM():
+class SortVM:
     def __get__(self, _, obj_type=None) -> Optional["TypeSort"]:
         if inspect.signature(obj_type).parameters.__len__():
             return TypeSort("", TypeSort.Sort.VM)

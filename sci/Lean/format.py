@@ -1,7 +1,11 @@
+import sys
 import json
 
-from typing import List, Optional
+from typing import List, Dict, Any, Optional
 from dataclasses import dataclass, asdict
+
+sys.dont_write_bytecode = True
+from ..base.override import *
 
 
 @dataclass
@@ -24,7 +28,10 @@ class REPLInput:
         else:
             return None
 
-    def dump(self) -> str:
+    def __dict_factory_override__(self) -> Dict[str, Any]:
+        return eliminate_nonetype(self)
+
+    def dumps(self) -> str:
         return json.dumps(asdict(self)) + "\n\n"
 
 
@@ -42,15 +49,15 @@ class REPLInputTactic(REPLInput):
 
 @dataclass
 class REPLOutput:
-    input: Optional[REPLInput] = None
+    input: Optional[Dict] = None
     message: Optional[str] = None
     messages: Optional[List] = None
 
     @staticmethod
-    def from_dict(output: dict) -> "REPLOutput":
-        return REPLOutputCommand(**output) \
+    def from_dict(input: REPLInput, output: dict) -> "REPLOutput":
+        return REPLOutputCommand(input=asdict(input), **output) \
             if "env" in output \
-            else REPLOutputTactic(**output)
+            else REPLOutputTactic(input=asdict(input), **output)
 
     def from_sorry(sorry: dict) -> "REPLOutputTactic":
         return REPLOutputTactic(

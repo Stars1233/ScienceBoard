@@ -26,6 +26,7 @@ class RawManager(Manager):
         self.lib_path = lib_path
         self.cwd_path = os.path.join(lib_path, "test/Mathlib")
 
+        # TODO: reverse history
         self.history: List[RawManager.Message] = []
 
         # download REPL and Mathlib
@@ -57,7 +58,7 @@ class RawManager(Manager):
 
         if isinstance(input, REPLInputTactic) \
             or (not tactic_only and isinstance(input, REPLInputCommand)):
-            self.process.stdin.write(input.dump())
+            self.process.stdin.write(input.dumps())
             self.process.stdin.flush()
             output = REPLOutput.from_dict(self.__read())
 
@@ -77,16 +78,17 @@ class RawManager(Manager):
 
         else:
             output = REPLOutput(
+                input=asdict(input),
                 message="Could not parse as a valid JSON tactic."
             )
 
-        # if self.passed is not None:
-        #     self.history.append(output)
-        output.input = input
         return output
 
     def __call__(self, tactic: str) -> None:
-        self._call(json.loads(tactic), tactic_only=True)
+        output = self._call(json.loads(tactic), tactic_only=True)
+        self.history.append({
+            # ...
+        })
 
     def __enter__(self) -> Self:
         self.process = subprocess.Popen(
