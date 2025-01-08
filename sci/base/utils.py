@@ -6,6 +6,7 @@ from enum import Enum
 from typing import Optional, Dict, Any
 from typing import Callable, ClassVar, Self
 from dataclasses import dataclass
+from contextlib import contextmanager
 
 class SortVM:
     def __get__(self, _, obj_type=None) -> Optional["TypeSort"]:
@@ -81,3 +82,13 @@ def want(cls):
         return super(mro_chain[cls_index - 1], self)
     else:
         return self
+
+
+@contextmanager
+def temp_chdir(path):
+    last_path = os.getcwd()
+    try:
+        os.chdir(path)
+        yield
+    finally:
+        os.chdir(last_path)

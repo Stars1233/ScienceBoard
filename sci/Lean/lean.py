@@ -7,6 +7,7 @@ from typing import Dict, List, Union, Self
 
 sys.dont_write_bytecode
 from ..base import Manager
+from ..base.utils import temp_chdir
 from .format import *
 
 
@@ -16,11 +17,19 @@ class RawManager(Manager):
     REPL_URL = "https://github.com/leanprover-community/repl"
     TIMEOUT = 120
 
+    VERSION_MAP = {
+        "0.1": {
+            "tag": "v4.14.0"
+        }
+    }
+
     def __init__(
         self,
-        version: str,
+        version: str = "0.1",
         lib_path: str = None
     ) -> None:
+        # this assertion is prior to __check_version()
+        assert version in RawManager.VERSION_MAP
         super().__init__(version)
 
         self.lib_path = lib_path
@@ -32,17 +41,27 @@ class RawManager(Manager):
         # download REPL and Mathlib
         if not os.path.exists(os.path.join(lib_path, ".git")):
             self.__fetch()
+        else:
+            self.__version()
 
     def set_headers(self, func) -> None:
         setattr(self.__class__, "headers", property(func))
 
     def __fetch(self) -> None:
         assert os.system(f"git clone {RawManager.REPL_URL} {self.lib_path}") == 0
-        assert os.system("lake build repl") == 0
 
-        os.chdir(self.cwd_path)
-        assert os.system("lake exe cache get") == 0
-        assert os.system("lake build Mathlib") == 0
+        with temp_chdir(self.lib_path):
+            self.__version()
+            assert os.system("lake build repl") == 0
+
+        with temp_chdir(self.cwd_path):
+            assert os.system("lake exe cache get") == 0
+            assert os.system("lake build Mathlib") == 0
+
+    def __version(self):
+        tag_name = RawManager.VERSION_MAP[self.version]["tag"]
+        with temp_chdir(self.lib_path):
+            assert os.system(f"git checkout tags/{tag_name} --quiet") == 0
 
     def __read(self) -> Dict:
         raw_outputs = ""
