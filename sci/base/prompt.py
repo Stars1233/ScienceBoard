@@ -6,11 +6,10 @@ from .utils import TypeSort
 
 import sys
 import re
-import dataclasses
 
 from dataclasses import dataclass
 
-from typing import List, FrozenSet
+from typing import List, FrozenSet, Optional
 from typing import Callable, Self, NoReturn
 
 sys.dont_write_bytecode = True
@@ -165,8 +164,9 @@ class PromptFactory:
         self.code_handler: Callable[[str], str] = getattr(CodeLike, func_name)
 
     @staticmethod
-    def option(item: str) -> List[str]:
-        return [item] if len(input) > 0 else []
+    def option(item: Optional[str]) -> List[str]:
+        # usage: [..., *PromptFactory.option("..."), ...]
+        return [] if item is None or len(item) == 0 else [item]
 
     @staticmethod
     def filter(inputs: List[str]) -> List[str]:
@@ -229,23 +229,28 @@ class PromptFactory:
         ]])
 
     def _command(self, obs: FrozenSet[str], type_sort: TypeSort) -> str:
-        return "\n\n".join([
+        return "\n\n".join(PromptFactory.filter([
             self._general_command(obs, type_sort),
+            self._general_usage(),
             self._special_command()
-        ])
+        ]))
 
     def _warning(self, type_sort: TypeSort) -> str:
-        vm_tips = [self.VM_GENERAL] if type_sort == TypeSort.VM else []
-        ex_tips = getattr(
+        vm_tip = self.VM_GENERAL if type_sort == TypeSort.VM else None
+        extra_tips = getattr(
             Prompts,
-            str(type_sort).upper(),
+            str(type_sort).upper() + "_TIPS",
             getattr(
                 Prompts,
-                type_sort.type.upper(),
+                type_sort.type.upper() + "_TIPS",
                 []
             )
         )
-        return "\n".join([*vm_tips, *ex_tips])
+
+        return "\n".join([
+            *PromptFactory.option(vm_tip),
+            *extra_tips
+        ])
 
     def _ending(self) -> Callable[[str], str]:
         return lambda inst: "\n".join([
