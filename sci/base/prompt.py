@@ -121,9 +121,9 @@ class CodeLike:
 class PromptFactory:
     # first section: _intro
     GENERAL_INTRO = "You are an agent which follow my instruction and perform desktop computer tasks as instructed."
-    APP_GENERAL = "an application of Ubuntu"
+    APP_GENERAL = "an application available on Ubuntu"
     APP_INCENTIVE = {
-        RAW: lambda type, brief_intro: f"You have good knowledge of {type}, {brief_intro}, and assume that your code will run directly in the CLI of {type}.",
+        RAW: lambda type, brief_intro: f"You have good knowledge of {type}, {brief_intro}, and assume that your code will run directly in the CLI or REPL of {type}.",
         VM: lambda type, brief_intro: f"You have good knowledge of {type}, {brief_intro}, and assume your code will run on a computer controlling the mouse and keyboard."
     }
     OBS_INCENTIVE = staticmethod(lambda obs_descr: f"For each step, you will get an observation of the desktop by {obs_descr}, and you will predict actions of the next step based on that.")
@@ -182,6 +182,9 @@ class PromptFactory:
             self.APP_INCENTIVE[type_sort.sort](type_sort.type, brief_intro),
             self.OBS_INCENTIVE(self._unfold(obs))
         ])
+
+    def _usage(self) -> str:
+        return "..."
 
     def _general_command(self, type_sort: TypeSort) -> str:
         return "\n".join([

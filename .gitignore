@@ -1,4 +1,6 @@
-.temp
+/.temp
+/.in
+/.out
 
 .vscode
 .VSCodeCounter

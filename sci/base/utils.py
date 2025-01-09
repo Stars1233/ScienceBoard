@@ -46,7 +46,7 @@ class TypeSort:
         return self.sort.name + postfix
 
 RawType = lambda type: TypeSort(type, TypeSort.Sort.Raw)
-VMType = lambda type: TypeSort(type, TypeSort.Sort.Raw)
+VMType = lambda type: TypeSort(type, TypeSort.Sort.VM)
 
 
 def error_factory(default_value: Any):
