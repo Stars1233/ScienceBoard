@@ -12,14 +12,14 @@ VM_PASSWORD = "password"
 LEAN_IS = "an interactive theorem prover"
 LEAN_RAW_NEED = "JSON of Lean REPL"
 LEAN_RAW_USAGE = [
-    "You will be given a unproved theorem declared by `sorry`, which is what you need to prove.",
+    "You will be given an unproved theorem declared by `sorry`, which is what you need to prove.",
     "Each round you will receive the imports information and initial states together with possible historical interaction records as textual observation, and you are expected to apply EXACTLY ONE tactic as a response.",
     "Your submission will be passed to REPL directly, and it should be a JSON with and only with `tactic` and `proofState` fields, such as {\"tactic\": \"apply Int.natAbs\", \"proofState\": 0}`.",
     "It is worth noting that the `proofState` which REPL returns contains all proof states stored, so your JSON should also contains this field from which the proof continues."
 ]
 LEAN_RAW_TIPS = [
-    "DO NOT use `sorry` or `admit` to forcibly close the proof, or your input will be ignored.",
-    "NEVER submit any Lean 3 code which the compiler of Lean 4 no longer accpets."
+    "DO NOT use `sorry` or `admit` to close the proof forcibly, or your input will be ignored.",
+    "NEVER submit any Lean 3 code which the compiler of Lean 4 no longer accepts."
 ]
 
 CHIMERAX_IS = "a molecular visualization software"
@@ -31,5 +31,5 @@ CHIMERAX_VM_TIPS = [
 
 KALGEBRA_IS = "a mathematical graph calculator"
 KALGEBRA_VM_TIPS = [
-    "Be aware that equations in 3D plotting is a bit different from normal mathematics. For example, the equation `x = y` is actually equivalent to `(x, y) -> x - y`, which means `z = x - y` in KAlgebra."
+    "Be aware that equations in 3D plotting is a bit different from notations of real mathematics. For example, the equation `x = y` is actually equivalent to `(x, y) -> x - y`, which means `z = x - y` in KAlgebra."
 ]
