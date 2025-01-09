@@ -262,18 +262,19 @@ class Tester:
         self.agent = automata()
         self.agent.vlog.set(self.log)
 
-        # manager in managers should not be Manager itself
-        assert isinstance(vm_path, str)
-        vm_path = os.path.expanduser(vm_path)
-        self.modules = Presets.spawn_modules()
-        self.manager_args = Presets.spawn_managers(vm_path)
-        self.managers = {}
-
         assert isinstance(obs_types, Iterable)
         self.obs_types = obs_types
 
-        assert vm_path is None or isinstance(vm_path, str)
+        if isinstance(vm_path, str):
+            vm_path = os.path.expanduser(vm_path)
+        else:
+            assert vm_path is None
         self.vm_path = vm_path
+
+        # manager in managers should not be Manager itself
+        self.modules = Presets.spawn_modules()
+        self.manager_args = Presets.spawn_managers(vm_path)
+        self.managers = {}
 
         assert isinstance(ignore, bool)
         self.ignore = ignore
