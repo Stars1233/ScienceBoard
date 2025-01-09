@@ -172,6 +172,18 @@ class PromptFactory:
     def filter(inputs: List[str]) -> List[str]:
         return [item for item in inputs if len(item) > 0]
 
+    def getattr(self, type_sort: TypeSort, name: str, default: Any) -> Any:
+        assert type(default) == type(results := getattr(
+            Prompts,
+            str(type_sort).upper() + "_" + name,
+            getattr(
+                Prompts,
+                type_sort.type.upper() + "_" + name,
+                default
+            )
+        ))
+        return results
+
     def _unfold(self, obs: FrozenSet[str]) -> str:
         get_descr = lambda obs_name: getattr(Manager, obs_name).__doc__
         obs = list(obs)
@@ -185,12 +197,7 @@ class PromptFactory:
             ]) + f"; and {len(obs)}) " + get_descr(obs[-1])
 
     def _intro(self, obs: FrozenSet[str], type_sort: TypeSort) -> str:
-        brief_intro = getattr(
-            Prompts,
-            type_sort.type.upper() + "_IS",
-            self.APP_GENERAL
-        )
-
+        brief_intro = self.getattr(type_sort, "IS", self.APP_GENERAL)
         return "\n".join([
             self.GENERAL_INTRO,
             self.APP_INCENTIVE[type_sort.sort](type_sort.type, brief_intro),
@@ -198,11 +205,7 @@ class PromptFactory:
         ])
 
     def _general_command(self, obs: FrozenSet[str], type_sort: TypeSort) -> str:
-        media = getattr(
-            Prompts,
-            type_sort.type.upper() + "_NEED",
-            type_sort.type + " commands"
-        )
+        media = self.getattr(type_sort, "NEED", type_sort.type + " commands")
         set_of_marks = self.SOM_SUPPLEMENT if OBS.set_of_marks in obs else []
 
         return "\n\n".join(PromptFactory.filter([
@@ -237,15 +240,7 @@ class PromptFactory:
 
     def _warning(self, type_sort: TypeSort) -> str:
         vm_tip = self.VM_GENERAL if type_sort == TypeSort.VM else None
-        extra_tips = getattr(
-            Prompts,
-            str(type_sort).upper() + "_TIPS",
-            getattr(
-                Prompts,
-                type_sort.type.upper() + "_TIPS",
-                []
-            )
-        )
+        extra_tips = self.getattr(type_sort, "TIPS", [])
 
         return "\n".join([
             *PromptFactory.option(vm_tip),
