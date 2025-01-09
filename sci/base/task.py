@@ -71,11 +71,7 @@ class Task:
         if self.type_sort.sort == TypeSort.Sort.VM:
             self.obs_types = set(obs_types)
         elif manager is not None:
-            self.obs_types = {
-                OBS.screenshot
-                if Manager.is_gui
-                else OBS.textual
-            }
+            self.obs_types = {OBS.screenshot if manager.is_gui else OBS.textual}
 
         assert isinstance(debug, bool)
         self.debug = debug
