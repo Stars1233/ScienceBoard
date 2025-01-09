@@ -123,8 +123,8 @@ class PromptFactory:
     GENERAL_INTRO = "You are an agent which follow my instruction and perform desktop computer tasks as instructed."
     APP_GENERAL = "an application available on Ubuntu"
     APP_INCENTIVE = {
-        RAW: lambda type, brief_intro: f"You have good knowledge of {type}, {brief_intro}; and assume that your code will run directly in the CLI/REPL of {type}.",
-        VM: lambda type, brief_intro: f"You have good knowledge of {type}, {brief_intro}; and assume your code will run on a computer controlling the mouse and keyboard."
+        RAW: lambda type, intro: f"You have good knowledge of {type}, {intro}; and assume that your code will run directly in the CLI/REPL of {type}.",
+        VM: lambda type, intro: f"You have good knowledge of {type}, {intro}; and assume your code will run on a computer controlling the mouse and keyboard."
     }
     OBS_INCENTIVE = staticmethod(lambda obs_descr: f"For each step, you will get an observation of the desktop by {obs_descr}, and you will predict actions of the next step based on that.")
 
@@ -132,7 +132,7 @@ class PromptFactory:
     # second #1: _general_command
     RETURN_OVERVIEW = {
         RAW: lambda type, media: f"You are required to use {media} to perform the action grounded to the observation. DO NOT use the bash commands or and other codes that {type} itself does not support.",
-        VM: lambda _: "You are required to use `pyautogui` to perform the action grounded to the observation, but DO NOT use the `pyautogui.locateCenterOnScreen` function to locate the element you want to operate with since we have no image of the element you want to operate with. DO NOT USE `pyautogui.screenshot()` to make screenshot."
+        VM: lambda _, __: "You are required to use `pyautogui` to perform the action grounded to the observation, but DO NOT use the `pyautogui.locateCenterOnScreen` function to locate the element you want to operate with since we have no image of the element you want to operate with. DO NOT USE `pyautogui.screenshot()` to make screenshot."
     }
     RETURN_REGULATION = {
         "antiquot": "You ONLY need to return the code inside a code block, like this:\n```\n# your code here\n```"
@@ -142,11 +142,11 @@ class PromptFactory:
         VM: "Return one line or multiple lines of python code to perform the action each time, and be time efficient. When predicting multiple lines of code, make some small sleep like `time.sleep(0.5);` interval so that the machine could take breaks. Each time you need to predict a complete code, and no variables or function can be shared from history."
     }
 
+    # second #1.5: supplementary instruction for set of marks
     SOM_SUPPLEMENT = [
         "You can replace x, y in the code with the tag of elements you want to operate with, such as:",
         "«\npyautogui.moveTo(tag_3)\npyautogui.click(tag_2)\npyautogui.dragTo(tag_1, button='left')\n»",
-        "When you think you can directly output precise x and y coordinates or there is no tag on which you want to interact, you can also use them directly.",
-        "But you should be careful to ensure that the coordinates are correct."
+        "When you think you can directly output precise x and y coordinates or there is no tag on which you want to interact, you can also use them directly; but you should be careful to ensure the correct of coordinates."
     ]
 
     # second #3: _general_command
@@ -163,6 +163,14 @@ class PromptFactory:
         assert hasattr(CodeLike, func_name:=f"wrap_{code_style}")
         self.code_style = code_style
         self.code_handler: Callable[[str], str] = getattr(CodeLike, func_name)
+
+    @staticmethod
+    def option(item: str) -> List[str]:
+        return [item] if len(input) > 0 else []
+
+    @staticmethod
+    def filter(inputs: List[str]) -> List[str]:
+        return [item for item in inputs if len(item) > 0]
 
     def _unfold(self, obs: FrozenSet[str]) -> str:
         get_descr = lambda obs_name: getattr(Manager, obs_name).__doc__
@@ -189,18 +197,22 @@ class PromptFactory:
             self.OBS_INCENTIVE(self._unfold(obs))
         ])
 
-    def _general_command(self, type_sort: TypeSort) -> str:
+    def _general_command(self, obs: FrozenSet[str], type_sort: TypeSort) -> str:
         media = getattr(
             Prompts,
             type_sort.type.upper() + "_NEED",
             type_sort.type + " commands"
         )
+        set_of_marks = self.SOM_SUPPLEMENT if OBS.set_of_marks in obs else []
 
-        return "\n".join([
-            self.RETURN_OVERVIEW[type_sort.sort](type_sort.type, media),
-            self.RETURN_REGULATION[self.code_style],
-            self.RETURN_SUPPLEMENT[type_sort.sort]
-        ])
+        return "\n\n".join(PromptFactory.filter([
+            "\n".join([
+                self.RETURN_OVERVIEW[type_sort.sort](type_sort.type, media),
+                self.RETURN_REGULATION[self.code_style],
+                self.RETURN_SUPPLEMENT[type_sort.sort],
+            ]),
+            "\n".join([self.code_handler(item) for item in set_of_marks]),
+        ]))
 
     def _general_usage(self) -> str:
         return ""
@@ -217,10 +229,8 @@ class PromptFactory:
         ]])
 
     def _command(self, obs: FrozenSet[str], type_sort: TypeSort) -> str:
-        set_of_marks = self.SOM_SUPPLEMENT if OBS.set_of_marks in obs else []
         return "\n\n".join([
-            self._general_command(type_sort),
-            *[self.code_handler(item) for item in set_of_marks],
+            self._general_command(obs, type_sort),
             self._special_command()
         ])
 
@@ -248,9 +258,9 @@ class PromptFactory:
         obs: FrozenSet[str],
         type_sort: TypeSort
     ) -> Callable[[str], str]:
-        return lambda inst: "\n\n".join([item for item in [
+        return lambda inst: "\n\n".join(PromptFactory.filter([
             self._intro(obs, type_sort),
             self._command(obs, type_sort),
             self._warning(type_sort),
             self._ending()(inst)
-        ] if len(item) > 0])
+        ]))
