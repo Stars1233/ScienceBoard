@@ -123,22 +123,23 @@ class PromptFactory:
     GENERAL_INTRO = "You are an agent which follow my instruction and perform desktop computer tasks as instructed."
     APP_GENERAL = "an application available on Ubuntu"
     APP_INCENTIVE = {
-        RAW: lambda type, brief_intro: f"You have good knowledge of {type}, {brief_intro}; and assume that your code will run directly in the CLI or REPL of {type}.",
+        RAW: lambda type, brief_intro: f"You have good knowledge of {type}, {brief_intro}; and assume that your code will run directly in the CLI/REPL of {type}.",
         VM: lambda type, brief_intro: f"You have good knowledge of {type}, {brief_intro}; and assume your code will run on a computer controlling the mouse and keyboard."
     }
     OBS_INCENTIVE = staticmethod(lambda obs_descr: f"For each step, you will get an observation of the desktop by {obs_descr}, and you will predict actions of the next step based on that.")
 
     # second section: _command = _general_command + _general_usage + _special_command
+    # second #1: _general_command
     RETURN_OVERVIEW = {
         RAW: lambda type, media: f"You are required to use {media} to perform the action grounded to the observation. DO NOT use the bash commands or and other codes that {type} itself does not support.",
         VM: lambda _: "You are required to use `pyautogui` to perform the action grounded to the observation, but DO NOT use the `pyautogui.locateCenterOnScreen` function to locate the element you want to operate with since we have no image of the element you want to operate with. DO NOT USE `pyautogui.screenshot()` to make screenshot."
     }
-    RETURN_SUPPLEMENT = {
-        RAW: lambda type: f"Return one line or multiple lines of {type} CLI commands to perform the action each time, be time efficient.",
-        VM: lambda _: "Return one line or multiple lines of python code to perform the action each time, be time efficient. When predicting multiple lines of code, make some small sleep like `time.sleep(0.5);` interval so that the machine could take; Each time you need to predict a complete code, no variables or function can be shared from history"
-    }
     RETURN_REGULATION = {
         "antiquot": "You ONLY need to return the code inside a code block, like this:\n```\n# your code here\n```"
+    }
+    RETURN_SUPPLEMENT = {
+        RAW: "Return exact one line of commands to perform the action in each code block.",
+        VM: "Return one line or multiple lines of python code to perform the action each time, and be time efficient. When predicting multiple lines of code, make some small sleep like `time.sleep(0.5);` interval so that the machine could take breaks. Each time you need to predict a complete code, and no variables or function can be shared from history."
     }
 
     SOM_SUPPLEMENT = [
@@ -147,6 +148,8 @@ class PromptFactory:
         "When you think you can directly output precise x and y coordinates or there is no tag on which you want to interact, you can also use them directly.",
         "But you should be careful to ensure that the coordinates are correct."
     ]
+
+    # second #3: _general_command
     SPECIAL_OVERVIEW = "Specially, it is also allowed to return the following special code:"
 
     # third section: _warning
@@ -189,14 +192,14 @@ class PromptFactory:
     def _general_command(self, type_sort: TypeSort) -> str:
         media = getattr(
             Prompts,
-            type_sort.type.upper() + "_MEDIA",
+            type_sort.type.upper() + "_NEED",
             type_sort.type + " commands"
         )
 
         return "\n".join([
             self.RETURN_OVERVIEW[type_sort.sort](type_sort.type, media),
-            self.RETURN_SUPPLEMENT[type_sort.sort](type_sort.type),
-            self.RETURN_REGULATION[self.code_style]
+            self.RETURN_REGULATION[self.code_style],
+            self.RETURN_SUPPLEMENT[type_sort.sort]
         ])
 
     def _general_usage(self) -> str:

@@ -3,11 +3,11 @@ VM_PASSWORD = "password"
 
 # take Lean for instance, a set of prompts for a specific app should include following:
 #   `LEAN_IS`: optional, used for brief_intro in APP_INCENTIVE
-#   `LEAN_MEDIA`: optional, a generalization of demanded input under Raw sort
+#   `LEAN_NEED`: optional, a generalization of demanded input under Raw sort
 #   `LEAN_(RAW|VM)`: optional, used for exclusive tips, fallback to (`${type.upper()}` ?? null) if not found
 
 LEAN_IS = "an interactive theorem prover"
-LEAN_MEDIA = "JSON of Lean REPL"
+LEAN_NEED = "JSON of Lean REPL"
 LEAN_RAW = [
     "The proof will be written in tactic mode, and you should apply ONE tactic each time, which returns a integer of proofState with all states stored.",
     "You should submit an JSON with `tactic` and `proofState` (the first proofState is 0), such as `{\"tactic\": \"apply Int.natAbs\", \"proofState\": 0}`"

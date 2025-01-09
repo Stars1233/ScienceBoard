@@ -1,6 +1,5 @@
 import sys
 import base64
-import dataclasses
 
 from dataclasses import dataclass, field
 from io import BytesIO
