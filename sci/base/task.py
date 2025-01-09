@@ -257,7 +257,8 @@ class Task:
             step_index,
             obs,
             response_codes,
-            self.agent.dump_history()
+            self.agent.dump_history(),
+            OBS.textual in obs
         )
 
     def __test_prompt(self) -> None:

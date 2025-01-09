@@ -367,7 +367,8 @@ class Log:
         step_index: int,
         obs: Dict[str, Any],
         codes: List["CodeLike"],
-        request: Dict[str, Any]
+        request: Dict[str, Any],
+        is_textual: bool
     ) -> None:
         assert self.save_path is not None, "Call trigger() first"
 
@@ -378,11 +379,11 @@ class Log:
             "actions": [code_like.code for code_like in codes]
         }
 
-        text_file_name = self.TEXT_FILENAME.format(
+        text_filename = self.TEXT_FILENAME.format(
             index=step_index,
             timestamp=timestamp
         )
-        text_file_path = os.path.join(self.save_path, text_file_name)
+        text_file_path = os.path.join(self.save_path, text_filename)
 
         image_filename = self.IMAGE_FILENAME.format(
             index=step_index,
@@ -390,13 +391,14 @@ class Log:
         )
         image_file_path = os.path.join(self.save_path, image_filename)
 
-        # save a11y_tree to new file
+        # save textual/a11y_tree to new file
         filtered_text = [
             item for item in obs.values()
             if isinstance(item, str)
         ]
         if len(filtered_text) == 1:
-            traj_obj["a11y_tree"] = text_file_name
+            key_name = "textual" if is_textual else "a11y_tree"
+            traj_obj[key_name] = text_filename
             with open(text_file_path, mode="w", encoding="utf-8") as writable:
                 writable.write(filtered_text[0])
 
