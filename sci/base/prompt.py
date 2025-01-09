@@ -217,8 +217,8 @@ class PromptFactory:
             "\n".join([self.code_handler(item) for item in set_of_marks]),
         ]))
 
-    def _general_usage(self) -> str:
-        return ""
+    def _general_usage(self, type_sort: TypeSort) -> str:
+        return "\n".join(self.getattr(type_sort, "USAGE", []))
 
     def _special_command(self) -> str:
         docs = [
@@ -234,7 +234,7 @@ class PromptFactory:
     def _command(self, obs: FrozenSet[str], type_sort: TypeSort) -> str:
         return "\n\n".join(PromptFactory.filter([
             self._general_command(obs, type_sort),
-            self._general_usage(),
+            self._general_usage(type_sort),
             self._special_command()
         ]))
 
