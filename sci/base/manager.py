@@ -82,7 +82,7 @@ class Manager:
         return _assert_wrapper
 
     def textual(self) -> Union[str, NoReturn]:
-        """textual output from terminal"""
+        """textual information extracted from terminal"""
         raise NotImplementedError
 
     def screenshot(self) -> Union[Image.Image, NoReturn]:

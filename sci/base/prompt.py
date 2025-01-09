@@ -123,14 +123,14 @@ class PromptFactory:
     GENERAL_INTRO = "You are an agent which follow my instruction and perform desktop computer tasks as instructed."
     APP_GENERAL = "an application available on Ubuntu"
     APP_INCENTIVE = {
-        RAW: lambda type, brief_intro: f"You have good knowledge of {type}, {brief_intro}, and assume that your code will run directly in the CLI or REPL of {type}.",
-        VM: lambda type, brief_intro: f"You have good knowledge of {type}, {brief_intro}, and assume your code will run on a computer controlling the mouse and keyboard."
+        RAW: lambda type, brief_intro: f"You have good knowledge of {type}, {brief_intro}; and assume that your code will run directly in the CLI or REPL of {type}.",
+        VM: lambda type, brief_intro: f"You have good knowledge of {type}, {brief_intro}; and assume your code will run on a computer controlling the mouse and keyboard."
     }
     OBS_INCENTIVE = staticmethod(lambda obs_descr: f"For each step, you will get an observation of the desktop by {obs_descr}, and you will predict actions of the next step based on that.")
 
-    # second section: _command = _general_command + _special_command
+    # second section: _command = _general_command + _general_usage + _special_command
     RETURN_OVERVIEW = {
-        RAW: lambda type: f"You are required to use {type} commands to perform the action grounded to the observation. DO NOT use the bash commands or and other codes that {type} itself does not support.",
+        RAW: lambda type, media: f"You are required to use {media} to perform the action grounded to the observation. DO NOT use the bash commands or and other codes that {type} itself does not support.",
         VM: lambda _: "You are required to use `pyautogui` to perform the action grounded to the observation, but DO NOT use the `pyautogui.locateCenterOnScreen` function to locate the element you want to operate with since we have no image of the element you want to operate with. DO NOT USE `pyautogui.screenshot()` to make screenshot."
     }
     RETURN_SUPPLEMENT = {
@@ -174,8 +174,11 @@ class PromptFactory:
             ]) + f"; and {len(obs)}) " + get_descr(obs[-1])
 
     def _intro(self, obs: FrozenSet[str], type_sort: TypeSort) -> str:
-        brief_intro_name = type_sort.type.upper() + "_IS"
-        brief_intro = getattr(Prompts, brief_intro_name, self.APP_GENERAL)
+        brief_intro = getattr(
+            Prompts,
+            type_sort.type.upper() + "_IS",
+            self.APP_GENERAL
+        )
 
         return "\n".join([
             self.GENERAL_INTRO,
@@ -183,15 +186,21 @@ class PromptFactory:
             self.OBS_INCENTIVE(self._unfold(obs))
         ])
 
-    def _usage(self) -> str:
-        return "..."
-
     def _general_command(self, type_sort: TypeSort) -> str:
+        media = getattr(
+            Prompts,
+            type_sort.type.upper() + "_MEDIA",
+            type_sort.type + " commands"
+        )
+
         return "\n".join([
-            self.RETURN_OVERVIEW[type_sort.sort](type_sort.type),
+            self.RETURN_OVERVIEW[type_sort.sort](type_sort.type, media),
             self.RETURN_SUPPLEMENT[type_sort.sort](type_sort.type),
             self.RETURN_REGULATION[self.code_style]
         ])
+
+    def _general_usage(self) -> str:
+        return ""
 
     def _special_command(self) -> str:
         docs = [
