@@ -71,10 +71,10 @@ class CodeLike:
         tag_prefix = ""
         for index, tag in enumerate(tags):
             cord_x, cord_y, width, height = tag
-            tag_prefix += "tag_" + str(index + 1) + "=" + "({}, {})".format(
-                int(cord_x + width // 2),
-                int(cord_y + height // 2)
-            )
+            tag_prefix += "tag_" \
+                + str(index + 1) \
+                + "=" \
+                + f"({cord_x + width // 2}, {cord_y + height // 2})"
             tag_prefix += "\n"
         return tag_prefix.strip()
 

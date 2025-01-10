@@ -77,9 +77,9 @@ class RawManager(Manager):
     def _call(self, query: Message, tactic_only: bool = False) -> REPLOutput:
         input = REPLInput.from_dict(query)
         output = None
-        force = ("sorry" in input.tactic) or ("admit" in input.tactic)
+        force = lambda input: ("sorry" in input.tactic) or ("admit" in input.tactic)
 
-        if (isinstance(input, REPLInputTactic) and not force) \
+        if (isinstance(input, REPLInputTactic) and not force(input)) \
             or (not tactic_only and isinstance(input, REPLInputCommand)):
             self.process.stdin.write(input.dumps())
             self.process.stdin.flush()
@@ -87,7 +87,7 @@ class RawManager(Manager):
 
         else:
             message = "Could not apply `sorry` or `admit` in tactic mode." \
-                if (isinstance(input, REPLInputTactic) and force) \
+                if (isinstance(input, REPLInputTactic) and force(input)) \
                 else "Could not parse as a valid JSON tactic."
             output = REPLOutput(input=query, message=message)
 
