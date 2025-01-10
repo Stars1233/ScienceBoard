@@ -45,7 +45,7 @@ class RawManager(Manager, ManagerMixin):
         self,
         bin_path: str,
         lib_path: str,
-        version: str = "0.2",
+        version: str = "0.3",
         port: int = 8000
     ) -> None:
         super().__init__(version)
