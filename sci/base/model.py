@@ -43,7 +43,12 @@ class TextContent(Content):
 
     # overwrite Content._asdict()
     # asdict(TextContent(...)) will also be redirected here
-    def _asdict(self, hide_text: bool = False, **_) -> Dict[str, Any]:
+    def _asdict(
+        self,
+        hide_text: bool = False,
+        use_format: bool = False,
+        **_
+    ) -> Dict[str, Any]:
         args = {
             OBS.textual: TextContent.PLACEHOLDER,
             OBS.a11y_tree: TextContent.PLACEHOLDER
@@ -51,7 +56,7 @@ class TextContent(Content):
 
         return {
             "type": "text",
-            "text": self.text.format(**args)
+            "text": self.text.format(**args) if use_format else self.text
         }
 
 
@@ -100,7 +105,11 @@ class Message:
         result = {
             "role": self.role,
             "content": [
-                content._asdict(style=self.style, hide_text=hide_text)
+                content._asdict(
+                    style=self.style,
+                    hide_text=hide_text,
+                    use_format=self.role=="user"
+                )
                 for content in self.content
             ]
         }

@@ -3,11 +3,12 @@ import os
 import json
 import subprocess
 
-from typing import Dict, List, Union, Self
+from typing import Dict, List, Union
+from typing import Callable, Self
 
 sys.dont_write_bytecode
 from ..base import utils
-from ..base import Manager
+from ..base import Manager, PromptFactory
 from .format import *
 
 
@@ -44,7 +45,7 @@ class RawManager(Manager):
         else:
             self.__version()
 
-    def set_headers(self, func) -> None:
+    def set_headers(self, func: Callable) -> None:
         setattr(self.__class__, "headers", property(func))
 
     def __fetch(self) -> None:
@@ -123,6 +124,11 @@ class RawManager(Manager):
         return super().__exit__(exc_type, exc_value, traceback)
 
     def textual(self) -> str:
-        history_info = "Historical interactive records: \n" \
-            + "\n".join([item.dumps() for item in self.history])
-        return "\n\n".join([*self.headers, history_info])
+        history_info = "\n".join([item.dumps() for item in self.history])
+        if len(history_info) > 0:
+            history_info = "Historical interactive records: \n" + history_info
+
+        return "\n\n".join([
+            *PromptFactory.filter(self.headers),
+            *PromptFactory.option(history_info)
+        ])

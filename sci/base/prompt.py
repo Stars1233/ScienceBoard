@@ -166,11 +166,14 @@ class PromptFactory:
     @staticmethod
     def option(item: Optional[str]) -> List[str]:
         # usage: [..., *PromptFactory.option("..."), ...]
-        return [] if item is None or len(item) == 0 else [item]
+        return PromptFactory.filter([item])
 
     @staticmethod
     def filter(inputs: List[str]) -> List[str]:
-        return [item for item in inputs if len(item) > 0]
+        return [
+            item for item in inputs
+            if isinstance(item, str) and len(item) > 0
+        ]
 
     def getattr(self, type_sort: TypeSort, name: str, default: Any) -> Any:
         assert type(default) == type(results := getattr(

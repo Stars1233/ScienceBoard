@@ -36,16 +36,10 @@ class RawTask(Task, TaskMixin):
         self.opened: List[str] = []
         self.initial: Optional[REPLOutputTactic] = None
 
-        # LONG LIVE THE CLOSURE!!
-        self.manager.set_headers(lambda _: filter(
-            lambda item: item is not None,
-            [self.header, self.origin]
-        ))
-
     @property
     def header(self) -> Optional[str]:
         if len(self.imported) == 0 and len(self.opened) == 0:
-            return None
+            return "No imported files or opened namespaces."
 
         results = ["Headers of the file: "]
         if len(self.imported) > 0:
@@ -90,6 +84,14 @@ class RawTask(Task, TaskMixin):
 
         self.initial = REPLOutput.from_sorry(output.sorries[0])
         return True
+
+    def __call__(self) -> bool:
+        # LONG LIVE THE CLOSURE!!
+        self.manager.set_headers(lambda _: filter(
+            lambda item: item is not None,
+            [self.header, self.origin]
+        ))
+        return super().__call__()
 
     @Task._stop_handler
     def eval(self) -> bool:
