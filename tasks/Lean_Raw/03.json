@@ -1,13 +1,13 @@
 {
     "type": "Lean",
     "sort": "Raw",
-    "steps": 5,
-    "instruction": "example : ∃ x, x + 2 = 8 := by sorry",
+    "steps": 10,
+    "instruction": "example (p q : Prop) : p ∨ q → q ∨ p := by sorry",
     "version": "0.1",
     "initialize": [
         {
             "func": "query",
-            "expr": "example : ∃ x, x + 2 = 8 := by sorry"
+            "expr": "example (p q : Prop) : p ∨ q → q ∨ p := by sorry"
         }
     ],
     "evaluate": [
