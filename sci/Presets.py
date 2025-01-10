@@ -27,7 +27,7 @@ def spawn_managers(vm_path: Optional[str] = None) -> Config:
             "gui": True
         },
         TypeSort.Raw("KAlgebra"): lambda: {
-            "version": "0.2",
+            "version": "0.3",
             "bin_path": os.environ["KALG_BIN_PATH"],
             "lib_path": os.environ["QT6_LIB_PATH"],
             "port": 8000
