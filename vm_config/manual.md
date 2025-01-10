@@ -109,20 +109,27 @@
     vmrun -T ws -gu user -gp password runProgramInGuest /tmp/VM/Ubuntu.vmx /usr/bin/bash -c "mkdir -p /home/user/.config/systemd/user"
     vmrun -T ws -gu user -gp password CopyFileFromHostToGuest /tmp/VM/Ubuntu.vmx vm_config/server.py /home/user/server/main.py
     vmrun -T ws -gu user -gp password CopyFileFromHostToGuest /tmp/VM/Ubuntu.vmx vm_config/pyxcursor.py /home/user/server/pyxcursor.py
-    vmrun -T ws -gu user -gp password CopyFileFromHostToGuest /tmp/VM/Ubuntu.vmx vm_config/config.ini /home/user/.config/systemd/user/osworld.service
+    vmrun -T ws -gu user -gp password CopyFileFromHostToGuest /tmp/VM/Ubuntu.vmx vm_config/service.conf /home/user/.config/systemd/user/osworld.service
     ```
 
-    (GUEST) start daemon process:
+    1. (GUEST) Switch `XDG_SESSION_TYPE` to `x11`:
 
-    ```shell
-    pip install python-xlib lxml pyautogui Flask numpy
-    sudo apt install python3-tk python3-dev ffmpeg
-    gsettings set org.gnome.desktop.interface toolkit-accessibility true
+        ```shell
+        sudo sed -i 's/^#WaylandEnable=false/WaylandEnable=false/' /etc/gdm3/custom.conf
+        sudo systemctl restart gdm
+        ```
 
-    systemctl --user daemon-reload
-    systemctl --user enable osworld.service
-    systemctl --user restart osworld.service
-    ```
+    2. (GUEST) start daemon process:
+
+        ```shell
+        pip install python-xlib lxml pyautogui Flask numpy
+        sudo apt install python3-tk python3-dev ffmpeg
+        gsettings set org.gnome.desktop.interface toolkit-accessibility true
+
+        systemctl --user daemon-reload
+        systemctl --user enable osworld.service
+        systemctl --user restart osworld.service
+        ```
 
 2. (HOST) Attach a `__VERSION__` file under VM directory:
 
