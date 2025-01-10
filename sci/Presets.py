@@ -12,12 +12,15 @@ from . import TypeSort
 # should be consisted with Prompts' lambda
 # add lambda function for lazy loading
 Config: TypeAlias = Dict[TypeSort, Callable[[], Dict[str, Any]]]
-def spawn_managers(vm_path: Optional[str] = None) -> Config:
+def spawn_managers(
+    vm_headless: bool = False,
+    vm_path: Optional[str] = None
+) -> Config:
     return {
         TypeSort.VM: lambda: {
             "version": "0.1",
             "vm_path": vm_path,
-            "headless": False,
+            "headless": vm_headless,
             "port": 8000
         },
         TypeSort.Raw("ChimeraX"): lambda: {

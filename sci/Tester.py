@@ -227,6 +227,7 @@ class Tester:
         automata: Automata,
         obs_types: Set[str] = {OBS.screenshot},
         vm_path: Optional[str] = None,
+        headless: bool = False,
         ignore: bool = True,
         debug: bool = False,
         optimize: bool = True
@@ -273,7 +274,7 @@ class Tester:
 
         # manager in managers should not be Manager itself
         self.modules = Presets.spawn_modules()
-        self.manager_args = Presets.spawn_managers(vm_path)
+        self.manager_args = Presets.spawn_managers(headless, vm_path)
         self.managers = {}
 
         assert isinstance(ignore, bool)
