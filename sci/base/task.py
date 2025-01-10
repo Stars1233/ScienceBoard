@@ -249,10 +249,8 @@ class Task:
                 + response_content.text
         )
 
-        for code_like in response_codes:
-            code_like(self.manager)
-            Manager.pause()
-
+        # save the log first
+        # becase primitives would cause exceptions
         self.vlog.save(
             step_index,
             obs,
@@ -260,6 +258,10 @@ class Task:
             self.agent.dump_history(),
             OBS.textual in obs
         )
+
+        for code_like in response_codes:
+            code_like(self.manager)
+            Manager.pause()
 
     def __test_prompt(self) -> None:
         obs = frozenset({OBS.screenshot if self.manager.is_gui else OBS.textual})
