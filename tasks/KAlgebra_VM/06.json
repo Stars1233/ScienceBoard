@@ -2,7 +2,7 @@
     "type": "KAlgebra",
     "sort": "VM",
     "steps": 5,
-    "instruction": "Plot y = x^2 in KAlgebra.",
+    "instruction": "Plot a plane passing through three points (1, 0, 0), (0, 2, 0) and (0, 0, 3) in KAlgebra.",
     "version": "0.1",
     "snapshot": "sci_bench",
     "initialize": [
@@ -14,18 +14,18 @@
         },
         {
             "func": "tab",
-            "index": 1
+            "index": 2
         }
     ],
     "evaluate": [
         {
             "type": "eqns",
-            "key": [[-81.92, 6710.8864], [0, 1], [-1, 1], [99, 9999]],
+            "key": [[1, 2, -3], [0, 2, 0], [0, 0, 0], [2, 1, -6]],
             "value": {
-                "(-81.92, 6710.8864)": true,
-                "(0, 1)": false,
-                "(-1, 1)": true,
-                "(99, 9999)": false
+                "(1, 2, -3)": true,
+                "(0, 2, 0)": true,
+                "(0, 0, 0)": false,
+                "(2, 1, -6)": false
             }
         }
     ]

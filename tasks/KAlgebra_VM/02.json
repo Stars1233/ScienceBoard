@@ -2,7 +2,7 @@
     "type": "KAlgebra",
     "sort": "VM",
     "steps": 5,
-    "instruction": "Plot $f(x)=\\dfrac{1}{x^2}$ with exact black color in KAlgebra.",
+    "instruction": "Calculate their distance between points (2, -7) and (7, 5), and store the result in variable `d` in KAlgebra.",
     "version": "0.1",
     "snapshot": "sci_bench",
     "initialize": [
@@ -11,22 +11,13 @@
             "wait": 2,
             "command": "LD_LIBRARY_PATH=/home/user/6.5.0/gcc_64/lib /app/bin/kalgebra «PORTLIKE»",
             "shell": true
-        },
-        {
-            "func": "tab",
-            "index": 1
         }
     ],
     "evaluate": [
         {
-            "type": "eqns",
-            "key": [[2, 0.25], [-1, -1], [16, 0.00390625]],
-            "value": {
-                "(2, 0.25)": true,
-                "(-1, -1)": false,
-                "(16, 0.00390625)": true,
-                "color": "#000000"
-            }
+            "type": "vars",
+            "key": "d",
+            "value": 13
         }
     ]
 }

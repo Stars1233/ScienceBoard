@@ -2,7 +2,7 @@
     "type": "KAlgebra",
     "sort": "VM",
     "steps": 5,
-    "instruction": "Plot y = x^2 in KAlgebra.",
+    "instruction": "Plot $f(x)=\\dfrac{1}{x^2}$ with exact black color in KAlgebra.",
     "version": "0.1",
     "snapshot": "sci_bench",
     "initialize": [
@@ -20,12 +20,13 @@
     "evaluate": [
         {
             "type": "eqns",
-            "key": [[-81.92, 6710.8864], [0, 1], [-1, 1], [99, 9999]],
+            "key": [[2, 0.25], [-1, -1], [7.77, 0.015], [16, 0.00390625]],
             "value": {
-                "(-81.92, 6710.8864)": true,
-                "(0, 1)": false,
-                "(-1, 1)": true,
-                "(99, 9999)": false
+                "(2, 0.25)": true,
+                "(-1, -1)": false,
+                "(7.77, 0.015)": false,
+                "(16, 0.00390625)": true,
+                "color": "#000000"
             }
         }
     ]
