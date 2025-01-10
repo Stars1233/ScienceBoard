@@ -252,11 +252,11 @@ class Task:
         # save the log first
         # becase primitives would cause exceptions
         self.vlog.save(
-            step_index,
-            obs,
-            response_codes,
-            self.agent.dump_history(),
-            OBS.textual in obs
+            step_index=step_index,
+            obs=obs,
+            codes=response_codes,
+            handle_request=self.agent.dump_history,
+            is_textual=OBS.textual in obs
         )
 
         for code_like in response_codes:

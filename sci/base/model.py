@@ -23,13 +23,18 @@ RoleType = Literal["system", "user", "assistant"]
 
 @dataclass
 class Content:
+    PLACEHOLDER: ClassVar[str] = "..."
     def _asdict(
         self,
         style: ModelType = "openai",
         hide_text: bool = False,
+        hide_image: bool = False,
         **_
     ) -> Dict[str, Any]:
-        return getattr(self, f"_{style}")(hide_text=hide_text)
+        return getattr(self, f"_{style}")(
+            hide_text=hide_text,
+            hide_image=hide_image
+        )
 
     def __dict_factory_override__(self) -> Dict[str, Any]:
         return self._asdict()
@@ -37,7 +42,6 @@ class Content:
 
 @dataclass
 class TextContent(Content):
-    PLACEHOLDER: ClassVar[str] = "..."
     text: str
     args: Dict[str, str] = field(default_factory=lambda: {})
 
@@ -50,8 +54,8 @@ class TextContent(Content):
         **_
     ) -> Dict[str, Any]:
         args = {
-            OBS.textual: TextContent.PLACEHOLDER,
-            OBS.a11y_tree: TextContent.PLACEHOLDER
+            OBS.textual: Content.PLACEHOLDER,
+            OBS.a11y_tree: Content.PLACEHOLDER
         } if hide_text else self.args
 
         return {
@@ -69,22 +73,25 @@ class ImageContent(Content):
         self.image.save(buffered:=BytesIO(), format="PNG")
         return base64.b64encode(buffered.getvalue()).decode()
 
-    def _openai(self, **_) -> Dict[str, Any]:
+    def _openai(self, hide_image: bool = False, **_) -> Dict[str, Any]:
         return {
             "type": "image_url",
             "image_url": {
-                "url": f"data:image/png;base64, {self.base64_png}",
+                "url": (
+                    Content.PLACEHOLDER if hide_image \
+                        else f"data:image/png;base64, {self.base64_png}"
+                ),
                 "detail": "high"
             }
         }
 
-    def _anthropic(self, **_) -> Dict[str, Any]:
+    def _anthropic(self, hide_image: bool = False, **_) -> Dict[str, Any]:
         return {
             "type": "image",
             "source": {
                 "type": "base64",
                 "media_type": "image/png",
-                "data": self.base64_png
+                "data": Content.PLACEHOLDER if hide_image else self.base64_png
             }
         }
 
@@ -100,7 +107,8 @@ class Message:
     def _asdict(
         self,
         show_context: bool = False,
-        hide_text: bool = False
+        hide_text: bool = False,
+        hide_image: bool = False
     ) -> Dict[str, Any]:
         result = {
             "role": self.role,
@@ -108,6 +116,7 @@ class Message:
                 content._asdict(
                     style=self.style,
                     hide_text=hide_text,
+                    hide_image=hide_image,
                     use_format=self.role=="user"
                 )
                 for content in self.content

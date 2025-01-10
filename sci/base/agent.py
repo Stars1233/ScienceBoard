@@ -1,7 +1,7 @@
 import sys
 
-from typing import Optional, List, Dict, FrozenSet
-from typing import Callable, Any
+from typing import Optional, List, Tuple, Dict
+from typing import Callable, Any, FrozenSet
 
 from PIL import Image
 from requests import Response
@@ -128,11 +128,12 @@ class Agent:
             not index + 1 == len(payload) and self.hide_text
         )) for index, message in enumerate(payload)]
 
-    def dump_history(self) -> Dict:
-        return [
-            message._asdict(show_context=True)
+    def dump_history(self) -> Tuple[Dict, Dict]:
+        dump = lambda hide: [
+            message._asdict(show_context=True, hide_text=hide, hide_image=hide)
             for message in self.__dump(len(self.context))
         ]
+        return dump(False), dump(True)
 
     def __call__(
         self,

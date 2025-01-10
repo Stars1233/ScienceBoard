@@ -7,7 +7,7 @@ import string
 
 from datetime import datetime
 from enum import Enum
-from typing import Optional, List, Dict, Any
+from typing import Optional, List, Tuple, Dict, Any
 from typing import Callable, Self, TYPE_CHECKING
 
 from PIL import Image
@@ -347,27 +347,12 @@ class Log:
         else:
             self.extra["log"] = log_name
 
-    def __mod_url(self, obj: Any):
-        is_target = lambda value: isinstance(value, str) and \
-            re.search(r'^data:image/[a-zA-Z]+;base64,', value) is not None
-        ellipsis = lambda data: ", ".join([data.split(", ")[0], "..."])
-
-        if isinstance(obj, dict):
-            return {
-                key: (ellipsis(value) if is_target(value) else self.__mod_url(value))
-                for key, value in obj.items()
-            }
-        elif isinstance(obj, list):
-            return [self.__mod_url(item) for item in obj]
-        else:
-            return obj
-
     def save(
         self,
         step_index: int,
         obs: Dict[str, Any],
         codes: List["CodeLike"],
-        request: Dict[str, Any],
+        handle_request: Callable[[], Tuple[Dict[str, Any], Dict[str, Any]]],
         is_textual: bool
     ) -> None:
         assert self.save_path is not None, "Call trigger() first"
@@ -416,15 +401,15 @@ class Log:
             appendable.write(json.dumps(traj_obj, ensure_ascii=False) + "\n")
 
         # save requests by overwriting previous record
+        full_request, simp_request = handle_request()
         with open(self.request_file_path, mode="w", encoding="utf-8") as writable:
-            json.dump(request, writable, ensure_ascii=False, indent=2)
+            json.dump(full_request, writable, ensure_ascii=False, indent=2)
 
         with open(self.simp_file_path, mode="w", encoding="utf-8") as writable:
-            request_simp = self.__mod_url(request)
-            json.dump(request_simp, writable, ensure_ascii=False, indent=2)
+            json.dump(simp_request, writable, ensure_ascii=False, indent=2)
 
         with open(self.prompt_file_path, mode="w", encoding="utf-8") as writable:
-            writable.write(request[0]["content"][0]["text"])
+            writable.write(full_request[0]["content"][0]["text"])
 
     # should not be set as protected method
     # as they will be used by Task objects
