@@ -14,7 +14,7 @@ class REPLInput:
         return eliminate_nonetype(self)
 
     def dumps(self) -> str:
-        return json.dumps(asdict(self)) + "\n\n"
+        return json.dumps(asdict(self), ensure_ascii=False) + "\n\n"
 
     @staticmethod
     def from_dict(query: dict) -> Optional["REPLInput"]:
@@ -63,7 +63,7 @@ class REPLOutput:
         return eliminate_nonetype(self)
 
     def dumps(self) -> str:
-        return json.dumps(asdict(self))
+        return json.dumps(asdict(self), ensure_ascii=False)
 
     @staticmethod
     def from_dict(input: Optional[REPLInput], output: dict) -> "REPLOutput":
