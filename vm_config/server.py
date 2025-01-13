@@ -17,6 +17,7 @@ import Xlib
 import lxml.etree
 import pyautogui
 import requests
+import dbus
 from PIL import Image
 from Xlib import display, X
 from flask import Flask, request, jsonify, send_file, abort  # , send_from_directory
@@ -63,8 +64,8 @@ pyautogui.PAUSE = 0
 pyautogui.DARWIN_CATCH_UP_TIME = 0
 
 logger = app.logger
-recording_process = None  # fixme: this is a temporary solution for recording, need to be changed to support multiple-process
-recording_path = "/tmp/recording.mp4"
+session_bus = None  # fixme: this is a temporary solution for recording, need to be changed to support multiple-process
+recording_path = "/tmp/recording.webm"
 
 
 @app.route('/setup/execute', methods=['POST'])
@@ -1115,32 +1116,41 @@ def close_window():
 
 @app.route('/start_recording', methods=['POST'])
 def start_recording():
-    global recording_process
-    if recording_process:
-        return jsonify({'status': 'error', 'message': 'Recording is already in progress.'}), 400
+    global session_bus
+    if session_bus:
+        return jsonify({
+            'status': 'error',
+            'message': 'Recording is already in progress.'
+        }), 400
 
-    d = display.Display()
-    screen_width = d.screen().width_in_pixels
-    screen_height = d.screen().height_in_pixels
-
-    start_command = f"ffmpeg -y -f x11grab -draw_mouse 1 -s {screen_width}x{screen_height} -i :0.0 -c:v libx264 -r 30 {recording_path}"
-
-    recording_process = subprocess.Popen(shlex.split(start_command), stdout=subprocess.DEVNULL,
-                                         stderr=subprocess.DEVNULL)
+    session_bus = dbus.SessionBus()
+    session_bus.call_blocking(
+        "org.gnome.Shell.Screencast",
+        "/org/gnome/Shell/Screencast",
+        "org.gnome.Shell.Screencast",
+        "Screencast",
+        signature="sa{sv}",
+        args=[recording_path, {"draw-cursor":True, "framerate": 24}]
+    )
 
     return jsonify({'status': 'success', 'message': 'Started recording.'})
 
 
 @app.route('/end_recording', methods=['POST'])
 def end_recording():
-    global recording_process
+    global session_bus
 
-    if not recording_process:
+    if not session_bus:
         return jsonify({'status': 'error', 'message': 'No recording in progress to stop.'}), 400
 
-    recording_process.send_signal(signal.SIGINT)
-    recording_process.wait()
-    recording_process = None
+    result = session_bus.call_blocking(
+        "org.gnome.Shell.Screencast",
+        "/org/gnome/Shell/Screencast",
+        "org.gnome.Shell.Screencast",
+        "StopScreencast",
+        signature="",
+        args=[]
+    )
 
     # return recording video file
     if os.path.exists(recording_path):
