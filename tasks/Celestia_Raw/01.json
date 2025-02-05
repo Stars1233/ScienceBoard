@@ -1,0 +1,10 @@
+{
+    "type": "Celestia",
+    "sort": "Raw",
+    "steps": 5,
+    "instruction": "...",
+    "version": "0.1",
+    "snapshot": "sci_bench",
+    "initialize": [],
+    "evaluate": []
+}

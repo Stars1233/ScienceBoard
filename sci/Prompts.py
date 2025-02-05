@@ -33,3 +33,9 @@ KALGEBRA_IS = "a mathematical graph calculator"
 KALGEBRA_VM_TIPS = [
     "Be aware that equations in 3D plotting is a bit different from notations of real mathematics. For example, the equation `x = y` is actually equivalent to `(x, y) -> x - y`, which means `z = x - y` in KAlgebra."
 ]
+
+CELESTIA_IS = "a three-dimension space simulator"
+CELESTIA_VM_TIPS = [
+    # TODO: fill tips
+    "..."
+]

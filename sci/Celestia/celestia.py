@@ -13,10 +13,16 @@ from ..vm import VManager
 
 
 class ManagerMixin:
+    STARTUP_WAIT_TIME = 5
+
     def __init__(self, ip: str, port: int) -> None:
         # legality is not checked due to inner usage
         self.base_url = f"http://{ip}:{port}"
 
+    def status_version(self) -> str:
+        # TEMP: switch to requests
+        return "0.1"
+        return requests.get(self.base_url + "/version").text
 
 class RawManager(Manager, ManagerMixin):
     def __init__(
@@ -53,7 +59,7 @@ class RawManager(Manager, ManagerMixin):
             text=True
         )
 
-        Manager.pause()
+        Manager.pause(self.STARTUP_WAIT_TIME)
         assert self.status_version() == self.version
         return super().__enter__()
 
