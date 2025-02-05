@@ -35,6 +35,12 @@ def spawn_managers(
             "lib_path": os.environ["QT6_LIB_PATH"],
             "port": 8000
         },
+        TypeSort.Raw("Celestia"): lambda: {
+            "version": "0.1",
+            "bin_path": os.environ["CELE_BIN_PATH"],
+            "lib_path": os.environ["QT6_LIB_PATH"],
+            "port": 8000
+        },
         TypeSort.Raw("Lean"): lambda: {
             "version": "0.1",
             "lib_path": os.environ["LEAN_LIB_PATH"],
@@ -44,6 +50,7 @@ def spawn_managers(
 def spawn_modules(manager_args: Optional[Config] = None):
     from . import ChimeraX
     from . import KAlgebra
+    from . import Celestia
     from . import Lean
 
     frozen = locals()
