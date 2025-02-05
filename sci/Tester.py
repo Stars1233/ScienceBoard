@@ -230,7 +230,8 @@ class Tester:
         headless: bool = False,
         ignore: bool = True,
         debug: bool = False,
-        optimize: bool = True
+        optimize: bool = True,
+        handle_managers: Callable = Presets.spawn_managers
     ) -> None:
         assert isinstance(tasks_path, str)
         tasks_path = os.path.expanduser(tasks_path)
@@ -273,9 +274,10 @@ class Tester:
         self.vm_path = vm_path
 
         # manager in managers should not be Manager itself
-        self.modules = Presets.spawn_modules()
-        self.manager_args = Presets.spawn_managers(headless, vm_path)
+        assert hasattr(handle_managers, "__call__")
+        self.manager_args = handle_managers(headless, vm_path)
         self.managers = {}
+        self.modules = Presets.spawn_modules()
 
         assert isinstance(ignore, bool)
         self.ignore = ignore
