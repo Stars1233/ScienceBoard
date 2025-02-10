@@ -2,7 +2,7 @@
     "type": "TeXstudio",
     "sort": "VM",
     "steps": 5,
-    "instruction": "...",
+    "instruction": "Create a file named test.tex under directory of /home/user/Downloads.",
     "version": "0.1",
     "snapshot": "sci_bench",
     "initialize": [
