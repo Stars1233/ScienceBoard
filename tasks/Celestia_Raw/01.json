@@ -2,7 +2,7 @@
     "type": "Celestia",
     "sort": "Raw",
     "steps": 5,
-    "instruction": "...",
+    "instruction": "Set the Julian date to 2400000 in Celestia.",
     "version": "0.1",
     "snapshot": "sci_bench",
     "initialize": [],

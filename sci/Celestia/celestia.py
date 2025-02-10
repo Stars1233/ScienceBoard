@@ -20,8 +20,6 @@ class ManagerMixin:
         self.base_url = f"http://{ip}:{port}"
 
     def status_version(self) -> str:
-        # TEMP: switch to requests
-        return "0.1"
         return requests.get(self.base_url + "/version").text
 
 class RawManager(Manager, ManagerMixin):
@@ -29,7 +27,7 @@ class RawManager(Manager, ManagerMixin):
         self,
         bin_path: str,
         lib_path: str,
-        version: str = "0.3",
+        version: str = "0.1",
         port: int = 8000
     ) -> None:
         super().__init__(version)
