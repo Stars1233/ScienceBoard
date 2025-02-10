@@ -36,6 +36,9 @@ from .vm import VTask
 
 from . import ChimeraX
 from . import KAlgebra
+from . import Celestia
+from . import TeXstudio
+from . import Lean
 
 from . import Presets
 from . import Prompts

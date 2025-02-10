@@ -1,11 +1,11 @@
 import sys
-from typing import Dict, Union, Any
+import os
+
+from typing import Union, Dict, Any
 
 sys.dont_write_bytecode = True
 from ..base import Task
 from ..vm import VTask
-
-from ..base.utils import error_factory
 from .texstudio import RawManager, VMManager
 
 
@@ -16,63 +16,15 @@ class TaskMixin:
 
     @Task._config_handler
     def check_config(self, eval_item) -> None:
-        assert eval_item["type"] in ("vars", "eqns")
-        numeral = (int, float)
+        assert eval_item["type"] == "file"
+        assert "path" in eval_item
 
-        assert "key" in eval_item
-        key = eval_item["key"]
-        if not isinstance(key, str):
-            assert isinstance(key, list)
-            for item in key:
-                assert isinstance(item, list)
-                assert len(item) in (2, 3)
-                for sub_item in item:
-                    assert type(sub_item) in numeral
-
-        assert "value" in eval_item
-        value = eval_item["value"]
-        if type(value) not in numeral:
-            assert isinstance(value, dict)
-            for sub_key, sub_value in value.items():
-                assert isinstance(sub_key, str)
-                assert type(sub_value) in (bool, str)
-
-    def _tab(self: Union["RawTask", "VMTask"], index: int) -> bool:
-        return self.manager.operate_tab(index)
-
-    @staticmethod
-    def is_near(left: Any, right: Any) -> bool:
-        return abs(float(left) - float(right)) <= 1e-6
-
-    @error_factory(False)
-    def _eval_vars(
+    def eval(
         self: Union["RawTask", "VMTask"],
-        eval_item: Dict[str, Any]
+        eval_item: Dict[str, Any],
+        file_path: str
     ) -> bool:
-        return TaskMixin.is_near(
-            self.manager.status_vars()[eval_item["key"]],
-            eval_item["value"]
-        )
-
-    @error_factory(False)
-    def _eval_eqns(
-        self: Union["RawTask", "VMTask"],
-        eval_item: Dict[str, Any]
-    ) -> bool:
-        eqns = self.manager.status_func(eval_item["key"])
-        return any([all([
-            value == eqn[key]
-            for key, value in eval_item["value"].items()
-        ]) for eqn in eqns])
-
-    def eval(self: Union["RawTask", "VMTask"]) -> bool:
-        for eval_item in self.evaluate:
-            eval_type = eval_item["type"]
-            eval_func = getattr(self, f"_eval_{eval_type}")
-            if not eval_func(eval_item):
-                self.vlog.info(f"Evaluation failed at {eval_type} of {eval_item['key']}.")
-                return False
-        return True
+        return open(file_path, mode="r").read() == "1"
 
 
 class RawTask(Task, TaskMixin):
@@ -92,8 +44,11 @@ class RawTask(Task, TaskMixin):
 
     @Task._stop_handler
     def eval(self) -> bool:
-        # MRO: RawTask -> Task -> TaskMixin -> object
-        return super(Task, self).eval()
+        for eval_item in self.evaluate:
+            # MRO: VMTask -> VTask -> Task -> TaskMixin -> object
+            if not super(Task, self).eval(eval_item, eval_item["path"]):
+                return False
+        return True
 
 
 class VMTask(VTask, TaskMixin):
@@ -113,5 +68,12 @@ class VMTask(VTask, TaskMixin):
 
     @Task._stop_handler
     def eval(self) -> bool:
-        # MRO: VMTask -> VTask -> Task -> TaskMixin -> object
-        return super(Task, self).eval()
+        for eval_item in self.evaluate:
+            guest_file = eval_item["path"]
+            local_file = self.temp(os.path.split(guest_file)[1])
+            assert self._vmrun("CopyFileFromGuestToHost", guest_file, local_file)[1]
+
+            # MRO: VMTask -> VTask -> Task -> TaskMixin -> object
+            if not super(Task, self).eval(eval_item, local_file):
+                return False
+        return True

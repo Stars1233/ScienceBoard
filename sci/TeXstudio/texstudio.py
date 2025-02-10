@@ -11,9 +11,9 @@ from ..vm import VManager
 
 
 class RawManager(Manager):
-    def __init__(self) -> None:
+    def __init__(self, version: str = "0.1") -> None:
         assert os.system("texstudio --version") == 0
-        super().__init__("0.1")
+        super().__init__(version)
 
     def __call__(self) -> None:
         raise NotImplementedError
