@@ -1,0 +1,22 @@
+{
+    "type": "TeXstudio",
+    "sort": "Raw",
+    "steps": 5,
+    "instruction": "...",
+    "version": "0.1",
+    "snapshot": "sci_bench",
+    "initialize": [
+        {
+            "func": "launch",
+            "wait": 2,
+            "command": "texstudio",
+            "shell": true
+        }
+    ],
+    "evaluate": [
+        {
+            "type": "file",
+            "path": "/home/user/Downloads/test.tex"
+        }
+    ]
+}

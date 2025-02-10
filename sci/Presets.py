@@ -41,7 +41,7 @@ def spawn_managers(
             "lib_path": os.environ["QT6_LIB_PATH"],
             "port": 8000
         },
-        TypeSort.Raw("Celestia"): lambda: {
+        TypeSort.Raw("TeXstudio"): lambda: {
             "version": "0.1"
         },
         TypeSort.Raw("Lean"): lambda: {

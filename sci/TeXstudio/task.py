@@ -6,6 +6,8 @@ from typing import Union, Dict, Any
 sys.dont_write_bytecode = True
 from ..base import Task
 from ..vm import VTask
+
+from ..base.utils import error_factory
 from .texstudio import RawManager, VMManager
 
 
@@ -19,6 +21,7 @@ class TaskMixin:
         assert eval_item["type"] == "file"
         assert "path" in eval_item
 
+    @error_factory
     def eval(
         self: Union["RawTask", "VMTask"],
         eval_item: Dict[str, Any],
@@ -43,6 +46,7 @@ class RawTask(Task, TaskMixin):
         self.check_config()
 
     @Task._stop_handler
+    @error_factory
     def eval(self) -> bool:
         for eval_item in self.evaluate:
             # MRO: VMTask -> VTask -> Task -> TaskMixin -> object
@@ -67,6 +71,7 @@ class VMTask(VTask, TaskMixin):
         self.check_config()
 
     @Task._stop_handler
+    @error_factory
     def eval(self) -> bool:
         for eval_item in self.evaluate:
             guest_file = eval_item["path"]
