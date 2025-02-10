@@ -28,7 +28,7 @@ class TaskMixin:
         file_path: str
     ) -> bool:
         # TEMP: add concrete evaluation
-        return open(file_path, mode="r", encoding="utf-8").read().__len__ >= 0
+        return open(file_path, mode="r", encoding="utf-8").read().__len__() >= 0
 
 
 class RawTask(Task, TaskMixin):
