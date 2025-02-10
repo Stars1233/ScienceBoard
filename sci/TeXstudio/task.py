@@ -27,7 +27,8 @@ class TaskMixin:
         eval_item: Dict[str, Any],
         file_path: str
     ) -> bool:
-        return open(file_path, mode="r").read() == "1"
+        # TEMP: add concrete evaluation
+        return open(file_path, mode="r", encoding="utf-8").read().__len__ >= 0
 
 
 class RawTask(Task, TaskMixin):

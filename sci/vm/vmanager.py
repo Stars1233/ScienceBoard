@@ -19,6 +19,7 @@ from .. import Prompts
 from . import utils
 
 class VManager(Manager):
+    ISO_PATH = "/tmp/ubuntu.iso"
     VM_PATH = "vmware"
     VMX_NAME = "Ubuntu.vmx"
     VERSION_NAME = "__VERSION__"
@@ -52,6 +53,9 @@ class VManager(Manager):
 
         assert isinstance(a11y_tree_limit, int)
         self.a11y_tree_limit = a11y_tree_limit
+
+        # if not os.path.exists(VManager.ISO_PATH):
+        #     open(VManager.ISO_PATH, mode="w").close()
 
     def __is_zip(self, file_path: str):
         assert os.path.exists(file_path)
