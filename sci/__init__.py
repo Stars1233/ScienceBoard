@@ -1,7 +1,7 @@
 import sys
 from typing import Annotated
 
-sys.dont_write_bytecode
+sys.dont_write_bytecode = True
 from .base import utils
 from .base import TypeSort
 from .base import RawType

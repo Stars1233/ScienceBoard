@@ -6,7 +6,7 @@ import subprocess
 from typing import Dict, List, Union
 from typing import Callable, Self
 
-sys.dont_write_bytecode
+sys.dont_write_bytecode = True
 from ..base import utils
 from ..base import Manager, PromptFactory
 from .format import *

@@ -12,7 +12,7 @@ import requests
 from PIL import Image
 from desktop_env.desktop_env import DesktopEnv
 
-sys.dont_write_bytecode
+sys.dont_write_bytecode = True
 from ..base import Manager
 from ..base import GLOBAL_VLOG
 from .. import Prompts

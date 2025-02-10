@@ -1,6 +1,6 @@
 import sys
 
-sys.dont_write_bytecode
+sys.dont_write_bytecode = True
 from . import utils
 from .utils import TypeSort
 from .utils import RawType

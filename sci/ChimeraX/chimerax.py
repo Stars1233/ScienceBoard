@@ -14,7 +14,7 @@ from typing import Callable, Self, Union
 from PIL import Image
 from PIL import ImageGrab
 
-sys.dont_write_bytecode
+sys.dont_write_bytecode = True
 from ..base import Manager
 from ..vm import VManager
 

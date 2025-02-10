@@ -13,7 +13,7 @@ from typing import Union, Optional, List, Set, Dict, Any
 from typing import Iterable, Callable, Generator, FrozenSet
 from typing import NotRequired, TypedDict, Unpack
 
-sys.dont_write_bytecode
+sys.dont_write_bytecode = True
 from . import TypeSort
 from . import Model, ModelType, Agent
 from . import Manager, Task
