@@ -39,11 +39,11 @@ class Log:
     # make it easier to change according to different obj
     ANSI_ESCAPE = r'\033(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])'
     LOG_PATTERN = (
-        "\033[1;91m[%(asctime)s "
-        "\033[1;91m%(levelname)-5s "
-        "\033[1;94mID=%(domain)-s "
-        "\033[1;92m%(module)s::%(funcName)s@%(filename)s:%(lineno)d"
-        "\033[1;91m] "
+        "\033[1m[%(asctime)s "
+        "\033[1m%(levelname)-5s "
+        "\033[1mID=%(domain)-s "
+        "\033[1m%(module)s::%(funcName)s@%(filename)s:%(lineno)d"
+        "\033[1m] "
         "\033[1;30m%(log)s"
         "\033[0m%(message)s"
     )
