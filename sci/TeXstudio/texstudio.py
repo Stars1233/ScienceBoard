@@ -19,12 +19,7 @@ class RawManager(Manager):
         raise NotImplementedError
 
     def __enter__(self) -> Self:
-        self.process = subprocess.Popen(
-            ["texstudio"],
-            stdout=subprocess.PIPE,
-            text=True
-        )
-
+        self.process = subprocess.Popen(["texstudio"], text=True)
         Manager.pause()
         return super().__enter__()
 

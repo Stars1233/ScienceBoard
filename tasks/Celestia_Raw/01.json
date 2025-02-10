@@ -6,5 +6,12 @@
     "version": "0.1",
     "snapshot": "sci_bench",
     "initialize": [],
-    "evaluate": []
+    "evaluate": [
+        {
+            "type": "info",
+            "key": "simTime",
+            "value": 2400000,
+            "pred": "lambda left, right: abs(left - right) < 1"
+        }
+    ]
 }

@@ -1,5 +1,5 @@
 import sys
-from typing import Union
+from typing import Union, Callable
 
 sys.dont_write_bytecode = True
 from ..base import Task
@@ -16,10 +16,21 @@ class TaskMixin:
 
     @Task._config_handler
     def check_config(self, eval_item) -> None:
-        assert eval_item["type"] in ("info",)
+        assert eval_item["type"] == "info"
+        assert "key" in eval_item
+        assert "value" in eval_item
 
+    @error_factory(False)
     def eval(self: Union["RawTask", "VMTask"]) -> bool:
-        return False
+        info = self.manager.status_dump()
+        for eval_item in self.evaluate:
+            pred: Callable = lambda left, right: left == right
+            if "pred" in eval_item:
+                pred = eval(eval_item["pred"])
+                assert hasattr(pred, "__call__")
+            if not pred(info[eval_item["key"]], eval_item["value"]):
+                return False
+        return True
 
 
 class RawTask(Task, TaskMixin):
