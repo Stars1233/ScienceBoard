@@ -39,3 +39,8 @@ class RawManager(Manager):
 class VMManager(VManager):
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
+
+    def dump_tex(self, guest_file: str) -> str:
+        local_file = self.temp(os.path.split(guest_file)[1])
+        assert self._vmrun("CopyFileFromGuestToHost", guest_file, local_file)[1]
+        return local_file

@@ -31,7 +31,8 @@ class VManager(Manager):
         version: str = "0.1",
         vm_path: Optional[str] = None,
         headless: bool = False,
-        a11y_tree_limit: int = 10240
+        a11y_tree_limit: int = 10240,
+        **kwargs
     ) -> None:
         super().__init__(version)
         self.__vm_path(vm_path)

@@ -21,7 +21,7 @@ class TaskMixin:
         assert eval_item["type"] == "file"
         assert "path" in eval_item
 
-    @error_factory
+    @error_factory(False)
     def eval(
         self: Union["RawTask", "VMTask"],
         eval_item: Dict[str, Any],
@@ -46,7 +46,7 @@ class RawTask(Task, TaskMixin):
         self.check_config()
 
     @Task._stop_handler
-    @error_factory
+    @error_factory(False)
     def eval(self) -> bool:
         for eval_item in self.evaluate:
             # MRO: VMTask -> VTask -> Task -> TaskMixin -> object
@@ -71,12 +71,10 @@ class VMTask(VTask, TaskMixin):
         self.check_config()
 
     @Task._stop_handler
-    @error_factory
+    @error_factory(False)
     def eval(self) -> bool:
         for eval_item in self.evaluate:
-            guest_file = eval_item["path"]
-            local_file = self.temp(os.path.split(guest_file)[1])
-            assert self._vmrun("CopyFileFromGuestToHost", guest_file, local_file)[1]
+            local_file = self.manager.dump_tex(eval_item["path"])
 
             # MRO: VMTask -> VTask -> Task -> TaskMixin -> object
             if not super(Task, self).eval(eval_item, local_file):
