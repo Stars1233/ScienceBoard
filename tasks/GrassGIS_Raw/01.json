@@ -20,8 +20,7 @@
         {
             "type": "info",
             "key": "lambda dump: dump['layers'][0]['name']",
-            "value": "boundary_region@PERMANENT",
-            "pred": "lambda left, right: left == right"
+            "value": "boundary_region@PERMANENT"
         }
     ]
 }
