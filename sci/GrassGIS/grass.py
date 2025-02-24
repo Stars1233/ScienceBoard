@@ -49,22 +49,21 @@ class RawManager(Manager, ManagerMixin):
         assert os.path.isfile(bin_path)
         self.bin_path = bin_path
 
-        assert os.path.isdir(lib_path)
+        assert os.path.isfile(lib_path)
         self.lib_path = lib_path
 
     def __call__(self) -> None:
         raise NotImplementedError
 
     def __enter__(self) -> Self:
-        env = os.environ.copy()
-        env["LD_PRELOAD"] = self.lib_path
-        env["FLASK_PORT"] = self.port
-        self.process = subprocess.Popen(
-            [self.bin_path, str(self.port)],
-            env=env,
-            stdout=subprocess.PIPE,
-            text=True
-        )
+        self.process = subprocess.Popen((
+            f"gnome-terminal -- "
+            f"/bin/bash -ic "
+            f"\"conda activate grass; "
+            f"LD_PRELOAD={self.lib_path} "
+            f"FLASK_PORT={self.port} "
+            f"/app/bin/grass --gui\"",
+        ), shell=True, stdout=subprocess.PIPE, text=True)
 
         Manager.pause()
         assert self.status_version() == self.version

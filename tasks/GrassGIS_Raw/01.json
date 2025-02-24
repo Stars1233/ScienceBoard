@@ -1,0 +1,10 @@
+{
+    "type": "GrassGIS",
+    "sort": "Raw",
+    "steps": 5,
+    "instruction": "Display and only display the layer of 'boundary_region' in Grass GIS.",
+    "version": "0.1",
+    "snapshot": "sci_bench",
+    "initialize": [],
+    "evaluate": []
+}

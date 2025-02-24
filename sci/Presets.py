@@ -60,6 +60,7 @@ def spawn_modules(manager_args: Optional[Config] = None):
     from . import ChimeraX
     from . import KAlgebra
     from . import Celestia
+    from . import GrassGIS
     from . import TeXstudio
     from . import Lean
 
