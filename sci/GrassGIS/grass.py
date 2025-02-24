@@ -14,6 +14,8 @@ from ..vm import VManager
 
 
 class ManagerMixin:
+    STARTUP_WAIT_TIME = 5
+
     def __init__(self, ip: str, port: int) -> None:
         # legality is not checked due to inner usage
         self.base_url = f"http://{ip}:{port}"
@@ -63,10 +65,11 @@ class RawManager(Manager, ManagerMixin):
             f"\"conda activate grass; "
             f"LD_PRELOAD={self.lib_path} "
             f"FLASK_PORT={self.port} "
-            f"/app/bin/grass --gui\"",
+            f"/app/bin/grass --gui "
+            f"~/grassdata/world_latlong_wgs84/PERMANENT\"",
         ), shell=True, stdout=subprocess.PIPE, text=True)
 
-        Manager.pause()
+        Manager.pause(self.STARTUP_WAIT_TIME)
         pids = subprocess.check_output(["pidof", "bash"])
         self.pid = int(pids.decode().split(" ")[0])
 
