@@ -16,6 +16,11 @@
     "evaluate": [
         {
             "type": "info",
+            "key": "lambda dump: len(dump['layers'])",
+            "value": 1
+        },
+        {
+            "type": "info",
             "key": "lambda dump: dump['layers'][0]['name']",
             "value": "boundary_region@PERMANENT"
         }

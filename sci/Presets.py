@@ -45,6 +45,7 @@ def spawn_managers(
             "version": "0.1",
             "bin_path": os.environ["GIS_BIN_PATH"],
             "lib_path": os.environ["FFI_LIB_PATH"],
+            "data_path": os.path.expanduser("~/grassdata"),
             "port": 8000
         },
         TypeSort.Raw("TeXstudio"): lambda: {

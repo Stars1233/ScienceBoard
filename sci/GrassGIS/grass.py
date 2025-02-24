@@ -45,6 +45,7 @@ class RawManager(Manager, ManagerMixin):
         self,
         bin_path: str,
         lib_path: str,
+        data_path: str,
         version: str = "0.1",
         port: int = 8000
     ) -> None:
@@ -62,10 +63,16 @@ class RawManager(Manager, ManagerMixin):
         assert os.path.isfile(lib_path)
         self.lib_path = lib_path
 
+        assert os.path.isdir(data_path)
+        self.data_path = data_path
+
     def __call__(self) -> None:
         raise NotImplementedError
 
     def __enter__(self) -> Self:
+        lock_files = os.path.join(self.data_path, "*/*/.gislock")
+        os.system(f"rm -rf {lock_files}")
+
         self.process = subprocess.Popen((
             f"gnome-terminal "
             f"-- /bin/bash -ic "
@@ -73,7 +80,7 @@ class RawManager(Manager, ManagerMixin):
             f"LD_PRELOAD={self.lib_path} "
             f"FLASK_PORT={self.port} "
             f"/app/bin/grass --gui "
-            f"~/grassdata/world_latlong_wgs84/PERMANENT\"",
+            f"{self.data_path}/world_latlong_wgs84/PERMANENT\"",
         ), shell=True, stdout=subprocess.PIPE, text=True)
 
         Manager.pause(self.STARTUP_WAIT_TIME)
