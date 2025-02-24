@@ -7,13 +7,10 @@
     "snapshot": "sci_bench",
     "initialize": [
         {
-            "func": "gcmd",
-            "cmd": "g.mapset",
-            "kwargs": {
-                "dbase": "/home/ichinoe/grassdata",
-                "project": "nc_basic_spm_grass7",
-                "mapset": "PERMANENT"
-            }
+            "func": "map",
+            "grassdb": "/home/ichinoe/grassdata",
+            "location": "nc_basic_spm_grass7",
+            "mapset": "PERMANENT"
         }
     ],
     "evaluate": [

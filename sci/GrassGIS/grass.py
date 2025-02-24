@@ -73,7 +73,7 @@ class RawManager(Manager, ManagerMixin):
             f"LD_PRELOAD={self.lib_path} "
             f"FLASK_PORT={self.port} "
             f"/app/bin/grass --gui "
-            f"~/grassdata/nc_basic_spm_grass7/PERMANENT\"",
+            f"~/grassdata/world_latlong_wgs84/PERMANENT\"",
         ), shell=True, stdout=subprocess.PIPE, text=True)
 
         Manager.pause(self.STARTUP_WAIT_TIME)
