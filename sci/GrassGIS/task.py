@@ -16,26 +16,12 @@ class TaskMixin:
 
     @Task._config_handler
     def check_config(self, eval_item) -> None:
-        assert eval_item["type"] in ("vars", "eqns")
-        numeral = (int, float)
-
+        assert eval_item["type"] == "info"
         assert "key" in eval_item
-        key = eval_item["key"]
-        if not isinstance(key, str):
-            assert isinstance(key, list)
-            for item in key:
-                assert isinstance(item, list)
-                assert len(item) in (2, 3)
-                for sub_item in item:
-                    assert type(sub_item) in numeral
-
         assert "value" in eval_item
-        value = eval_item["value"]
-        if type(value) not in numeral:
-            assert isinstance(value, dict)
-            for sub_key, sub_value in value.items():
-                assert isinstance(sub_key, str)
-                assert type(sub_value) in (bool, str)
+
+    def _gcmd(self: Union["RawTask", "VMTask"], cmd, kwargs) -> bool:
+        return self.manager.operate_gcmd(cmd, kwargs)
 
     def eval(self: Union["RawTask", "VMTask"]) -> bool:
         return False
@@ -55,6 +41,10 @@ class RawTask(Task, TaskMixin):
 
         super().__init__(config_path, manager, *args, **kwargs)
         self.check_config()
+
+    def _init(self) -> bool:
+        # TEMP: do nothing
+        return True
 
     @Task._stop_handler
     def eval(self) -> bool:

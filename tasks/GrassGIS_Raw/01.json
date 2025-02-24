@@ -5,6 +5,16 @@
     "instruction": "Display and only display the layer of 'boundary_region' in Grass GIS.",
     "version": "0.1",
     "snapshot": "sci_bench",
-    "initialize": [],
+    "initialize": [
+        {
+            "func": "gcmd",
+            "cmd": "g.mapset",
+            "kwargs": {
+                "dbase": "/home/ichinoe/grassdata",
+                "project": "nc_basic_spm_grass7",
+                "mapset": "PERMANENT"
+            }
+        }
+    ],
     "evaluate": []
 }

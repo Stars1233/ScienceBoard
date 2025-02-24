@@ -26,11 +26,11 @@ class ManagerMixin:
     def status_dump(self) -> Dict[str, str]:
         return requests.get(self.base_url + "/dump").json()
 
-    def operate_cmd(self, *args, **kwargs) -> bool:
+    def operate_gcmd(self, cmd, kwargs) -> bool:
         return requests.post(
-            self.base_url + "/tab",
-            json={"args": args, "kwargs": kwargs}
-        ).json()["code"] == True
+            self.base_url + "/gcmd",
+            json={"cmd": cmd, "kwargs": kwargs}
+        ).text == "OK"
 
 
 class RawManager(Manager, ManagerMixin):
