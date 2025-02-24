@@ -32,6 +32,13 @@ class ManagerMixin:
             json={"cmd": cmd, "kwargs": kwargs}
         ).text == "OK"
 
+    def operate_map(self, grassdb, location, mapset) -> bool:
+        return requests.post(self.base_url + "/init/map", json={
+            "grassdb": grassdb,
+            "location": location,
+            "mapset": mapset
+        }).text == "OK"
+
 
 class RawManager(Manager, ManagerMixin):
     def __init__(

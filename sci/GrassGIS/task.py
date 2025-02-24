@@ -23,6 +23,14 @@ class TaskMixin:
     def _gcmd(self: Union["RawTask", "VMTask"], cmd, kwargs) -> bool:
         return self.manager.operate_gcmd(cmd, kwargs)
 
+    def _map(
+        self: Union["RawTask", "VMTask"],
+        grassdb: str,
+        location: str,
+        mapset: str
+    ) -> bool:
+        return self.manager.operate_map(grassdb, location, mapset)
+
     def eval(self: Union["RawTask", "VMTask"]) -> bool:
         return False
 
