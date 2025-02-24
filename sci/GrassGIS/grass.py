@@ -1,5 +1,6 @@
 import sys
 import os
+import signal
 import subprocess
 
 from typing import List, Dict, Union, Self
@@ -57,8 +58,8 @@ class RawManager(Manager, ManagerMixin):
 
     def __enter__(self) -> Self:
         self.process = subprocess.Popen((
-            f"gnome-terminal -- "
-            f"/bin/bash -ic "
+            f"gnome-terminal "
+            f"-- /bin/bash -ic "
             f"\"conda activate grass; "
             f"LD_PRELOAD={self.lib_path} "
             f"FLASK_PORT={self.port} "
@@ -66,11 +67,14 @@ class RawManager(Manager, ManagerMixin):
         ), shell=True, stdout=subprocess.PIPE, text=True)
 
         Manager.pause()
+        pids = subprocess.check_output(["pidof", "bash"])
+        self.pid = int(pids.decode().split(" ")[0])
+
         assert self.status_version() == self.version
         return super().__enter__()
 
     def __exit__(self, exc_type, exc_value, traceback) -> None:
-        self.process.kill()
+        os.kill(self.pid, signal.SIGTERM)
         super().__exit__(exc_type, exc_value, traceback)
 
     def screenshot(self) -> Image.Image:
