@@ -20,6 +20,9 @@ class TaskMixin:
         assert "key" in eval_item
         assert "value" in eval_item
 
+        if "pred" in eval_item:
+            assert hasattr(eval(eval_item["pred"]), "__call__")
+
     @error_factory(False)
     def eval(self: Union["RawTask", "VMTask"]) -> bool:
         info = self.manager.status_dump()
@@ -27,7 +30,6 @@ class TaskMixin:
             pred: Callable = lambda left, right: left == right
             if "pred" in eval_item:
                 pred = eval(eval_item["pred"])
-                assert hasattr(pred, "__call__")
             if not pred(info[eval_item["key"]], eval_item["value"]):
                 return False
         return True
