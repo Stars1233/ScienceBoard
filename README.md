@@ -14,5 +14,7 @@
 3. Raw Apps
     - `LEAN_LIB_PATH`: path for Lean 4 REPL
     - `QT6_LIB_PATH`: dynamic library directory for Qt6
+    - `FFI_LIB_PATH`: dynamic library file for libffi.so
     - `KALG_BIN_PATH`: executable binary file of KAlgebra
     - `CELE_BIN_PATH`: executable binary file of Celestia
+    - `GIS_BIN_PATH`: executable binary file of Grass GIS
