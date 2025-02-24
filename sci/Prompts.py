@@ -40,6 +40,12 @@ CELESTIA_VM_TIPS = [
     "..."
 ]
 
+CELESTIA_IS = "a GIS software suite used for geospatial data management and analysis, etc."
+CELESTIA_VM_TIPS = [
+    # TODO: fill tips
+    "..."
+]
+
 TEXSTUDIO_IS = "an integrated writing environment for creating LaTeX documents"
 TEXSTUDIO_VM_TIPS = [
     # TODO: fill tips
