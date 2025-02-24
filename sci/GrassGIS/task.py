@@ -1,5 +1,5 @@
 import sys
-from typing import Dict, Union, Any
+from typing import Union, Callable
 
 sys.dont_write_bytecode = True
 from ..base import Task
@@ -31,8 +31,21 @@ class TaskMixin:
     ) -> bool:
         return self.manager.operate_map(grassdb, location, mapset)
 
+    @error_factory(False)
     def eval(self: Union["RawTask", "VMTask"]) -> bool:
-        return False
+        info = self.manager.status_dump()
+        for eval_item in self.evaluate:
+            hkey: Callable = lambda info: info[eval_item["key"]]
+            pred: Callable = lambda left, right: left == right
+
+            if hasattr(key_eval := eval(eval_item["key"]), "__call__"):
+                hkey = key_eval
+            if "pred" in eval_item:
+                pred = eval(eval_item["pred"])
+
+            if not pred(hkey(info), eval_item["value"]):
+                return False
+        return True
 
 
 class RawTask(Task, TaskMixin):
