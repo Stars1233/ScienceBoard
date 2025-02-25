@@ -8,7 +8,7 @@
     "initialize": [
         {
             "func": "launch",
-            "wait": "5",
+            "wait": 5,
             "command": "gnome-terminal -- /bin/bash -ic \"FLASK_PORT=8000 grass --gui /home/user/grassdata/world_latlong_wgs84/PERMANENT\"",
             "shell": true
         },
