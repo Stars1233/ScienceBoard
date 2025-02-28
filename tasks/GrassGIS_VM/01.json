@@ -2,7 +2,7 @@
     "type": "GrassGIS",
     "sort": "VM",
     "steps": 5,
-    "instruction": "Display and only display the layer of 'boundary_region' in Grass GIS.",
+    "instruction": "Display and ONLY display the layer of 'boundary_region' in Grass GIS.",
     "version": "0.1",
     "snapshot": "sci_bench",
     "initialize": [
@@ -17,6 +17,12 @@
             "grassdb": "/home/user/grassdata",
             "location": "nc_basic_spm_grass7",
             "mapset": "PERMANENT"
+        },
+        {
+            "func": "layer",
+            "query": {
+                "name": "basins"
+            }
         }
     ],
     "evaluate": [

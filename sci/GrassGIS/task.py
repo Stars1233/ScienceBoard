@@ -1,5 +1,5 @@
 import sys
-from typing import Union, Callable
+from typing import Dict, Union, Callable
 
 sys.dont_write_bytecode = True
 from ..base import Task
@@ -30,6 +30,12 @@ class TaskMixin:
         mapset: str
     ) -> bool:
         return self.manager.operate_map(grassdb, location, mapset)
+
+    def _layer(
+        self: Union["RawTask", "VMTask"],
+        query: Dict[str, str]
+    ) -> bool:
+        return self.manager.operate_layer(query)
 
     @error_factory(False)
     def eval(self: Union["RawTask", "VMTask"]) -> bool:

@@ -39,6 +39,12 @@ class ManagerMixin:
             "mapset": mapset
         }).text == "OK"
 
+    def operate_layer(self, query) -> bool:
+        return requests.post(
+            self.base_url + "/init/layer",
+            json={ "query": query }
+        ).text == "OK"
+
 
 class RawManager(Manager, ManagerMixin):
     def __init__(
