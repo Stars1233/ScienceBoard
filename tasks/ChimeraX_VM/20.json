@@ -24,9 +24,7 @@
             "func": "launch",
             "wait": 5,
             "command": [
-                "flatpak",
-                "run",
-                "edu.ucsf.rbvi.ChimeraX",
+                "chimerax",
                 "--cmd",
                 "remotecontrol rest start json true port «PORTLIKE»"
             ]

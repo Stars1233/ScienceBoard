@@ -58,8 +58,8 @@
     wget https://files.rcsb.org/download/102l.cif -P /home/user/Downloads/ChimeraX/PDB
     wget https://files.rcsb.org/download/251d.cif -P /home/user/Downloads/ChimeraX/PDB
     wget https://files.rcsb.org/download/2olx.cif -P /home/user/Downloads/ChimeraX/PDB
-    flatpak run edu.ucsf.rbvi.ChimeraX --nogui --exit --cmd "alphafold match A8Z1J3"
-    flatpak run edu.ucsf.rbvi.ChimeraX --nogui --exit --cmd "clear"
+    chimerax --nogui --exit --cmd "alphafold match A8Z1J3"
+    chimerax --nogui --exit --cmd "clear"
     ```
 
     **or use `pack.deb` mentioned after**.
