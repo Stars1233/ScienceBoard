@@ -32,12 +32,10 @@
 ## Applications
 ### ChimeraX
 
-1. (GUEST) Download `ChimeraX-1.8.flatpak` at [Web Browser](https://www.cgl.ucsf.edu/chimerax/cgi-bin/secure/chimerax-get.py?file=1.8%2Fflatpak%2FChimeraX-1.8.flatpak) in Guest OS, then execute
+1. (GUEST) Download `ucsf-chimerax_1.9ubuntu22.04_amd64.deb` at [Web Browser](https://www.cgl.ucsf.edu/chimerax/cgi-bin/secure/chimerax-get.py?file=1.9/ubuntu-22.04/ucsf-chimerax_1.9ubuntu22.04_amd64.deb) in Guest OS, then execute
 
     ```shell
-    sudo apt install flatpak
-    flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
-    sudo flatpak install /home/user/Downloads/ChimeraX-1.8.flatpak
+    sudo apt install ~/Downloads/ucsf-chimerax_1.9ubuntu22.04_amd64.deb
     ```
 
 2. (GUEST) Install toolshed of ChimeraX-states:
@@ -45,7 +43,7 @@
     ```shell
     wget https://github.com/ShiinaHiiragi/chimerax-states/archive/refs/tags/0.5.zip -P /home/user/Downloads
     unzip /home/user/Downloads/0.5.zip -d /home/user/Downloads
-    flatpak run edu.ucsf.rbvi.ChimeraX --nogui --exit --cmd "devel install /home/user/Downloads/chimerax-states-0.5 exit true"
+    chimerax --nogui --exit --cmd "devel install /home/user/Downloads/chimerax-states-0.5 exit true"
     ```
 
 3. (GUEST | OPTIONAL) Load some of .cif files in advance to avoid bad connection:
