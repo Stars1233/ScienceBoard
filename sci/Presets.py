@@ -30,7 +30,7 @@ def spawn_managers(
             "gui": True
         },
         TypeSort.Raw("KAlgebra"): lambda: {
-            "version": "0.3",
+            "version": "1.0",
             "bin_path": os.environ["KALG_BIN_PATH"],
             "lib_path": os.environ["QT6_LIB_PATH"],
             "port": 8000

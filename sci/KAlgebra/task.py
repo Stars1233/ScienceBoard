@@ -16,7 +16,7 @@ class TaskMixin:
 
     @Task._config_handler
     def check_config(self, eval_item) -> None:
-        assert eval_item["type"] in ("vars", "eqns")
+        assert eval_item["type"] in ("val", "var", "eqn")
         numeral = (int, float)
 
         assert "key" in eval_item
@@ -45,7 +45,7 @@ class TaskMixin:
         return abs(float(left) - float(right)) <= 1e-6
 
     @error_factory(False)
-    def _eval_vars(
+    def _eval_val(
         self: Union["RawTask", "VMTask"],
         eval_item: Dict[str, Any]
     ) -> bool:
@@ -55,7 +55,14 @@ class TaskMixin:
         )
 
     @error_factory(False)
-    def _eval_eqns(
+    def _eval_var(
+        self: Union["RawTask", "VMTask"],
+        eval_item: Dict[str, Any]
+    ) -> bool:
+        return self.manager.status_vars()[eval_item["key"]] == eval_item["value"]
+
+    @error_factory(False)
+    def _eval_eqn(
         self: Union["RawTask", "VMTask"],
         eval_item: Dict[str, Any]
     ) -> bool:
