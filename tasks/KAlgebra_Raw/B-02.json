@@ -1,0 +1,17 @@
+{
+    "type": "KAlgebra",
+    "sort": "Raw",
+    "steps": 5,
+    "instruction": "Remove Euler's constant from variables list in KAlgebra.",
+    "version": "1.0",
+    "snapshot": "sci_bench",
+    "initialize": [],
+    "evaluate": [
+        {
+            "type": "var",
+            "key": "euler",
+            "value": "#UNDEF"
+        }
+    ],
+    "ans": "N/A"
+}

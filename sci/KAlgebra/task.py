@@ -60,7 +60,10 @@ class TaskMixin:
         eval_item: Dict[str, Any]
     ) -> bool:
         vars = self.manager.status_vars()
-        return vars[eval_item["key"]] == eval_item["value"]
+        if eval_item["value"] == "#UNDEF":
+            return eval_item["key"] not in vars
+        else:
+            return vars[eval_item["key"]] == eval_item["value"]
 
     @error_factory(False)
     def _eval_eqn(
