@@ -35,7 +35,7 @@ class TaskMixin:
             assert isinstance(value, dict)
             for sub_key, sub_value in value.items():
                 assert isinstance(sub_key, str)
-                assert type(sub_value) in (bool, str)
+                assert type(sub_value) in (bool, str, int)
 
     def _tab(self: Union["RawTask", "VMTask"], index: int) -> bool:
         return self.manager.operate_tab(index)
