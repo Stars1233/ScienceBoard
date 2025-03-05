@@ -17,7 +17,7 @@ class TaskMixin:
     @Task._config_handler
     def check_config(self, eval_item) -> None:
         assert eval_item["type"] in ("val", "var", "eqn")
-        numeral = (int, float)
+        single = (int, float, str)
 
         assert "key" in eval_item
         key = eval_item["key"]
@@ -27,11 +27,11 @@ class TaskMixin:
                 assert isinstance(item, list)
                 assert len(item) in (2, 3)
                 for sub_item in item:
-                    assert type(sub_item) in numeral
+                    assert type(sub_item) in single
 
         assert "value" in eval_item
         value = eval_item["value"]
-        if type(value) not in numeral:
+        if type(value) not in single:
             assert isinstance(value, dict)
             for sub_key, sub_value in value.items():
                 assert isinstance(sub_key, str)
@@ -59,7 +59,8 @@ class TaskMixin:
         self: Union["RawTask", "VMTask"],
         eval_item: Dict[str, Any]
     ) -> bool:
-        return self.manager.status_vars()[eval_item["key"]] == eval_item["value"]
+        vars = self.manager.status_vars()
+        return vars[eval_item["key"]] == eval_item["value"]
 
     @error_factory(False)
     def _eval_eqn(
@@ -96,6 +97,10 @@ class RawTask(Task, TaskMixin):
 
         super().__init__(config_path, manager, *args, **kwargs)
         self.check_config()
+
+    def _init(self) -> bool:
+        # TEMP: do nothing
+        return True
 
     @Task._stop_handler
     def eval(self) -> bool:

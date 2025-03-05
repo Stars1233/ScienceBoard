@@ -1,0 +1,16 @@
+{
+    "type": "KAlgebra",
+    "sort": "Raw",
+    "steps": 5,
+    "instruction": "Calculate the conjugate of 1 + i and store the result in variable `p` in KAlgebra.",
+    "version": "1.0",
+    "snapshot": "sci_bench",
+    "initialize": [],
+    "evaluate": [
+        {
+            "type": "var",
+            "key": "p",
+            "value": "1+-i"
+        }
+    ]
+}
