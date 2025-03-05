@@ -39,6 +39,11 @@ class ManagerMixin:
         assert index >= 0 and index < 4
         return requests.post(self.base_url + "/tab", json=index).text == "OK"
 
+    def operate_func2d(self, expr: str) -> bool:
+        return requests.post(self.base_url + "/add/2d", data=expr).text == "OK"
+
+    def operate_func3d(self, expr: str) -> bool:
+        return requests.post(self.base_url + "/add/3d", data=expr).text == "OK"
 
 class RawManager(Manager, ManagerMixin):
     def __init__(

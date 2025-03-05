@@ -1,0 +1,26 @@
+{
+    "type": "KAlgebra",
+    "sort": "Raw",
+    "steps": 5,
+    "instruction": "Delete the given curve in KAlgebra.",
+    "version": "1.0",
+    "snapshot": "sci_bench",
+    "initialize": [
+        {
+            "func": "tab",
+            "index": 1
+        },
+        {
+            "func": "func_2d",
+            "expr": "q->6*sin(3*q)"
+        }
+    ],
+    "evaluate": [
+        {
+            "type": "eqn",
+            "key": "#SIZE",
+            "value": 0
+        }
+    ],
+    "ans": "N/A"
+}

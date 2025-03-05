@@ -40,6 +40,12 @@ class TaskMixin:
     def _tab(self: Union["RawTask", "VMTask"], index: int) -> bool:
         return self.manager.operate_tab(index)
 
+    def _func_2d(self: Union["RawTask", "VMTask"], expr: str) -> bool:
+        return self.manager.operate_func2d(expr)
+
+    def _func_3d(self: Union["RawTask", "VMTask"], expr: str) -> bool:
+        return self.manager.operate_func3d(expr)
+
     @staticmethod
     def is_near(left: Any, right: Any) -> bool:
         return abs(float(left) - float(right)) <= 1e-6
@@ -70,6 +76,9 @@ class TaskMixin:
         self: Union["RawTask", "VMTask"],
         eval_item: Dict[str, Any]
     ) -> bool:
+        if eval_item["key"] == "#SIZE":
+            return len(self.manager.status_func([[0]])) == eval_item["value"]
+
         eqns = self.manager.status_func(eval_item["key"])
         return any([all([
             value == eqn[key]
