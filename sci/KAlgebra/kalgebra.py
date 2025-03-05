@@ -25,10 +25,14 @@ class ManagerMixin:
 
     def status_func(
         self,
-        points: List[List[float]]
+        points: List[List[float]],
+        dim: int = None
     ) -> List[Dict["str", Union[bool, str]]]:
+        if dim is None:
+            dim = len(points[0])
+
         if isinstance((result := requests.post(
-            self.base_url + f"/func/{len(points[0])}d",
+            self.base_url + f"/func/{dim}d",
             json=points
         ).json()), dict):
             result = [result]

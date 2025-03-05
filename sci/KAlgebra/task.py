@@ -77,7 +77,8 @@ class TaskMixin:
         eval_item: Dict[str, Any]
     ) -> bool:
         if eval_item["key"] == "#SIZE":
-            return len(self.manager.status_func([[0]])) == eval_item["value"]
+            size = len(self.manager.status_func([], dim=2))
+            return size == eval_item["value"]
 
         eqns = self.manager.status_func(eval_item["key"])
         return any([all([
