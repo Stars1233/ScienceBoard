@@ -9,14 +9,25 @@ if TYPE_CHECKING:
     from ..vm.vmanager import VManager
 
 
-def raw_download(url, path) -> bool:
+def raw_download(url: str, path: str) -> bool:
     path = os.path.expanduser(path)
     urllib.request.urlretrieve(url, path)
     return True
 
-def vm_download(url, path, manager: "VManager") -> bool:
+def raw_touch(text: str, path: str) -> bool:
     path = os.path.expanduser(path)
-    _, filename = os.path.split(path)
+    with open(path, mode="w") as writable:
+        writable.write(text)
+    return True
+
+def vm_download(url: str, path: str, manager: "VManager") -> bool:
+    filename = os.path.split(path)[1]
     temp_path = os.path.join(manager.temp_dir, filename)
-    urllib.request.urlretrieve(url, temp_path)
-    return manager._vmrun("CopyFileFromHostToGuest", temp_path, path)[1]
+    if raw_download(url, temp_path):
+        return manager._vmrun("CopyFileFromHostToGuest", temp_path, path)[1]
+
+def vm_touch(text: str, path: str, manager: "VManager") -> bool:
+    filename = os.path.split(path)[1]
+    temp_path = os.path.join(manager.temp_dir, filename)
+    if raw_touch(text, temp_path):
+        return manager._vmrun("CopyFileFromHostToGuest", temp_path, path)[1]
