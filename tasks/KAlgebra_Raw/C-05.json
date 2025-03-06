@@ -1,0 +1,23 @@
+{
+    "type": "KAlgebra",
+    "sort": "Raw",
+    "steps": 5,
+    "instruction": "Load script from ~/script.kal where vector a are defined. Let b = (√3, 2); calculate their inner product in KAlgebra and store the result in variable `p`.",
+    "version": "1.0",
+    "snapshot": "sci_bench",
+    "initialize": [
+        {
+            "func": "touch",
+            "text": "a := vector{-1, root(3, 3)}",
+            "path": "~/script.kal"
+        }
+    ],
+    "evaluate": [
+        {
+            "type": "val",
+            "key": "p",
+            "value": 1.15244833305
+        }
+    ],
+    "ans": "b : =vector {root(3, 2), 2}\nc := scalarproduct(a, b)\np := c[1]+c[2]"
+}

@@ -1,0 +1,18 @@
+{
+    "type": "KAlgebra",
+    "sort": "Raw",
+    "steps": 5,
+    "instruction": "Calculate the sum of the first 20 terms of harmonic series in KAlgebra and store the result in variable `p`.",
+    "version": "1.0",
+    "snapshot": "sci_bench",
+    "initialize": [
+    ],
+    "evaluate": [
+        {
+            "type": "val",
+            "key": "p",
+            "value": 3.59773965714
+        }
+    ],
+    "ans": "p := sum(1/n: n=1..20)"
+}

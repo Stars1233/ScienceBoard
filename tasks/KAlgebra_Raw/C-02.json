@@ -2,16 +2,16 @@
     "type": "KAlgebra",
     "sort": "Raw",
     "steps": 5,
-    "instruction": "Calculate the conjugate of (1 + i) in KAlgebra and store the result in variable `p`.",
+    "instruction": "Compare e^π and π^e in KAlgebra and store the bigger one in variable `p`.",
     "version": "1.0",
     "snapshot": "sci_bench",
     "initialize": [],
     "evaluate": [
         {
-            "type": "var",
+            "type": "val",
             "key": "p",
-            "value": "1+-i"
+            "value": 23.1406926205
         }
     ],
-    "ans": "p := conjugate(1+i)"
+    "ans": "p := e^pi"
 }
