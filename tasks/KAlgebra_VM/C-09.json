@@ -19,7 +19,7 @@
         {
             "func": "touch",
             "text": "r := a->q->a*q",
-            "path": "~/script.kal"
+            "path": "/home/user/script.kal"
         }
     ],
     "evaluate": [
