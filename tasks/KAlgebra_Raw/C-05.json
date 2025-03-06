@@ -19,5 +19,5 @@
             "value": 1.15244833305
         }
     ],
-    "ans": "b : =vector {root(3, 2), 2}\nc := scalarproduct(a, b)\np := c[1]+c[2]"
+    "ans": "Ctrl+L: ~/script.kal\nb := vector {root(3, 2), 2}\nc := scalarproduct(a, b)\np := c[1]+c[2]"
 }
