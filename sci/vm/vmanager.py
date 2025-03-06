@@ -43,6 +43,7 @@ class VManager(Manager):
         # only load desktop_env when needed
         # to avoid impact on raw test
         from desktop_env.desktop_env import DesktopEnv
+        self.env_type = DesktopEnv
 
         # prevent DesktopEnv from loading immediately
         self.env = lambda: DesktopEnv(
@@ -101,7 +102,7 @@ class VManager(Manager):
     @staticmethod
     def _env_handler(method: Callable) -> Callable:
         def _env_wrapper(self: "VManager", *args, **kwargs) -> Any:
-            assert isinstance(self.env, DesktopEnv)
+            assert isinstance(self.env, self.env_type)
             return method(self, *args, **kwargs)
         return _env_wrapper
 
@@ -186,7 +187,7 @@ class VManager(Manager):
 
     @_env_handler
     def revert(self, snapshot_name: str) -> bool:
-        assert isinstance(self.env, DesktopEnv)
+        assert isinstance(self.env, self.env_type)
         assert isinstance(snapshot_name, str)
 
         self.vlog.info(f"Revert to snapshot of {snapshot_name}.")
@@ -199,7 +200,7 @@ class VManager(Manager):
             return False
 
     def __enter__(self) -> Self:
-        self.env: DesktopEnv = self.env()
+        self.env: self.env_type = self.env()
         self.controller = self.env.controller
         return super().__enter__()
 
