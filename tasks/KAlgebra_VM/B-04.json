@@ -2,7 +2,7 @@
     "type": "KAlgebra",
     "sort": "VM",
     "steps": 5,
-    "instruction": "Change the color of the given curve into pure white in KAlgebra.",
+    "instruction": "Change the color of the given curve into pure black in KAlgebra.",
     "version": "0.1",
     "snapshot": "sci_bench",
     "initialize": [
@@ -47,7 +47,7 @@
                 "(16.64, 16852337.69353376)": true,
                 "(5.31, 201.35022838814749)": true,
                 "(6, -10)": false,
-                "color": "#ffffff"
+                "color": "#000000"
             }
         }
     ],
