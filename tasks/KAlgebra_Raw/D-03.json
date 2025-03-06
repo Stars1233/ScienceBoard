@@ -1,0 +1,26 @@
+{
+    "type": "KAlgebra",
+    "sort": "Raw",
+    "steps": 5,
+    "instruction": "Let f(x) = 2sin(x) and g(x) = x + 1/(2x). Find the number of zeros of the equation f(x) = g(x) and store your answer into variable `cnt` in KAlgebra.",
+    "version": "1.0",
+    "snapshot": "sci_bench",
+    "initialize": [
+        {
+            "func": "tab",
+            "index": 1
+        },
+        {
+            "func": "func_2d",
+            "expr": "x^2/16+y^2/9=1"
+        }
+    ],
+    "evaluate": [
+        {
+            "type": "val",
+            "key": "cnt",
+            "value": 4
+        }
+    ],
+    "ans": "cnt := 4"
+}

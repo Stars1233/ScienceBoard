@@ -2,25 +2,21 @@
     "type": "KAlgebra",
     "sort": "Raw",
     "steps": 5,
-    "instruction": "Find the area of ​​the given figure in KAlgebra and store the value in variable `area`.",
+    "instruction": "Suppose that f(n) = ln(n) / n where n is a natural number. Calculate the max f(n) in KAlgebra and store the value in variable `M`. Hint: try to plot the corresponding function to observe its monotonicity.",
     "version": "1.0",
     "snapshot": "sci_bench",
     "initialize": [
         {
             "func": "tab",
             "index": 1
-        },
-        {
-            "func": "func_2d",
-            "expr": "x^2/16+y^2/9=1"
         }
     ],
     "evaluate": [
         {
             "type": "val",
-            "key": "area",
-            "value": 37.6991118431
+            "key": "M",
+            "value": 0.366204096223
         }
     ],
-    "ans": "area := pi*3*4"
+    "ans": "M := ln(3)/3"
 }
