@@ -2,25 +2,43 @@
     "type": "KAlgebra",
     "sort": "Raw",
     "steps": 5,
-    "instruction": "Find the area of ​​the given figure in KAlgebra and store the value in variable `area`.",
+    "instruction": "Given that f(x) = ln(x + 1) + (x^2 - x), plot f'(x) in KAlgebra.",
     "version": "1.0",
     "snapshot": "sci_bench",
     "initialize": [
         {
             "func": "tab",
             "index": 1
-        },
-        {
-            "func": "func_2d",
-            "expr": "x^2/16+y^2/9=1"
         }
     ],
     "evaluate": [
         {
-            "type": "val",
-            "key": "area",
-            "value": 37.6991118431
+            "type": "eqn",
+            "key": [
+                [-11, -23.18032786885246],
+                [-13, -27.152941176470588],
+                [-19, -39.10497237569061],
+                [-19.38, -39.86292513444529],
+                [-3, 0.31085698061003864],
+                [-6.58, -4],
+                [-8, -17.246153846153845],
+                [0, -1.0],
+                [3, -11],
+                [5.75, 5.318634437154422]
+            ],
+            "value": {
+                "(-11, -23.18032786885246)": true,
+                "(-13, -27.152941176470588)": true,
+                "(-19, -39.10497237569061)": true,
+                "(-19.38, -39.86292513444529)": true,
+                "(-3, 0.31085698061003864)": false,
+                "(-6.58, -4)": false,
+                "(-8, -17.246153846153845)": true,
+                "(0, -1.0)": true,
+                "(3, -11)": false,
+                "(5.75, 5.318634437154422)": false
+            }
         }
     ],
-    "ans": "area := pi*3*4"
+    "ans": "diff(ln(x^2+1)+x^2-x:x)"
 }
