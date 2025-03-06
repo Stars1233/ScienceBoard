@@ -128,10 +128,9 @@ class Task:
                 assert "value" in eval_item
                 assert isinstance(eval_item["value"], str)
 
+        self.ans = None
         if "ans" in self.config:
             self.ans = self.config["ans"]
-        else:
-            self.ans = "(NOT REGISTERED)"
 
     @staticmethod
     def _stop_handler(method: Callable) -> Callable:
@@ -316,7 +315,8 @@ class Task:
             # input value will be converted to stop_type
             # default to TIMEOUT
             self.__test_prompt()
-            self.vlog.info(f"Answer: {self.ans}")
+            if self.ans is not None:
+                self.vlog.info(f"Answer: {self.ans}")
             primitive_text = self.vlog.input(
                 f"Finish task manually: ",
                 end=""
