@@ -1,11 +1,17 @@
 {
     "type": "KAlgebra",
-    "sort": "Raw",
+    "sort": "VM",
     "steps": 5,
     "instruction": "Given a function f(x) = (x^2 - x) * e^x - 1 (x < 0). Try to plot a function g(x) such that g(x) is an even function that mirrors f(x) to the positive x-axis in KAlgebra.",
-    "version": "1.0",
+    "version": "0.1",
     "snapshot": "sci_bench",
     "initialize": [
+        {
+            "func": "launch",
+            "wait": 2,
+            "command": "LD_LIBRARY_PATH=/home/user/6.5.0/gcc_64/lib /app/bin/kalgebra «PORTLIKE»",
+            "shell": true
+        },
         {
             "func": "tab",
             "index": 1

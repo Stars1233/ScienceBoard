@@ -1,11 +1,17 @@
 {
     "type": "KAlgebra",
-    "sort": "Raw",
+    "sort": "VM",
     "steps": 5,
     "instruction": "Load script from ~/script.kal where vector a are defined. Let b = (√3, 2); calculate their inner product in KAlgebra and store the result in variable `p`.",
-    "version": "1.0",
+    "version": "0.1",
     "snapshot": "sci_bench",
     "initialize": [
+        {
+            "func": "launch",
+            "wait": 2,
+            "command": "LD_LIBRARY_PATH=/home/user/6.5.0/gcc_64/lib /app/bin/kalgebra «PORTLIKE»",
+            "shell": true
+        },
         {
             "func": "touch",
             "text": "a := vector{-1, root(3, 3)}",
