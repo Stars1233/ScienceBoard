@@ -10,7 +10,6 @@ from typing import Self, NoReturn, Callable
 
 import requests
 from PIL import Image
-from desktop_env.desktop_env import DesktopEnv
 
 sys.dont_write_bytecode = True
 from ..base import Manager
@@ -40,6 +39,10 @@ class VManager(Manager):
 
         assert isinstance(headless, bool)
         self.headless = headless
+
+        # only load desktop_env when needed
+        # to avoid impact on raw test
+        from desktop_env.desktop_env import DesktopEnv
 
         # prevent DesktopEnv from loading immediately
         self.env = lambda: DesktopEnv(
