@@ -13,10 +13,6 @@
             "shell": true
         },
         {
-            "func": "tab",
-            "index": 1
-        },
-        {
             "func": "touch",
             "text": "r := a->q->a*q",
             "path": "/home/user/script.kal"
@@ -49,5 +45,5 @@
             }
         }
     ],
-    "ans": "q->(r(2))(q)"
+    "ans": "Ctrl+L: ~/script.kal; q->(r(2))(q)"
 }
