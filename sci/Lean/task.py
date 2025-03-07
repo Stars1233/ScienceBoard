@@ -34,18 +34,23 @@ class RawTask(Task, TaskMixin):
 
         self.imported: List[str] = []
         self.opened: List[str] = []
+        self.defs: List[str] = []
         self.initial: Optional[REPLOutputTactic] = None
 
     @property
     def header(self) -> Optional[str]:
-        if len(self.imported) == 0 and len(self.opened) == 0:
-            return "No imported files or opened namespaces."
+        if len(self.imported) == 0 \
+            and len(self.opened) == 0 \
+            and len(self.defs) == 0:
+            return "No imported files, opened namespaces or extra definitions."
 
-        results = ["Headers of the file: "]
+        results = ["Headers or definitions of the file: "]
         if len(self.imported) > 0:
             results.append(f"import {' '.join(self.imported)}")
         if len(self.opened) > 0:
             results.append(f"open {' '.join(self.opened)}")
+        if len(self.defs) > 0:
+            results += self.defs
         return "\n".join(results)
 
     @property
@@ -77,7 +82,18 @@ class RawTask(Task, TaskMixin):
         self.opened.extend(libs)
         return True
 
-    def _query(self, expr) -> bool:
+    def _def(self, expr: str):
+        output = self.manager._call({
+            "cmd": expr,
+            "env": self.env
+        })
+        assert isinstance(output, REPLOutputCommand)
+
+        self.env = output.env
+        self.defs.append(expr)
+        return True
+
+    def _query(self, expr: str) -> bool:
         output = self.manager._call({"cmd": expr, "env": self.env})
         assert isinstance(output, REPLOutputCommand)
         assert output.sorries is not None and len(output.sorries) == 1
