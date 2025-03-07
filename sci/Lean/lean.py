@@ -18,6 +18,7 @@ class RawManager(Manager):
     REPL_URL = "https://github.com/leanprover-community/repl"
     TIMEOUT = 120
 
+    # lower version NG (e.g. v4.9.0)
     VERSION_MAP = {
         "0.1": {
             "tag": "v4.14.0"
