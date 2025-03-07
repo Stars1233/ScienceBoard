@@ -8,7 +8,6 @@ def ST_1
   : ((IsTransitive X) ↔ (X ⊆ powerset X)) ∧ ((IsTransitive X) ↔ ((⋃₀ X : ZFSet) ⊆ X))
   := by sorry
 
-
 open Ordinal Cardinal
 
 -- Set Theory: P126, T11
