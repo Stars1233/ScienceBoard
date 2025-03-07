@@ -15,13 +15,13 @@ def ST_2
   (α : Ordinal)
   (p₁ : IsLimit α)
   (p₂ : α < ord ℵ₁)
-  : cof α = ℵ
+  : α.cof = ℵ
   := by sorry
 
 open Ordinal Cardinal
 
 -- Set Theory: P117, T33
-def ℷ (κ : Cardinal) : Cardinal := κ ^ cof (ord κ)
+def ℷ (κ : Cardinal) : Cardinal := κ ^ cof κ.ord
 def ST_3
   (p : 𝔠 > ℵ_ (ord ℵ₁))
   : (ℷ (ℵ_ ω) = 2 ^ ℵ₀) ∧ (ℷ (ℵ_ <| ω_ 1) = 2 ^ ℵ₁)
