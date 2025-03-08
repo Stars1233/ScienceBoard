@@ -1,7 +1,7 @@
 import Mathlib
 
 -- Number Theory: P47, T5
-theorem CB_1
+theorem DM_1
   {a p : ℕ}
   (h₁ : Nat.Prime p)
   (h₂ : Odd a)
@@ -10,7 +10,7 @@ theorem CB_1
   := by sorry
 
 -- Graph Theory: P107, T33
-theorem CB_2
+theorem DM_2
   {n e : ℕ}
   {G : SimpleGraph V}
   [Fintype V]
@@ -22,7 +22,7 @@ theorem CB_2
   := by sorry
 
 -- Computability Theory: P94, Lemma 3.1.3
-theorem CB_3
+theorem DM_3
   [Primcodable α]
   [Primcodable β]
   [Primcodable γ]
