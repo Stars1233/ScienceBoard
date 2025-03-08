@@ -26,7 +26,7 @@ theorem AA_3
   [Field F]
   [Algebra F E]
   [Algebra F K]
-  (p₁ : F ⊆ E) (p₂ : E ⊆ K)
-  (t : Normal F K)
+  (h₁ : F ⊆ E) (h₂ : E ⊆ K)
+  (h₃ : Normal F K)
   : Nonempty (Algebra E K) ∧ ([Algebra E K] → (Normal E K))
   := by sorry
