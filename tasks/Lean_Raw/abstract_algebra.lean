@@ -20,7 +20,7 @@ theorem AA_2
 
 -- Abstract Algebra: P110, T4
 theorem AA_3
-  (K E F: Set α)
+  {K E F : Set α}
   [Field K]
   [Field E]
   [Field F]

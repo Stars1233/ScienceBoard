@@ -5,7 +5,8 @@ open ZFSet
 -- Set Theory: P100, T4
 def ST_1
   (X : ZFSet)
-  : ((IsTransitive X) ↔ (X ⊆ powerset X)) ∧ ((IsTransitive X) ↔ ((⋃₀ X : ZFSet) ⊆ X))
+  : ((IsTransitive X) ↔ (X ⊆ powerset X))
+    ∧ ((IsTransitive X) ↔ ((⋃₀ X : ZFSet) ⊆ X))
   := by sorry
 
 open Ordinal Cardinal
@@ -21,6 +22,7 @@ def ST_2
 open Ordinal Cardinal
 
 -- Set Theory: P117, T33
+-- Gimel function
 def ℷ (κ : Cardinal) : Cardinal := κ ^ cof κ.ord
 def ST_3
   (h : 𝔠 > ℵ_ (ord ℵ₁))
