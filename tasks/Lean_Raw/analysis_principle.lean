@@ -9,7 +9,13 @@ theorem AP_1
   : UniformContinuousOn f S
   := by sorry
 
--- Analysis: P___
+open Set
+
+-- Analysis: P214, T5
 theorem AP_2
-  : 0 = 1
+  {a b : ℝ}
+  (f : ℝ → ℝ)
+  (h₁ : ContinuousOn f (Icc a b))
+  (h₂ : (∫ x in a..b, (f x) ^ 2) = 0)
+  : ∀ x ∈ Icc a b, f x = 0
   := by sorry
