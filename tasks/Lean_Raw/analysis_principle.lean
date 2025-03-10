@@ -1,5 +1,7 @@
 import Mathlib
 
+open Filter Topology
+
 -- Analysis: P54, T13
 theorem AP_1
   (A : ℝ)
