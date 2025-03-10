@@ -15,7 +15,7 @@ open Ordinal Cardinal
 def ST_2
   (α : Ordinal)
   (h₁ : IsLimit α)
-  (h₂ : α < ord ℵ₁)
+  (h₂ : α < ω_ 1)
   : α.cof = ℵ
   := by sorry
 
