@@ -19,8 +19,6 @@ def ST_2
   : α.cof = ℵ
   := by sorry
 
-open Ordinal Cardinal
-
 -- Set Theory: P117, T33
 -- Gimel function
 def ℷ (κ : Cardinal) : Cardinal := κ ^ cof κ.ord

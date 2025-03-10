@@ -15,7 +15,7 @@ def TP_1
 def TP_2
   [TopologicalSpace X]
   (A B : Set X)
-  (h : derivedSet A ⊆ B ∧ B ⊆ A)
+  (h : (derivedSet A) ⊆ B ∧ B ⊆ A)
   : IsClosed B
   := by sorry
 

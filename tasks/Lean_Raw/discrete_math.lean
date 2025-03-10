@@ -21,8 +21,19 @@ theorem DM_2
   : n ≥ 4 → 2 * e ≥ 3 * n + 1
   := by sorry
 
--- Computability Theory: P94, Lemma 3.1.3
+open CategoryTheory FirstOrder
+
+-- Model Theory: P57, Prop 2.5.1
 theorem DM_3
+  {L : Language}
+  [L.Structure M₁]
+  [L.Structure M₂]
+  (h : M₁ ≅[L] M₂)
+  : ∃ N : Bundled L.Structure, Nonempty (M₁ ↪ₑ[L] N) ∧ Nonempty (M₂ ↪ₑ[L] N)
+  := by sorry
+
+-- Computability Theory: P94, Lemma 3.1.3
+theorem DM_4
   [Primcodable α]
   [Primcodable β]
   [Primcodable γ]
