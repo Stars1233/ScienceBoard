@@ -3,7 +3,7 @@ import Mathlib
 open TopologicalSpace
 
 -- Topology: P63, T12
-def TP_1
+theorem TP_1
   [TopologicalSpace X]
   [TopologicalSpace Y]
   (h₁ : X ≃ₜ Y)
@@ -12,7 +12,7 @@ def TP_1
   := by sorry
 
 -- Topology: P76, T2
-def TP_2
+theorem TP_2
   [TopologicalSpace X]
   (A B : Set X)
   (h : (derivedSet A) ⊆ B ∧ B ⊆ A)
@@ -20,7 +20,7 @@ def TP_2
   := by sorry
 
 -- Topology: P129, T13
-def TP_3
+theorem TP_3
   [TopologicalSpace X]
   [TopologicalSpace Y]
   (f : X → Y)
@@ -31,7 +31,7 @@ def TP_3
   := by sorry
 
 -- Topology: P170, T9
-def TP_4
+theorem TP_4
   [𝒯₁ : TopologicalSpace X]
   [𝒯₂ : TopologicalSpace X]
   (h : ∀ x : Set X, 𝒯₁.IsOpen x → 𝒯₂.IsOpen x)
@@ -39,7 +39,7 @@ def TP_4
   := by sorry
 
 -- Topology: P209, T2
-def TP_5
+theorem TP_5
   [TopologicalSpace X]
   [RegularSpace X]
   (A Y : Set X)
