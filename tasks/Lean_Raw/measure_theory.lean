@@ -23,7 +23,7 @@ theorem MT_2
 
 open Set MeasureTheory Filter
 
--- Measure Theory: P___
+-- Real Analysis: P66, T17
 theorem MT_3
   {a b : ℝ}
   {μ : Measure <| Icc a b}
@@ -34,4 +34,19 @@ theorem MT_3
   (h₂ : ∃ M : ℝ, ∀ x : Icc a b, |f x| < M)
   (h₃ : ContinuousOn g univ)
   : TendstoInMeasure μ (fun n => g ∘ (f_ n)) atTop (g ∘ f)
+  := by sorry
+
+open MeasureTheory ProbabilityTheory Filter Topology
+
+-- Probability Theory: P92, T48
+theorem MT_4
+  [MeasureSpace Ω]
+  [IsProbabilityMeasure (ℙ : Measure Ω)]
+  (X : Ω → ℝ)
+  {p : ℕ}
+  {X : Ω → ℝ}
+  (h₁ : p > 0)
+  (h₂ : Integrable X)
+  (h₃ : ∃ M : ℝ, 𝔼[fun ω => |X ω| ^ p] = M)
+  : Tendsto (fun (x : ℝ) => (x ^ p) * (ℙ {ω : Ω | abs (X ω) > x}).toReal) atTop (𝓝 0)
   := by sorry
