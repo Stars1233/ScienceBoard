@@ -48,5 +48,5 @@ theorem MT_4
   (h₁ : p > 0)
   (h₂ : Integrable X)
   (h₃ : ∃ M : ℝ, 𝔼[fun ω => |X ω| ^ p] = M)
-  : Tendsto (fun (x : ℝ) => (x ^ p) * (ℙ {ω : Ω | abs (X ω) > x}).toReal) atTop (𝓝 0)
+  : Tendsto (fun (x : ℝ) => (x ^ p) * (ℙ {ω : Ω | |X ω| > x}).toReal) atTop (𝓝 0)
   := by sorry
