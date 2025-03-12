@@ -16,7 +16,7 @@ from typing import NotRequired, TypedDict, Unpack
 sys.dont_write_bytecode = True
 from . import TypeSort
 from . import Model, ModelType, Agent
-from . import Manager, Task
+from . import Manager, VManager, Task
 from . import Log, VirtualLog
 from . import OBS, Presets
 
@@ -199,7 +199,11 @@ class TaskGroup:
         for group in self.groups:
             assert len(group) > 0
             for task_info in group:
-                assert group[0].task.manager == task_info.task.manager
+                first = group[0].task.manager
+                current = task_info.task.manager
+                if first != current:
+                    assert VManager in first.__class__.mro() \
+                        and VManager in current.__class__.mro()
 
     def __call__(self, base_path: str, ignore: bool) -> Generator:
         assert isinstance(base_path, str)
@@ -297,8 +301,9 @@ class Tester:
             self.__temp_dir.cleanup()
 
     def __manager(self, type_sort: TypeSort):
-        if type_sort in self.managers:
-            return self.managers[type_sort]
+        # add __str__() to differentiate all managers
+        if str(type_sort) in self.managers:
+            return self.managers[str(type_sort)]
 
         manager_class = getattr(
             self.modules[type_sort.type],
@@ -307,7 +312,7 @@ class Tester:
 
         manager_args = self.manager_args[type_sort]()
         manager = manager_class(**manager_args)
-        self.managers[type_sort] = manager
+        self.managers[str(type_sort)] = manager
         manager.vlog.set(self.log)
         return manager
 
