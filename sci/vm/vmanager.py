@@ -1,12 +1,13 @@
 import sys
 import os
 import re
+import json
 import zipfile
 import subprocess
 
 from io import BytesIO
 from typing import Optional, Union, Iterable, Tuple, Dict, Any
-from typing import Self, NoReturn, Callable
+from typing import Self, NoReturn, Callable, TypedDict, NotRequired
 
 import requests
 from PIL import Image
@@ -16,6 +17,22 @@ from ..base import Manager
 from ..base import GLOBAL_VLOG
 from .. import Prompts
 from . import utils
+
+ENVS = {}
+
+class VirtualEnv(TypedDict):
+    provider_name: NotRequired[str]
+    region: NotRequired[str]
+    path_to_vm: NotRequired[str]
+    snapshot_name: NotRequired[str]
+    action_space: NotRequired[str]
+    cache_dir: NotRequired[str]
+    screen_size: NotRequired[Tuple[int]]
+    headless: NotRequired[bool]
+    require_a11y_tree: NotRequired[bool]
+    require_terminal: NotRequired[bool]
+    os_type: NotRequired[str]
+
 
 class VManager(Manager):
     ISO_PATH = "/tmp/ubuntu.iso"
@@ -40,13 +57,7 @@ class VManager(Manager):
         assert isinstance(headless, bool)
         self.headless = headless
 
-        # only load desktop_env when needed
-        # to avoid impact on raw test
-        from desktop_env.desktop_env import DesktopEnv
-        self.env_type = DesktopEnv
-
-        # prevent DesktopEnv from loading immediately
-        self.env = lambda: DesktopEnv(
+        self.env = VirtualEnv(
             provider_name="vmware",
             region=None,
             path_to_vm=self.path,
@@ -60,6 +71,40 @@ class VManager(Manager):
 
         # if not os.path.exists(VManager.ISO_PATH):
         #     open(VManager.ISO_PATH, mode="w").close()
+
+    @property
+    def env(self):
+        global ENVS
+        return ENVS[self.key] if hasattr(self, "key") else None
+
+    @env.setter
+    def env(self, value: VirtualEnv) -> None:
+        # TypedDict does not support instance and class checks
+        assert isinstance(value, dict)
+        self.key = json.dumps(value)
+
+        global ENVS
+        if self.key not in ENVS:
+            # only load desktop_env when needed
+            # to avoid impact on raw test
+            from desktop_env.desktop_env import DesktopEnv
+            self.env_type = DesktopEnv
+
+            # prevent DesktopEnv from loading immediately
+            ENVS[self.key] = lambda: DesktopEnv(**value)
+
+    @property
+    def controller(self):
+        return getattr(getattr(self, "env", None), "controller", None)
+
+    @property
+    def entered(self) -> bool:
+        return hasattr(self, "env") and not hasattr(self.env, "__call__")
+
+    @entered.setter
+    def entered(self, value) -> None:
+        # ignore assignment
+        ...
 
     def __is_zip(self, file_path: str):
         assert os.path.exists(file_path)
@@ -102,7 +147,7 @@ class VManager(Manager):
     @staticmethod
     def _env_handler(method: Callable) -> Callable:
         def _env_wrapper(self: "VManager", *args, **kwargs) -> Any:
-            assert isinstance(self.env, self.env_type)
+            assert self.entered
             return method(self, *args, **kwargs)
         return _env_wrapper
 
@@ -187,7 +232,6 @@ class VManager(Manager):
 
     @_env_handler
     def revert(self, snapshot_name: str) -> bool:
-        assert isinstance(self.env, self.env_type)
         assert isinstance(snapshot_name, str)
 
         self.vlog.info(f"Revert to snapshot of {snapshot_name}.")
@@ -200,8 +244,8 @@ class VManager(Manager):
             return False
 
     def __enter__(self) -> Self:
-        self.env: self.env_type = self.env()
-        self.controller = self.env.controller
+        global ENVS
+        ENVS[self.key] = ENVS[self.key]()
         return super().__enter__()
 
     @_env_handler
