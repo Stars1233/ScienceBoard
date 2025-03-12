@@ -18,9 +18,6 @@ from .. import Prompts
 from . import utils
 
 class VManager(Manager):
-    # generalization of vm manager
-    GLOBAL_ENTERED = False
-
     ISO_PATH = "/tmp/ubuntu.iso"
     VM_PATH = "vmware"
     VMX_NAME = "Ubuntu.vmx"
@@ -37,10 +34,6 @@ class VManager(Manager):
         a11y_tree_limit: int = 10240,
         **kwargs
     ) -> None:
-        def setter(_, value):
-            VManager.GLOBAL_ENTERED = value
-        self.entered = property(lambda _: VManager.GLOBAL_ENTERED, setter)
-
         super().__init__(version)
         self.__vm_path(vm_path)
 
