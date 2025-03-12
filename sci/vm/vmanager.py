@@ -88,7 +88,6 @@ class VManager(Manager):
             # only load desktop_env when needed
             # to avoid impact on raw test
             from desktop_env.desktop_env import DesktopEnv
-            self.env_type = DesktopEnv
 
             # prevent DesktopEnv from loading immediately
             ENVS[self.key] = lambda: DesktopEnv(**value)
