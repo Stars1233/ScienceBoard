@@ -62,6 +62,9 @@ class Manager:
         self.entered = True
         return self
 
+    def _post__enter__(self) -> None:
+        ...
+
     def __exit__(self, exc_type, exc_value, traceback) -> None:
         self.entered = False
 

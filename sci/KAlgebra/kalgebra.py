@@ -108,5 +108,11 @@ class VMManager(VManager, ManagerMixin):
         assert port in range(1024, 65536)
         self.port = port
 
+    def _post__enter__(self) -> None:
         # MRO: VMManager -> VManager -> Manager -> ManagerMixin -> object
         super(Manager, self).__init__(self.controller.vm_ip, self.port)
+
+    def __enter__(self) -> Self:
+        self = super().__enter__()
+        self._post__enter__()
+        return self

@@ -336,4 +336,5 @@ class Task:
             with self.manager:
                 return self.__call()
         else:
+            self.manager._post__enter__()
             return self.__call()
