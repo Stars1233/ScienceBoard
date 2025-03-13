@@ -79,6 +79,7 @@
     vmrun -T ws -gu user -gp password runProgramInGuest /app/VM/Ubuntu.vmx /usr/bin/bash -c "mkdir /home/user/server"
     vmrun -T ws -gu user -gp password runProgramInGuest /app/VM/Ubuntu.vmx /usr/bin/bash -c "mkdir -p /home/user/.config/systemd/user"
     vmrun -T ws -gu user -gp password CopyFileFromHostToGuest /app/VM/Ubuntu.vmx vm_config/server.py /home/user/server/main.py
+    vmrun -T ws -gu user -gp password CopyFileFromHostToGuest /app/VM/Ubuntu.vmx vm_config/reset.sh /home/user/server/reset.sh
     vmrun -T ws -gu user -gp password CopyFileFromHostToGuest /app/VM/Ubuntu.vmx vm_config/pyxcursor.py /home/user/server/pyxcursor.py
     vmrun -T ws -gu user -gp password CopyFileFromHostToGuest /app/VM/Ubuntu.vmx vm_config/service.conf /home/user/.config/systemd/user/osworld.service
     ```
@@ -86,6 +87,7 @@
 2. (GUEST) Start daemon process:
 
     ```shell
+    chmod +x /home/user/server/reset.sh
     pip install python-xlib lxml pyautogui Flask numpy
     sudo apt install python3-tk python3-dev ffmpeg gnome-screenshot
     gsettings set org.gnome.desktop.interface toolkit-accessibility true

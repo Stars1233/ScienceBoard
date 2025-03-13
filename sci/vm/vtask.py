@@ -9,6 +9,7 @@ from .vmanager import VManager
 
 
 class VTask(Task):
+    RESET_TIME = 3
     PATH_LIKE = "«PORTLIKE»"
 
     def __init__(
@@ -37,7 +38,17 @@ class VTask(Task):
             if hasattr(self.manager, "port") else command
 
     def _init(self) -> bool:
-        return self.manager.revert(self.snapshot)
+        try:
+            result = self.manager.revert(self.snapshot)
+            VManager.pause()
+            self._execute(
+                command="/bin/bash /home/user/server/reset.sh",
+                shell=True
+            )
+            VManager.pause()
+            return result
+        except:
+            return False
 
     # OSWorld's request does not check success
     # rewrite requests to make up this flaw
