@@ -315,7 +315,6 @@ class Task:
             # input value will be converted to stop_type
             # default to TIMEOUT
             self.__test_prompt()
-            self.manager.set_of_marks()[1].show()
             if self.ans is not None:
                 self.vlog.info(f"Answer: {self.ans}")
             primitive_text = self.vlog.input(
