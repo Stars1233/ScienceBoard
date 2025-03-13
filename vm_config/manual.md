@@ -10,10 +10,10 @@
 2. (GUEST) CHANGE THE DISPLAY SYSTEM FROM WAYLAND TO X11
 
     ```shell
-    sudo gedit /etc/gdm3/custom.conf
+    sudo sed -i 's/^#WaylandEnable=false/WaylandEnable=false/' /etc/gdm3/custom.conf
     ```
 
-    and uncomment `WaylandEnable=false` at line 10
+    and restart the guest machine.
 
 3. (GUEST) Disable options of 'Blank Screen':
 
@@ -83,32 +83,25 @@
     vmrun -T ws -gu user -gp password CopyFileFromHostToGuest /app/VM/Ubuntu.vmx vm_config/service.conf /home/user/.config/systemd/user/osworld.service
     ```
 
-    1. (GUEST) Switch `XDG_SESSION_TYPE` to `x11`:
+2. (GUEST) Start daemon process:
 
-        ```shell
-        sudo sed -i 's/^#WaylandEnable=false/WaylandEnable=false/' /etc/gdm3/custom.conf
-        sudo systemctl restart gdm
-        ```
+    ```shell
+    pip install python-xlib lxml pyautogui Flask numpy
+    sudo apt install python3-tk python3-dev ffmpeg
+    gsettings set org.gnome.desktop.interface toolkit-accessibility true
 
-    2. (GUEST) start daemon process:
+    systemctl --user daemon-reload
+    systemctl --user enable osworld.service
+    systemctl --user restart osworld.service
+    ```
 
-        ```shell
-        pip install python-xlib lxml pyautogui Flask numpy
-        sudo apt install python3-tk python3-dev ffmpeg
-        gsettings set org.gnome.desktop.interface toolkit-accessibility true
-
-        systemctl --user daemon-reload
-        systemctl --user enable osworld.service
-        systemctl --user restart osworld.service
-        ```
-
-2. (HOST) Attach a `__VERSION__` file under VM directory:
+3. (HOST) Attach a `__VERSION__` file under VM directory:
 
     ```shell
     echo "0.1" >> /app/VM/__VERSION__
     ```
 
-3. (HOST) Compress vmware files:
+4. (HOST) Compress vmware files:
 
     ```shell
     cd /app/VM; zip -r ../Ubuntu-x86.zip *; cd -
