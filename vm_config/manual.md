@@ -3,18 +3,26 @@
 ## Preprocess
 
 1. Download the image of Ubuntu 22.04 LTS and install it on VMWare Workstation.
-    - assuming the VM file to be under `/tmp/VM`;
-    - assuming username and password to be `user` and `password`;
-    - assuming `cwd` to be root directory of this repository;
+    - assuming `cwd` of the host machine to be the root directory of this repository;
+    - assuming the VM file to be under `/app/VM`;
+    - assuming username and password to be `user` and `password`; don't forget to tick 'Log in automatically';
 
-2. (GUEST) Disable options of 'Blank Screen':
+2. (GUEST) CHANGE THE DISPLAY SYSTEM FROM WAYLAND TO X11
+
+    ```shell
+    sudo gedit /etc/gdm3/custom.conf
+    ```
+
+    and uncomment `WaylandEnable=false` at line 10
+
+3. (GUEST) Disable options of 'Blank Screen':
 
     ```shell
     gsettings set org.gnome.desktop.session idle-delay 0
     gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-ac-type 'nothing'
     ```
 
-3. (GUEST) Change sources of `apt` and install `vm-tools` if necessary:
+4. (GUEST) Change sources of `apt` and install `vm-tools` if necessary:
 
     ```shell
     sudo sed -i "s/cn\.//g" /etc/apt/sources.list
@@ -22,7 +30,7 @@
     sudo apt install open-vm-tools-desktop
     ```
 
-4. (GUEST) Install `pip` and symlink for `python`:
+5. (GUEST) Install `pip` and symlink for `python`:
 
     ```shell
     sudo apt install python-is-python3
@@ -88,7 +96,7 @@
     ```shell
     chmod 755 -R vm_config/pack
     cd vm_config/; dpkg-deb --build pack; cd -
-    vmrun -T ws -gu user -gp password CopyFileFromHostToGuest /tmp/VM/Ubuntu.vmx vm_config/pack.deb /home/user/Downloads/pack.deb
+    vmrun -T ws -gu user -gp password CopyFileFromHostToGuest /app/VM/Ubuntu.vmx vm_config/pack.deb /home/user/Downloads/pack.deb
     ```
 
 2. (GUEST) Unpack the cache and change permissions of directories:
@@ -103,11 +111,11 @@
 1. (HOST) Move server files into guest OS:
 
     ```shell
-    vmrun -T ws -gu user -gp password runProgramInGuest /tmp/VM/Ubuntu.vmx /usr/bin/bash -c "mkdir /home/user/server"
-    vmrun -T ws -gu user -gp password runProgramInGuest /tmp/VM/Ubuntu.vmx /usr/bin/bash -c "mkdir -p /home/user/.config/systemd/user"
-    vmrun -T ws -gu user -gp password CopyFileFromHostToGuest /tmp/VM/Ubuntu.vmx vm_config/server.py /home/user/server/main.py
-    vmrun -T ws -gu user -gp password CopyFileFromHostToGuest /tmp/VM/Ubuntu.vmx vm_config/pyxcursor.py /home/user/server/pyxcursor.py
-    vmrun -T ws -gu user -gp password CopyFileFromHostToGuest /tmp/VM/Ubuntu.vmx vm_config/service.conf /home/user/.config/systemd/user/osworld.service
+    vmrun -T ws -gu user -gp password runProgramInGuest /app/VM/Ubuntu.vmx /usr/bin/bash -c "mkdir /home/user/server"
+    vmrun -T ws -gu user -gp password runProgramInGuest /app/VM/Ubuntu.vmx /usr/bin/bash -c "mkdir -p /home/user/.config/systemd/user"
+    vmrun -T ws -gu user -gp password CopyFileFromHostToGuest /app/VM/Ubuntu.vmx vm_config/server.py /home/user/server/main.py
+    vmrun -T ws -gu user -gp password CopyFileFromHostToGuest /app/VM/Ubuntu.vmx vm_config/pyxcursor.py /home/user/server/pyxcursor.py
+    vmrun -T ws -gu user -gp password CopyFileFromHostToGuest /app/VM/Ubuntu.vmx vm_config/service.conf /home/user/.config/systemd/user/osworld.service
     ```
 
     1. (GUEST) Switch `XDG_SESSION_TYPE` to `x11`:
@@ -132,13 +140,13 @@
 2. (HOST) Attach a `__VERSION__` file under VM directory:
 
     ```shell
-    echo "0.1" >> /tmp/VM/__VERSION__
+    echo "0.1" >> /app/VM/__VERSION__
     ```
 
 3. (HOST) Compress vmware files:
 
     ```shell
-    cd /tmp/VM; zip -r ../Ubuntu-x86.zip *; cd -
+    cd /app/VM; zip -r ../Ubuntu-x86.zip *; cd -
     ```
 
 ## References
