@@ -87,7 +87,7 @@
 
     ```shell
     pip install python-xlib lxml pyautogui Flask numpy
-    sudo apt install python3-tk python3-dev ffmpeg
+    sudo apt install python3-tk python3-dev ffmpeg gnome-screenshot
     gsettings set org.gnome.desktop.interface toolkit-accessibility true
 
     systemctl --user daemon-reload

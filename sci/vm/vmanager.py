@@ -291,6 +291,10 @@ class VManager(Manager):
         )
 
     @_env_handler
+    def show_som(self) -> None:
+        self.set_of_marks()[1].show()
+
+    @_env_handler
     def record_start(self) -> None:
         self.controller.start_recording()
 
