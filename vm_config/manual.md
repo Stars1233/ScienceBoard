@@ -54,24 +54,6 @@
     chimerax --nogui --exit --cmd "devel install /home/user/Downloads/chimerax-states-0.5 exit true"
     ```
 
-3. (GUEST | OPTIONAL) Load some of .cif files in advance to avoid bad connection:
-
-    ```shell
-    wget https://files.rcsb.org/download/1dns.cif -P /home/user/Downloads/ChimeraX/PDB
-    wget https://files.rcsb.org/download/2olx.cif -P /home/user/Downloads/ChimeraX/PDB
-    wget https://files.rcsb.org/download/3bna.cif -P /home/user/Downloads/ChimeraX/PDB
-    wget https://files.rcsb.org/download/3ppd.cif -P /home/user/Downloads/ChimeraX/PDB
-    wget https://files.rcsb.org/download/4r0u.cif -P /home/user/Downloads/ChimeraX/PDB
-    wget https://files.rcsb.org/download/4tut.cif -P /home/user/Downloads/ChimeraX/PDB
-    wget https://files.rcsb.org/download/102l.cif -P /home/user/Downloads/ChimeraX/PDB
-    wget https://files.rcsb.org/download/251d.cif -P /home/user/Downloads/ChimeraX/PDB
-    wget https://files.rcsb.org/download/2olx.cif -P /home/user/Downloads/ChimeraX/PDB
-    chimerax --nogui --exit --cmd "alphafold match A8Z1J3"
-    chimerax --nogui --exit --cmd "clear"
-    ```
-
-    **or use `pack.deb` mentioned after**.
-
 ### Kalgebra
 1. (GUEST) Download `aqt` and `QT 6.5.0`:
 
@@ -88,23 +70,6 @@
     wget https://github.com/ShiinaHiiragi/kalgebra/releases/download/0.1/kalgebra-kai.deb -P /home/user/Downloads
     sudo dpkg -i /home/user/Downloads/kalgebra-kai.deb
     LD_LIBRARY_PATH=/home/user/6.5.0/gcc_64/lib /app/bin/kalgebra
-    ```
-
-### Alternative for OPTIONAL
-1. (HOST) Pack the cache and move the file into guest OS:
-
-    ```shell
-    chmod 755 -R vm_config/pack
-    cd vm_config/; dpkg-deb --build pack; cd -
-    vmrun -T ws -gu user -gp password CopyFileFromHostToGuest /app/VM/Ubuntu.vmx vm_config/pack.deb /home/user/Downloads/pack.deb
-    ```
-
-2. (GUEST) Unpack the cache and change permissions of directories:
-
-    ```shell
-    sudo dpkg -i /home/user/Downloads/pack.deb
-    sudo chmod 777 -R /home/user/Downloads/ChimeraX/
-    rm /home/user/Downloads/pack.deb
     ```
 
 ## Postprocess
