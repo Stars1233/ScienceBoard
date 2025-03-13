@@ -196,12 +196,12 @@ class VManager(Manager):
         _, success = self._vmrun("snapshot", snapshot_name)
         return success
 
-    def _run_bash(self, text: str, tolerance: Iterable[int] = []) -> bool:
+    # very hard to use, try task._execute()
+    def _run(self, text: str, tolerance: Iterable[int] = []) -> bool:
         assert isinstance(text, str)
         return self._vmrun(
             "runScriptInGuest",
-            "/usr/bin/bash",
-            "-c",
+            "/bin/bash",
             text,
             tolerance=tolerance
         )
