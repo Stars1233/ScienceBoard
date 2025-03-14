@@ -250,6 +250,8 @@ class VManager(Manager):
     @_env_handler
     def __exit__(self, exc_type, exc_value, traceback) -> None:
         self.env.close()
+        del ENVS[self.key]
+        del self.key
         super().__exit__(exc_type, exc_value, traceback)
 
     @_env_handler

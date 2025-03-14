@@ -390,15 +390,13 @@ class Tester:
 
     # alternative for multiple Tester(...)()
     @staticmethod
-    def plan(params: List[Dict[str, Any]]) -> None:
-        testers = []
+    def plan(params: List[Dict[str, Any]], check_only: bool = False) -> None:
         assert isinstance(params, list)
         for param in params:
-            assert isinstance(param, dict)
-            testers.append(Tester(**param))
-
-        for tester in testers:
             try:
-                tester()
+                assert isinstance(param, dict)
+                tester = Tester(**param)
+                if not check_only:
+                    tester()
             except Exception:
                 traceback.print_exc()
