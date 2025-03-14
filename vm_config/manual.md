@@ -55,6 +55,7 @@
     ```
 
 ### Kalgebra
+
 1. (GUEST) Download `aqt` and `QT 6.5.0`:
 
     ```shell
@@ -67,12 +68,53 @@
 2. (GUEST) Download `kalgebra-kai.deb` and install it:
 
     ```shell
-    wget https://github.com/ShiinaHiiragi/kalgebra/releases/download/0.1/kalgebra-kai.deb -P /home/user/Downloads
+    wget https://github.com/ShiinaHiiragi/kalgebra/releases/download/1.0/kalgebra-kai.deb -P /home/user/Downloads
     sudo dpkg -i /home/user/Downloads/kalgebra-kai.deb
     LD_LIBRARY_PATH=/home/user/6.5.0/gcc_64/lib /app/bin/kalgebra
     ```
 
+### Celestia
+
+1. (GUEST) Configure `QT 6.5.0` mentioned above
+
+2. (GUEST) Download `celestia-kai.deb` and install it:
+
+    ```shell
+    wget https://github.com/ShiinaHiiragi/Celestia/releases/download/0.1/celestia-kai.deb -P /home/user/Downloads
+    sudo apt install /home/user/Downloads/celestia-kai.deb
+    LD_LIBRARY_PATH=/home/user/6.5.0/gcc_64/lib /app/bin/celestia-qt6
+    ```
+
+### Grass GIS
+
+1. (GUEST) Download Grass v8.4
+
+    ```shell
+    sudo add-apt-repository ppa:ubuntugis/ubuntugis-unstable
+    sudo apt update
+    sudo apt install grass=8.4.1-1~jammy1
+    ```
+
+2. (GUEST) Download the repo and replace raw scripts
+
+    ```shell
+    git clone https://github.com/ShiinaHiiragi/grass-gui
+    sudo rm -r /usr/lib/grass84/gui/wxpython
+    sudo mv ./grass-gui /usr/lib/grass84/gui/wxpython
+    gnome-terminal -- /bin/bash -ic "FLASK_PORT=8000 grass --gui"
+    ```
+
+### TeXstudio
+- (GUEST) Download TeXstudio
+
+    ```shell
+    sudo add-apt-repository ppa:sunderme/texstudio
+    sudo apt update
+    sudo apt install texstudio
+    ```
+
 ## Postprocess
+
 1. (HOST) Move server files into guest OS:
 
     ```shell
