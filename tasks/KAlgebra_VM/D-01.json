@@ -1,7 +1,7 @@
 {
     "type": "KAlgebra",
     "sort": "VM",
-    "steps": 5,
+    "steps": 10,
     "instruction": "Suppose that f(n) = ln(n) / n where n is a natural number. Calculate the max f(n) in KAlgebra and store the value in variable `M`. Hint: try to plot the corresponding function to observe its monotonicity.",
     "version": "0.1",
     "snapshot": "sci_bench",

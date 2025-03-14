@@ -1,7 +1,7 @@
 {
     "type": "KAlgebra",
     "sort": "VM",
-    "steps": 5,
+    "steps": 10,
     "instruction": "Find the area of ​​the given figure in KAlgebra and store the value in variable `area`.",
     "version": "0.1",
     "snapshot": "sci_bench",
