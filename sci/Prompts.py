@@ -41,8 +41,8 @@ CELESTIA_VM_TIPS = [
     "..."
 ]
 
-CELESTIA_IS = "a GIS software suite used for geospatial data management and analysis, etc."
-CELESTIA_VM_TIPS = [
+GRASSGIS_IS = "a GIS software suite used for geospatial data management and analysis, etc."
+GRASSGIS_VM_TIPS = [
     # TODO: fill tips
     "..."
 ]
