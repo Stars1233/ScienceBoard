@@ -1,7 +1,8 @@
 {
     "type": "Lean",
     "sort": "Raw",
-    "steps": 10,
+    "steps": 50,
+    "penalty": "1:5",
     "instruction": "theorem DM_3 {L : Language} [L.Structure M₁] [L.Structure M₂] (h : M₁ ≅[L] M₂) : ∃ N : Bundled L.Structure, Nonempty (M₁ ↪ₑ[L] N) ∧ Nonempty (M₂ ↪ₑ[L] N) := by sorry",
     "version": "0.1",
     "initialize": [

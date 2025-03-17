@@ -1,7 +1,8 @@
 {
     "type": "Lean",
     "sort": "Raw",
-    "steps": 10,
+    "steps": 50,
+    "penalty": "1:5",
     "instruction": "theorem TP_5 [TopologicalSpace X] [RegularSpace X] (A Y : Set X) (h₁ : IsCompact A) (h₂ : A ⊆ Y ∧ Y ⊆ Aᶜ) : IsCompact Y := by sorry",
     "version": "0.1",
     "initialize": [

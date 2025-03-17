@@ -132,6 +132,11 @@ class Task:
         if "ans" in self.config:
             self.ans = self.config["ans"]
 
+        self.penalty = (2147438648, 0)
+        if "penalty" in self.config:
+            match_obj = re.search("(\d+):(\d+)", self.config["penalty"])
+            self.penalty = (int(match_obj[1]), int(match_obj[2]))
+
     @staticmethod
     def _stop_handler(method: Callable) -> Callable:
         @Log.result_handler
@@ -224,7 +229,7 @@ class Task:
                 continue
         return False
 
-    def _step(self, step_index: int) -> None:
+    def _step(self, step_index: int) -> bool:
         obs = {
             obs_type: getattr(self.manager, obs_type)()
             for obs_type in self.obs_types
@@ -267,6 +272,8 @@ class Task:
             code_like(self.manager)
             Manager.pause()
 
+        return False
+
     def __test_prompt(self) -> None:
         obs = frozenset({OBS.screenshot if self.manager.is_gui else OBS.textual})
         self.agent._init(obs, self.instruction, self.type_sort)
@@ -278,9 +285,17 @@ class Task:
     @_avail_handler
     @Log.record_handler
     def predict(self) -> staticmethod:
+        liquid = 0
+        step_index = 1
+        step_sup = self.steps
         try:
-            for step_index in range(self.steps):
-                self._step(step_index)
+            while step_index <= step_sup:
+                invalid = self._step(step_index)
+                step_index += 1
+                liquid += 1 if invalid else 0
+                if liquid >= self.penalty[0]:
+                    liquid = 0
+                    step_sup -= self.penalty[1]
         except Primitive.PlannedTermination as early_stop:
             return early_stop.type
         return Primitive.TIMEOUT
