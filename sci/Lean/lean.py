@@ -95,7 +95,7 @@ class RawManager(Manager):
 
         return output
 
-    def __call__(self, tactic: str) -> None:
+    def __call__(self, tactic: str) -> bool:
         try:
             tactic = json.loads(tactic)
         except: ...
@@ -105,6 +105,8 @@ class RawManager(Manager):
         # but if this happened, there might be sth going wrong
         assert type(output) in (REPLOutput, REPLOutputTactic)
         self.history.append(output)
+
+        return not output.is_error()
 
     def __enter__(self) -> Self:
         self.process = subprocess.Popen(

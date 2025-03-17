@@ -268,11 +268,14 @@ class Task:
             is_textual=OBS.textual in obs
         )
 
+        results = []
         for code_like in response_codes:
-            code_like(self.manager)
+            results.append(code_like(self.manager))
             Manager.pause()
 
-        return False
+        # Manager.__call__() return True/None if success/undecidable
+        # if all code blocks fail, one liquidation is counted
+        return all([item is False for item in results])
 
     def __test_prompt(self) -> None:
         obs = frozenset({OBS.screenshot if self.manager.is_gui else OBS.textual})

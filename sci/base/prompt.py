@@ -110,11 +110,11 @@ class CodeLike:
             if isinstance(value, staticmethod)
         ]
 
-    def __call__(self, manager: Manager) -> None:
+    def __call__(self, manager: Manager) -> Optional[bool]:
         if self.code in self.PRIMITIVE:
             getattr(Primitive, self.code)()
         else:
-            manager(self.code)
+            return manager(self.code)
 
 
 class PromptFactory:
