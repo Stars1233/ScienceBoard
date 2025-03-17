@@ -288,17 +288,19 @@ class Task:
     @_avail_handler
     @Log.record_handler
     def predict(self) -> staticmethod:
-        liquid = 0
-        step_index = 1
-        step_sup = self.steps
         try:
-            while step_index <= step_sup:
+            liquid, step_index = 0, 0
+            while step_index < self.steps:
                 invalid = self._step(step_index)
                 step_index += 1
                 liquid += 1 if invalid else 0
                 if liquid >= self.penalty[0]:
                     liquid = 0
-                    step_sup -= self.penalty[1]
+                    self.steps -= self.penalty[1]
+                    self.vlog.info(
+                        f"Total steps are reduced to {self.steps} "
+                        f"due to {self.penalty[0]} consecutive incorrect inputs."
+                    )
         except Primitive.PlannedTermination as early_stop:
             return early_stop.type
         return Primitive.TIMEOUT
