@@ -2,7 +2,7 @@
     "type": "KAlgebra",
     "sort": "VM",
     "steps": 5,
-    "instruction": "Suppose f(n) to be the n-st fibonacci sequence and f(1) = f(2) = 1. Calculate f(24) in KAlgebra and store the result in variable `p`.",
+    "instruction": "Suppose f(n) to be the n-st fibonacci sequence and f(1) = f(2) = 1. Calculate f(24) in KAlgebra and submit the result via `ANS`.",
     "version": "0.1",
     "snapshot": "sci_bench",
     "initialize": [
@@ -15,10 +15,10 @@
     ],
     "evaluate": [
         {
-            "type": "val",
-            "key": "p",
-            "value": 46368
+            "type": "stop",
+            "value": "ANS",
+            "args": ["46368"]
         }
     ],
-    "ans": "p := (n->1/root(5, 2)*((1/2+root(5, 2)/2)^n-(1/2-root(5, 2)/2)^n))(24)"
+    "ans": "ANS 46368"
 }

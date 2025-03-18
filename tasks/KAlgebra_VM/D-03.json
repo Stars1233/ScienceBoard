@@ -2,7 +2,7 @@
     "type": "KAlgebra",
     "sort": "VM",
     "steps": 10,
-    "instruction": "Let f(x) = 2sin(x) and g(x) = x + 1/(2x). Find the number of zeros of the equation f(x) = g(x) and store your answer into variable `cnt` in KAlgebra.",
+    "instruction": "Let f(x) = 2sin(x) and g(x) = x + 1/(2x). Find the number of zeros of the equation f(x) = g(x) and submit your answer via `ANS`.",
     "version": "0.1",
     "snapshot": "sci_bench",
     "initialize": [
@@ -15,10 +15,10 @@
     ],
     "evaluate": [
         {
-            "type": "val",
-            "key": "cnt",
-            "value": 4
+            "type": "stop",
+            "value": "ANS",
+            "args": ["4"]
         }
     ],
-    "ans": "cnt := 4"
+    "ans": "ANS 4"
 }
