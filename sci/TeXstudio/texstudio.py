@@ -15,7 +15,7 @@ class RawManager(Manager):
         assert os.system("texstudio --version") == 0
         super().__init__(version)
 
-    def __call__(self) -> None:
+    def __call__(self, _) -> None:
         raise NotImplementedError
 
     def __enter__(self) -> Self:

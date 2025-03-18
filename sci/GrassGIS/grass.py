@@ -72,7 +72,7 @@ class RawManager(Manager, ManagerMixin):
         assert os.path.isdir(data_path)
         self.data_path = data_path
 
-    def __call__(self) -> None:
+    def __call__(self, _) -> None:
         raise NotImplementedError
 
     def __enter__(self) -> Self:

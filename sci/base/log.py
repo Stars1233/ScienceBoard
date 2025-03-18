@@ -415,8 +415,12 @@ class Log:
     # as they will be used by Task objects
     @staticmethod
     def result_handler(method: Callable) -> Callable:
-        def result_wrapper(self: "Task", stop_type: staticmethod) -> bool:
-            return_value = method(self, stop_type)
+        def result_wrapper(
+            self: "Task",
+            stop_type: staticmethod,
+            stop_args: List[str]
+        ) -> bool:
+            return_value = method(self, stop_type, stop_args)
             with open(
                 self.vlog.result_file_path,
                 mode="w",

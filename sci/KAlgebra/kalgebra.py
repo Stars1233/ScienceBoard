@@ -71,7 +71,7 @@ class RawManager(Manager, ManagerMixin):
         assert os.path.isdir(lib_path)
         self.lib_path = lib_path
 
-    def __call__(self) -> None:
+    def __call__(self, _) -> None:
         raise NotImplementedError
 
     def __enter__(self) -> Self:

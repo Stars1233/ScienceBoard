@@ -6,6 +6,7 @@ from .utils import TypeSort
 
 import sys
 import re
+import traceback
 
 from dataclasses import dataclass
 
@@ -18,6 +19,7 @@ from .override import *
 from .manager import OBS, Manager
 from .model import Content
 from .utils import TypeSort
+from .log import GLOBAL_VLOG
 
 RAW = TypeSort.Sort.Raw
 VM = TypeSort.Sort.VM
@@ -39,8 +41,9 @@ class Primitive:
     PRIMITIVES = PrimitiveGetter()
 
     class PlannedTermination(Exception):
-        def __init__(self, type: staticmethod) -> None:
+        def __init__(self, type: staticmethod, *args) -> None:
             self.type = type
+            self.args = args
 
     @staticmethod
     def DONE() -> NoReturn:
@@ -49,13 +52,19 @@ class Primitive:
 
     @staticmethod
     def FAIL() -> NoReturn:
-        """When you think the task can not be done, return «FAIL», don't easily say «FAIL», try your best to do the task"""
+        """When you think the task can not be done, return «FAIL». Don't easily say «FAIL»; try your best to do the task"""
         raise Primitive.PlannedTermination(Primitive.FAIL)
 
     @staticmethod
-    def WAIT() -> None:
-        """When you think you have to wait for some time, return «WAIT»"""
-        Manager.pause(Primitive.WAIT_TIME)
+    def WAIT(time_span: Optional[str] = None) -> None:
+        """When you think you have to wait for some time, return «WAIT» or «WAIT n», in which n defaults to 5(s)"""
+        time_span = Primitive.WAIT_TIME if time_span is None else int(time_span)
+        Manager.pause(time_span)
+
+    @staticmethod
+    def ANS(ans: str) -> None:
+        """When you are asked to submit an answer, return «ANS s» without quotation marks surrounding s"""
+        raise Primitive.PlannedTermination(Primitive.ANS, ans)
 
     @staticmethod
     def TIMEOUT() -> None:
@@ -111,8 +120,19 @@ class CodeLike:
         ]
 
     def __call__(self, manager: Manager) -> Optional[bool]:
-        if self.code in self.PRIMITIVE:
-            getattr(Primitive, self.code)()
+        if any([self.code.startswith(prim) for prim in self.PRIMITIVE]):
+            splits = self.code.split(" ")
+            try:
+                getattr(Primitive, splits[0])(*splits[1:])
+            except Primitive.PlannedTermination as early_stop:
+                # pass planned exception
+                raise early_stop
+            except:
+                # catch unexpected exception
+                GLOBAL_VLOG.error(
+                    f"Error calling primitive. \n" \
+                        + traceback.format_exc()
+                )
         else:
             return manager(self.code)
 

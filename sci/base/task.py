@@ -4,8 +4,8 @@ import re
 import json
 import traceback
 
-from typing import Set, Union, Optional, Any
-from typing import Iterable, Callable, NoReturn
+from typing import List, Tuple, Set, Union, Optional
+from typing import Any, Iterable, Callable, NoReturn
 
 sys.dont_write_bytecode = True
 from .agent import Agent, Primitive
@@ -128,6 +128,12 @@ class Task:
                 assert "value" in eval_item
                 assert isinstance(eval_item["value"], str)
 
+                if eval_item["value"] == Primitive.ANS.__name__:
+                    assert "args" in eval_item
+                    assert isinstance(eval_item["args"], list)
+                    for args_item in eval_item["args"]:
+                        assert isinstance(args_item, str)
+
         self.ans = None
         if "ans" in self.config:
             self.ans = self.config["ans"]
@@ -140,9 +146,13 @@ class Task:
     @staticmethod
     def _stop_handler(method: Callable) -> Callable:
         @Log.result_handler
-        def _stop_wrapper(self, stop_type: staticmethod) -> bool:
+        def _stop_wrapper(
+            self,
+            stop_type: staticmethod,
+            stop_args: List[str]
+        ) -> bool:
             try:
-                return Task.eval(self, stop_type)
+                return Task.eval(self, stop_type, stop_args)
             except Task.PlannedNotImplemented:
                 return method(self)
         return _stop_wrapper
@@ -287,7 +297,7 @@ class Task:
 
     @_avail_handler
     @Log.record_handler
-    def predict(self) -> staticmethod:
+    def predict(self) -> Tuple[staticmethod, List[str]]:
         try:
             liquid, step_index = 0, 0
             while step_index < self.steps:
@@ -297,20 +307,24 @@ class Task:
                 if liquid >= self.penalty[0]:
                     liquid = 0
                     self.steps -= self.penalty[1]
-                    self.vlog.info(
+                    self.vlog.warning(
                         f"Total steps are reduced to {self.steps} "
                         f"due to {self.penalty[0]} consecutive incorrect inputs."
                     )
         except Primitive.PlannedTermination as early_stop:
-            return early_stop.type
-        return Primitive.TIMEOUT
+            return early_stop.type, list(early_stop.args)
+        return Primitive.TIMEOUT, []
 
     # in case Task().eval() is derectly called
     # if eval() of Task's subclass is called
     # result output will be written twice sometimes
     @_avail_handler
     @Log.result_handler
-    def eval(self, stop_type: staticmethod) -> Union[bool, NoReturn]:
+    def eval(
+        self,
+        stop_type: staticmethod,
+        stop_args: List[str]
+    ) -> Union[bool, NoReturn]:
         eval_index = 0
 
         while eval_index < len(self.evaluate):
@@ -319,6 +333,10 @@ class Task:
                 eval_index += 1
             elif eval_item["value"] != stop_type.__name__:
                 self.vlog.info(f"Evaluation failed at stop type.")
+                return False
+            elif eval_item["value"] == Primitive.ANS.__name__ \
+                and eval_item["args"] != stop_args:
+                self.vlog.info(f"Evaluation failed at ANS.")
                 return False
             else:
                 del self.evaluate[eval_index]
@@ -341,12 +359,16 @@ class Task:
                 f"Finish task manually: ",
                 end=""
             ) or Primitive.TIMEOUT.__name__
-            stop_type = getattr(Primitive, primitive_text, Primitive.TIMEOUT)
+            splits = primitive_text.split(" ")
+            if hasattr(Primitive, splits[0]):
+                stop_type, stop_args = splits[0], splits[1:]
+            else:
+                stop_type, stop_args = Primitive.TIMEOUT, []
         else:
             self.vlog.info("Starting prediction.")
-            stop_type = self.predict()
+            stop_type, stop_args = self.predict()
         self.vlog.info(f"Starting evaluation with stop type of {stop_type.__name__}.")
-        return self.eval(stop_type)
+        return self.eval(stop_type, stop_args)
 
     @_avail_handler
     def __call__(self) -> bool:
