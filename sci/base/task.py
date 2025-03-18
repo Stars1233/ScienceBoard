@@ -286,7 +286,7 @@ class Task:
 
         results = []
         for code_like in response_codes:
-            results.append(code_like(self.manager))
+            results.append(code_like(self.manager, self.primitives))
             Manager.pause()
 
         # Manager.__call__() return True/None if success/undecidable

@@ -120,8 +120,8 @@ class CodeLike:
     def wrap_antiquot(doc_str: str) -> str:
         return doc_str.replace("«", "```").replace("»", "```")
 
-    def __call__(self, manager: Manager) -> Optional[bool]:
-        if any([self.code.startswith(prim) for prim in Primitive.PRIMITIVES]):
+    def __call__(self, manager: Manager, primitives: List[str]) -> Optional[bool]:
+        if any([self.code.startswith(prim) for prim in primitives]):
             splits = self.code.split(" ")
             try:
                 getattr(Primitive, splits[0])(*splits[1:])
