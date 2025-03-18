@@ -367,7 +367,7 @@ class Task:
             ) or Primitive.TIMEOUT.__name__
             splits = primitive_text.split(" ")
             if hasattr(Primitive, splits[0]):
-                stop_type, stop_args = splits[0], splits[1:]
+                stop_type, stop_args = getattr(Primitive, splits[0]), splits[1:]
             else:
                 stop_type, stop_args = Primitive.TIMEOUT, []
         else:
