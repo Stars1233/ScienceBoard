@@ -79,7 +79,7 @@ class Log:
 
     TRAJ_FILENAME    = "traj.jsonl"
     RESULT_FILENAME  = "result.out"
-    RECORD_FILENAME  = "record.webm"
+    RECORD_FILENAME  = "record.mp4"
     REQUEST_FILENAME = "request.json"
     SIMP_FILENAME    = "request.simp.json"
     PROMPT_FILENAME  = "prompt.txt"

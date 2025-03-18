@@ -6,6 +6,7 @@ from .utils import TypeSort
 
 import sys
 import re
+import functools
 import traceback
 
 from dataclasses import dataclass
@@ -40,6 +41,12 @@ class Primitive:
     WAIT_TIME = 5
     PRIMITIVES = PrimitiveGetter()
 
+    def option_handler(method: Callable) -> Callable:
+        @functools.wraps(method)
+        def option_wrapper(*args, **kwargs):
+            return method(*args, **kwargs)
+        return option_wrapper
+
     class PlannedTermination(Exception):
         def __init__(self, type: staticmethod, *args) -> None:
             self.type = type
@@ -62,6 +69,7 @@ class Primitive:
         Manager.pause(time_span)
 
     @staticmethod
+    @option_handler
     def ANS(ans: str) -> None:
         """When you are asked to submit an answer, return «ANS s» without quotation marks surrounding s"""
         raise Primitive.PlannedTermination(Primitive.ANS, ans)
@@ -112,15 +120,8 @@ class CodeLike:
     def wrap_antiquot(doc_str: str) -> str:
         return doc_str.replace("«", "```").replace("»", "```")
 
-    @property
-    def PRIMITIVE(self) -> List[str]:
-        return [
-            key for key, value in Primitive.__dict__.items()
-            if isinstance(value, staticmethod)
-        ]
-
     def __call__(self, manager: Manager) -> Optional[bool]:
-        if any([self.code.startswith(prim) for prim in self.PRIMITIVE]):
+        if any([self.code.startswith(prim) for prim in Primitive.PRIMITIVES]):
             splits = self.code.split(" ")
             try:
                 getattr(Primitive, splits[0])(*splits[1:])

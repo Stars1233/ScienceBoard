@@ -53,6 +53,10 @@ class Task:
         self.manager = manager
         self.agent = agent
 
+        self.primitives = {
+            item for item in Primitive.PRIMITIVES
+            if not hasattr(getattr(Primitive, item), "__wrapped__")
+        }
         self.__check_config()
         if self.__class__ != Task:
             assert self.version == self.manager.version
@@ -127,6 +131,8 @@ class Task:
             if eval_item["type"] == Task.EARLY_STOP:
                 assert "value" in eval_item
                 assert isinstance(eval_item["value"], str)
+                assert hasattr(Primitive, eval_item["value"])
+                self.primitives.add(eval_item["value"])
 
                 if eval_item["value"] == Primitive.ANS.__name__:
                     assert "args" in eval_item
