@@ -29,6 +29,11 @@ class Overflow:
 
     @staticmethod
     @utils.error_factory(False)
+    def openai_siliconflow(response: Response) -> bool:
+        return response.json()["code"] == 20015
+
+    @staticmethod
+    @utils.error_factory(False)
     def anthropic(response: Response) -> bool:
         return response.json()["error"]["type"] == "request_too_large"
 

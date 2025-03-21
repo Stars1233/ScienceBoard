@@ -7,7 +7,7 @@
     - `DEBUG_ERR_FACT`: insert a breakpoint when eval exception occur
 2. Models
     - `OPENAI_API_KEY`: API key for OpenAI GPT
-    - `LOCAL_BASE_URL`: base URL for locally deployed model
+    - `OPEN_BASE_URL`: base URL for locally deployed model
     - `INTERNVL_NAME`: model name of InternVL
     - `DEEPSEEK_VL_NAME`: model name of DeepSeek-VL
     - `QWEN_VL_NAME`: model name of QWen-VL

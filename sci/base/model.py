@@ -79,7 +79,7 @@ class ImageContent(Content):
             "image_url": {
                 "url": (
                     Content.PLACEHOLDER if hide_image \
-                        else f"data:image/png;base64, {self.base64_png}"
+                        else f"data:image/png;base64,{self.base64_png}"
                 ),
                 "detail": "high"
             }
