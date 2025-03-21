@@ -70,9 +70,9 @@ class Primitive:
 
     @staticmethod
     @option_handler
-    def ANS(ans: str) -> None:
+    def ANS(*args) -> None:
         """When you are asked to submit an answer, return «ANS s» without quotation marks surrounding s"""
-        raise Primitive.PlannedTermination(Primitive.ANS, ans)
+        raise Primitive.PlannedTermination(Primitive.ANS, *args)
 
     @staticmethod
     def TIMEOUT() -> None:
