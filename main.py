@@ -13,26 +13,28 @@ gpt_4o = lambda: Automata(
     overflow_style="openai_gpt"
 )
 
-internvl = lambda: Automata(
+intern_vl = lambda: Automata(
     model_style="openai",
-    base_url=os.environ["LOCAL_BASE_URL"],
-    model_name=os.environ["INTERNVL_NAME"],
+    base_url=os.environ["OPEN_BASE_URL"],
+    model_name=os.environ["INTERN_VL_NAME"],
     overflow_style="openai_lmdeploy"
 )
 
 deepseek_vl = lambda: Automata(
     model_style="openai",
-    base_url=os.environ["LOCAL_BASE_URL"],
+    base_url=os.environ["OPEN_BASE_URL"],
     model_name=os.environ["DEEPSEEK_VL_NAME"],
-    overflow_style="openai_lmdeploy",
+    api_key=os.environ["OPEN_API_KEY"],
+    overflow_style="openai_siliconflow",
     register=Automata.image_token()
 )
 
 qwen_vl = lambda: Automata(
     model_style="openai",
-    base_url=os.environ["LOCAL_BASE_URL"],
+    base_url=os.environ["OPEN_BASE_URL"],
     model_name=os.environ["QWEN_VL_NAME"],
-    overflow_style="openai_lmdeploy",
+    api_key=os.environ["OPEN_API_KEY"],
+    overflow_style="openai_siliconflow",
     context_window=3,
     hide_text=True
 )
