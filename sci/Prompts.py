@@ -43,8 +43,8 @@ CELESTIA_VM_TIPS = [
 
 GRASSGIS_IS = "a GIS software suite used for geospatial data management and analysis, etc."
 GRASSGIS_VM_TIPS = [
-    # TODO: fill tips
-    "..."
+    "DO NOT switch to multi-window mode.",
+    "DO NOT toggle more than one map display in map panel; just use 'Map Display 1'."
 ]
 
 TEXSTUDIO_IS = "an integrated writing environment for creating LaTeX documents"
