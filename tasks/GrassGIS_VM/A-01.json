@@ -1,0 +1,17 @@
+{
+    "type": "GrassGIS",
+    "sort": "Raw",
+    "steps": 5,
+    "instruction": "切换并载入 EARTH/countries",
+    "version": "0.1",
+    "snapshot": "sci_bench",
+    "initialize": [],
+    "evaluate": [
+        {
+            "type": "info",
+            "key": "lambda dump: dump['layers']",
+            "value": "countries@PERMANENT",
+            "pred": "lambda key, value: any([item['name'] == value for item in key])"
+        }
+    ]
+}

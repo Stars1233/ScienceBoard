@@ -1,0 +1,36 @@
+{
+    "type": "GrassGIS",
+    "sort": "Raw",
+    "steps": 5,
+    "instruction": "删除当前图层并载入 EARTH/countries",
+    "version": "0.1",
+    "snapshot": "sci_bench",
+    "initialize": [
+        {
+            "func": "map",
+            "grassdb": "/home/ichinoe/grassdata",
+            "location": "natural_earth_dataset",
+            "mapset": "PERMANENT"
+        },
+        {
+            "func": "layer",
+            "query": {
+                "name": "natural_earth"
+            }
+        }
+    ],
+    "evaluate": [
+        {
+            "type": "info",
+            "key": "lambda dump: dump['layers']",
+            "value": "natural_earth@PERMANENT",
+            "pred": "lambda key, value: all([item['name'] != value for item in key])"
+        },
+        {
+            "type": "info",
+            "key": "lambda dump: dump['layers']",
+            "value": "countries@PERMANENT",
+            "pred": "lambda key, value: any([item['name'] == value for item in key])"
+        }
+    ]
+}
