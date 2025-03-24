@@ -48,7 +48,7 @@
         },
         {
             "func": "destroy",
-            "wait": 2
+            "wait": 2.5
         }
     ],
     "evaluate": [

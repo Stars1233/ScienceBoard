@@ -1,0 +1,36 @@
+{
+    "type": "GrassGIS",
+    "sort": "Raw",
+    "steps": 5,
+    "instruction": "将中心点移动到东经 25°、北纬 20°",
+    "version": "0.1",
+    "snapshot": "sci_bench",
+    "initialize": [
+        {
+            "func": "map",
+            "grassdb": "/home/ichinoe/grassdata",
+            "location": "natural_earth_dataset",
+            "mapset": "PERMANENT"
+        },
+        {
+            "func": "layer",
+            "query": {
+                "name": "countries"
+            }
+        }
+    ],
+    "evaluate": [
+        {
+            "type": "info",
+            "key": "lambda dump: dump['region']['center_easting']",
+            "value": 25,
+            "pred": "lambda key, value: abs((key % 360) - value) < 1"
+        },
+        {
+            "type": "info",
+            "key": "lambda dump: dump['region']['center_northing']",
+            "value": 20,
+            "pred": "lambda key, value: abs(key - value) < 1"
+        }
+    ]
+}

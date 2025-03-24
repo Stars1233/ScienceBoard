@@ -20,8 +20,8 @@ class TaskMixin:
         assert "key" in eval_item
         assert "value" in eval_item
 
-    def _gcmd(self: Union["RawTask", "VMTask"], cmd, kwargs) -> bool:
-        return self.manager.operate_gcmd(cmd, kwargs)
+    def _cmd(self: Union["RawTask", "VMTask"]) -> bool:
+        return self.manager.operate_cmd()
 
     def _map(
         self: Union["RawTask", "VMTask"],
@@ -36,6 +36,12 @@ class TaskMixin:
         query: Dict[str, str]
     ) -> bool:
         return self.manager.operate_layer(query)
+
+    def _scale(
+        self: Union["RawTask", "VMTask"],
+        scale: int
+    ) -> bool:
+        return self.manager.operate_scale(scale)
 
     @error_factory(False)
     def eval(self: Union["RawTask", "VMTask"]) -> bool:

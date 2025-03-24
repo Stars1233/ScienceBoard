@@ -3,7 +3,7 @@ import os
 import signal
 import subprocess
 
-from typing import List, Dict, Union, Self
+from typing import Dict, Self
 
 import requests
 from PIL import Image
@@ -23,28 +23,39 @@ class ManagerMixin:
     def status_version(self) -> str:
         return requests.get(self.base_url + "/version").text
 
-    def status_dump(self) -> Dict[str, str]:
-        return requests.get(self.base_url + "/dump").json()
+    def operate_cmd(self) -> bool:
+        return requests.get(self.base_url + "/init/cmd").text == "OK"
 
-    def operate_gcmd(self, cmd, kwargs) -> bool:
-        return requests.post(
-            self.base_url + "/gcmd",
-            json={"cmd": cmd, "kwargs": kwargs}
-        ).text == "OK"
-
-    def operate_map(self, grassdb, location, mapset) -> bool:
+    def operate_map(self, grassdb: str, location: str, mapset: str) -> bool:
         return requests.post(self.base_url + "/init/map", json={
             "grassdb": grassdb,
             "location": location,
             "mapset": mapset
         }).text == "OK"
 
-    def operate_layer(self, query) -> bool:
+    def operate_layer(self, query: Dict[str, str]) -> bool:
         return requests.post(
             self.base_url + "/init/layer",
-            json={ "query": query }
+            json={"query": query}
         ).text == "OK"
 
+    def operate_scale(self, scale: int) -> bool:
+        return requests.post(
+            self.base_url + "/init/scale",
+            json={"scale": scale}
+        ).text == "OK"
+
+    def status_dump(self) -> Dict[str, str]:
+        return requests.get(self.base_url + "/dump").json()
+
+    def operate_gcmd(self, cmd: str, kwargs: Dict[str, str]) -> Dict:
+        return requests.post(
+            self.base_url + "/gcmd",
+            json={"cmd": cmd, "kwargs": kwargs}
+        ).json()
+
+    def operate_quit(self) -> bool:
+        requests.post(self.base_url + "/quit").status_code == 500
 
 class RawManager(Manager, ManagerMixin):
     def __init__(
@@ -90,14 +101,11 @@ class RawManager(Manager, ManagerMixin):
         ), shell=True, stdout=subprocess.PIPE, text=True)
 
         Manager.pause(self.STARTUP_WAIT_TIME)
-        pids = subprocess.check_output(["pidof", "bash"])
-        self.pid = int(pids.decode().split(" ")[0])
-
         assert self.status_version() == self.version
         return super().__enter__()
 
     def __exit__(self, exc_type, exc_value, traceback) -> None:
-        os.kill(self.pid, signal.SIGTERM)
+        self.operate_quit()
         super().__exit__(exc_type, exc_value, traceback)
 
     def screenshot(self) -> Image.Image:

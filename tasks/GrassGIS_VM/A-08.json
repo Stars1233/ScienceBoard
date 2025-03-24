@@ -1,0 +1,57 @@
+{
+    "type": "GrassGIS",
+    "sort": "Raw",
+    "steps": 5,
+    "instruction": "保持当前比例尺不变，在地图中完整显示保加利亚",
+    "version": "0.1",
+    "snapshot": "sci_bench",
+    "initialize": [
+        {
+            "func": "map",
+            "grassdb": "/home/ichinoe/grassdata",
+            "location": "natural_earth_dataset",
+            "mapset": "PERMANENT"
+        },
+        {
+            "func": "layer",
+            "query": {
+                "name": "countries"
+            }
+        },
+        {
+            "func": "scale",
+            "scale": 25
+        }
+    ],
+    "evaluate": [
+        {
+            "type": "info",
+            "key": "lambda dump: dump['statusbar']['scale']",
+            "value": 25
+        },
+        {
+            "type": "info",
+            "key": "lambda dump: dump['region']['n']",
+            "value": 43.5,
+            "pred": "lambda key, value: key > value"
+        },
+        {
+            "type": "info",
+            "key": "lambda dump: dump['region']['s']",
+            "value": 41.5,
+            "pred": "lambda key, value: key < value"
+        },
+        {
+            "type": "info",
+            "key": "lambda dump: dump['region']['e']",
+            "value": 28,
+            "pred": "lambda key, value: key > value"
+        },
+        {
+            "type": "info",
+            "key": "lambda dump: dump['region']['w']",
+            "value": 23,
+            "pred": "lambda key, value: key < value"
+        }
+    ]
+}

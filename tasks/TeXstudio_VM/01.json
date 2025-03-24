@@ -8,7 +8,7 @@
     "initialize": [
         {
             "func": "launch",
-            "wait": 2,
+            "wait": 2.5,
             "command": "texstudio",
             "shell": true
         }
