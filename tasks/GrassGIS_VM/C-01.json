@@ -2,7 +2,7 @@
     "type": "GrassGIS",
     "sort": "VM",
     "steps": 5,
-    "instruction": "回答问题：当前地图集中，最不发达地区（least developed region）的数量",
+    "instruction": "Submit your answer: number of least developed regions in the current mapset.",
     "version": "0.1",
     "snapshot": "sci_bench",
     "initialize": [

@@ -2,7 +2,7 @@
     "type": "GrassGIS",
     "sort": "VM",
     "steps": 5,
-    "instruction": "删去当前地图的 ISTAT 列",
+    "instruction": "Delete the column named 'ISTAT' in the current mapset in Grass GIS.",
     "version": "0.1",
     "snapshot": "sci_bench",
     "initialize": [

@@ -2,7 +2,7 @@
     "type": "GrassGIS",
     "sort": "VM",
     "steps": 5,
-    "instruction": "回答问题：10146 个地名（geoname）中，Capanna Margherita 的特征码（featurecode）",
+    "instruction": "What is the feature code of Capanna Margherita among 10146 geonames? Submit your answer via three letters in upper case.",
     "version": "0.1",
     "snapshot": "sci_bench",
     "initialize": [

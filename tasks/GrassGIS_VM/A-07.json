@@ -2,7 +2,7 @@
     "type": "GrassGIS",
     "sort": "VM",
     "steps": 5,
-    "instruction": "将中心点移动到东经 25°、北纬 20°",
+    "instruction": "Move the center point to 25°E, 20°N in Grass GIS.",
     "version": "0.1",
     "snapshot": "sci_bench",
     "initialize": [

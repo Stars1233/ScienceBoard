@@ -2,7 +2,7 @@
     "type": "GrassGIS",
     "sort": "VM",
     "steps": 5,
-    "instruction": "回答问题：3609 个 POI 中，被标记为基督教的点位数",
+    "instruction": "How many POIs are marked as Christian among the 3609 POIs? Answer the question via an integer.",
     "version": "0.1",
     "snapshot": "sci_bench",
     "initialize": [

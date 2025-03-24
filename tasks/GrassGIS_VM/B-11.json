@@ -2,7 +2,7 @@
     "type": "GrassGIS",
     "sort": "VM",
     "steps": 5,
-    "instruction": "输出当前地图的元数据（metadata）",
+    "instruction": "Output the metadata of the current map in Grass GIS.",
     "version": "0.1",
     "snapshot": "sci_bench",
     "initialize": [

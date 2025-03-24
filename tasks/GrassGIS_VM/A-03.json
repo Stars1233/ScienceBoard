@@ -2,7 +2,7 @@
     "type": "GrassGIS",
     "sort": "VM",
     "steps": 5,
-    "instruction": "隐藏 Map Display 1 的 Toolbars",
+    "instruction": "Hide the toolbar of Map Display 1 in Grass GIS.",
     "version": "0.1",
     "snapshot": "sci_bench",
     "initialize": [

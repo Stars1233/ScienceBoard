@@ -2,7 +2,7 @@
     "type": "GrassGIS",
     "sort": "VM",
     "steps": 5,
-    "instruction": "回答问题：学校 Scuola superiore N.Rosa 的邮编（postcode）",
+    "instruction": "Submit your answer: post code of the school called Scuola superiore N.Rosa.",
     "version": "0.1",
     "snapshot": "sci_bench",
     "initialize": [

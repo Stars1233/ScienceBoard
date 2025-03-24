@@ -2,7 +2,7 @@
     "type": "GrassGIS",
     "sort": "VM",
     "steps": 5,
-    "instruction": "切换并载入 EARTH/countries",
+    "instruction": "Switch to natural_earth_dataset and load countries@PERMANENT in Grass GIS.",
     "version": "0.1",
     "snapshot": "sci_bench",
     "initialize": [

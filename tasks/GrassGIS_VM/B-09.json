@@ -2,7 +2,7 @@
     "type": "GrassGIS",
     "sort": "VM",
     "steps": 5,
-    "instruction": "标出且仅标出所有确认支持轮椅的学校",
+    "instruction": "Mark all and only all schools that are confirmed to be wheelchair accessible in Grass GIS.",
     "version": "0.1",
     "snapshot": "sci_bench",
     "initialize": [

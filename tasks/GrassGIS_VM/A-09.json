@@ -2,7 +2,7 @@
     "type": "GrassGIS",
     "sort": "VM",
     "steps": 5,
-    "instruction": "回答问题：grassdata_piemonte_utm32n_wgs84_grass7/PERMANENT 中栅格/矢量地图哪种更多？回答 raster 或 vector",
+    "instruction": "Answer the question: which type of maps is more than the other in grassdata_piemonte_utm32n_wgs84_grass7/PERMANENT? Answer either 'raster' or 'vector'.",
     "version": "0.1",
     "snapshot": "sci_bench",
     "initialize": [

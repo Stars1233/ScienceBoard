@@ -2,7 +2,7 @@
     "type": "GrassGIS",
     "sort": "VM",
     "steps": 5,
-    "instruction": "回答问题：当前地图集中，位于 Corso Regina Margherita 的消防站名",
+    "instruction": "Submit your answer: name of the fire station located in Corso Regina Margherita in the current mapset.",
     "version": "0.1",
     "snapshot": "sci_bench",
     "initialize": [

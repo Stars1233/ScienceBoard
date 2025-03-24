@@ -2,7 +2,7 @@
     "type": "GrassGIS",
     "sort": "VM",
     "steps": 5,
-    "instruction": "当前地图某一点位于地中海，将其删除",
+    "instruction": "There is a point located in the Mediterranean Sea. Please delete it.",
     "version": "0.1",
     "snapshot": "sci_bench",
     "initialize": [

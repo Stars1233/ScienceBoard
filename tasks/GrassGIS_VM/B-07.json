@@ -2,7 +2,7 @@
     "type": "GrassGIS",
     "sort": "VM",
     "steps": 5,
-    "instruction": "以旗标样式标出所有消防站",
+    "instruction": "Mark all fire stations in Piemonte with flag icons in Grass GIS.",
     "version": "0.1",
     "snapshot": "sci_bench",
     "initialize": [

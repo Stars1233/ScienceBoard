@@ -2,7 +2,7 @@
     "type": "GrassGIS",
     "sort": "VM",
     "steps": 5,
-    "instruction": "改图层名为 country_boundaries",
+    "instruction": "Change the name of the current layer into 'country_boundaries' in Grass GIS.",
     "version": "0.1",
     "snapshot": "sci_bench",
     "initialize": [

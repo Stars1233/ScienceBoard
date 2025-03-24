@@ -2,7 +2,7 @@
     "type": "GrassGIS",
     "sort": "VM",
     "steps": 5,
-    "instruction": "载入主要公路，将颜色改为纯白",
+    "instruction": "Load the major roads of Piemonte and change their color to pure white in Grass GIS.",
     "version": "0.1",
     "snapshot": "sci_bench",
     "initialize": [

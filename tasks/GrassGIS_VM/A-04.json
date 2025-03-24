@@ -2,7 +2,7 @@
     "type": "GrassGIS",
     "sort": "VM",
     "steps": 5,
-    "instruction": "进入当前图层的编辑界面",
+    "instruction": "Enter the editing interface of the current layer in Grass GIS.",
     "version": "0.1",
     "snapshot": "sci_bench",
     "initialize": [

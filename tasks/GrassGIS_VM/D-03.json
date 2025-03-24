@@ -2,7 +2,7 @@
     "type": "GrassGIS",
     "sort": "VM",
     "steps": 5,
-    "instruction": "POI 中有且仅有一个点的 start date 中同时含有月份和日期，将其删去，只留年份",
+    "instruction": "There is only one POI whose start date contains both month and day. Delete them and only keep the year data in Grass GIS.",
     "version": "0.1",
     "snapshot": "sci_bench",
     "initialize": [

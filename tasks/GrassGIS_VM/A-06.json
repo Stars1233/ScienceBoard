@@ -2,7 +2,7 @@
     "type": "GrassGIS",
     "sort": "VM",
     "steps": 5,
-    "instruction": "将比例尺切换到 1:400",
+    "instruction": "Switch the map scale to 1:400 in Grass GIS.",
     "version": "0.1",
     "snapshot": "sci_bench",
     "initialize": [

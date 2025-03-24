@@ -2,7 +2,7 @@
     "type": "GrassGIS",
     "sort": "VM",
     "steps": 5,
-    "instruction": "回答问题：当前地图集中，ASTI 境内的医院数量",
+    "instruction": "Submit your answer: number of hospitals in ASTI according to the current mapset.",
     "version": "0.1",
     "snapshot": "sci_bench",
     "initialize": [
