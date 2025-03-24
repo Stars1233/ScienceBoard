@@ -14,6 +14,7 @@
         },
         {
             "func": "layer",
+            "wait": 5,
             "query": {
                 "name": "countries"
             }
