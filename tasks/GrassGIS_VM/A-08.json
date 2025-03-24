@@ -27,7 +27,8 @@
         {
             "type": "info",
             "key": "lambda dump: dump['statusbar']['scale']",
-            "value": 25
+            "value": 25,
+            "pred": "lambda key, value: abs(key - value) < 0.1"
         },
         {
             "type": "info",
