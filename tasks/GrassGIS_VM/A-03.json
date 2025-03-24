@@ -19,7 +19,7 @@
         },
         {
             "func": "map",
-            "grassdb": "/home/ichinoe/grassdata",
+            "grassdb": "/home/user/grassdata",
             "location": "natural_earth_dataset",
             "mapset": "PERMANENT"
         }

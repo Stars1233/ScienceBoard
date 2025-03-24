@@ -19,7 +19,7 @@
         },
         {
             "func": "map",
-            "grassdb": "/home/ichinoe/grassdata",
+            "grassdb": "/home/user/grassdata",
             "location": "grassdata_piemonte_utm32n_wgs84_grass7",
             "mapset": "PERMANENT"
         }
