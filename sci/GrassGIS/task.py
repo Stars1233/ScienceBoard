@@ -16,7 +16,12 @@ class TaskMixin:
 
     @Task._config_handler
     def check_config(self, eval_item) -> None:
-        assert eval_item["type"] == "info"
+        if eval_item["type"] == "db":
+            assert "cmd" in eval_item
+            assert "kwargs" in eval_item
+        else:
+            assert eval_item[type] == "info"
+
         assert "key" in eval_item
         assert "value" in eval_item
 
@@ -55,7 +60,18 @@ class TaskMixin:
         return pred(hkey(info), eval_item["value"])
 
     def _eval_db(self: Union["RawTask", "VMTask"], eval_item, _) -> bool:
-        ...
+        obj = self.manager.operate_gcmd(
+            eval_item["cmd"],
+            kwargs=eval_item["kwargs"]
+        )
+
+        hkey: Callable = lambda info: info[eval_item["key"]]
+        pred: Callable = lambda left, right: left == right
+        if hasattr(key_eval := eval(eval_item["key"]), "__call__"):
+            hkey = key_eval
+        if "pred" in eval_item:
+            pred = eval(eval_item["pred"])
+        return pred(hkey(obj["stdout"]), eval_item["value"])
 
     @error_factory(False)
     def eval(self: Union["RawTask", "VMTask"]) -> bool:

@@ -1,0 +1,37 @@
+{
+    "type": "GrassGIS",
+    "sort": "Raw",
+    "steps": 5,
+    "instruction": "为当前地图增加一列 color，类型为 varchar",
+    "version": "0.1",
+    "snapshot": "sci_bench",
+    "initialize": [
+        {
+            "func": "map",
+            "grassdb": "/home/ichinoe/grassdata",
+            "location": "grassdata_piemonte_utm32n_wgs84_grass7",
+            "mapset": "PERMANENT"
+        },
+        {
+            "func": "layer",
+            "query": {
+                "name": "boundary_region"
+            }
+        }
+    ],
+    "evaluate": [
+        {
+            "type": "db",
+            "cmd": "v.db.select",
+            "kwargs": {
+                "map": "boundary_region@PERMANENT"
+            },
+            "key": "lambda out: out['info']['columns']",
+            "value": {
+                "name": "color",
+                "sql_type": "CHARACTER"
+            },
+            "pred": "lambda key, value: any([item['name'] == value['name'] and item['sql_type'] == value['sql_type'] for item in key])"
+        }
+    ]
+}
