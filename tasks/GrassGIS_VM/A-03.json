@@ -1,0 +1,23 @@
+{
+    "type": "GrassGIS",
+    "sort": "Raw",
+    "steps": 5,
+    "instruction": "隐藏 Map Display 1 的 Toolbars",
+    "version": "0.1",
+    "snapshot": "sci_bench",
+    "initialize": [
+        {
+            "func": "map",
+            "grassdb": "/home/ichinoe/grassdata",
+            "location": "natural_earth_dataset",
+            "mapset": "PERMANENT"
+        }
+    ],
+    "evaluate": [
+        {
+            "type": "info",
+            "key": "lambda dump: dump['toolbars']['shown']",
+            "value": false
+        }
+    ]
+}

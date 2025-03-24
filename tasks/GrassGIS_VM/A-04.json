@@ -1,0 +1,35 @@
+{
+    "type": "GrassGIS",
+    "sort": "Raw",
+    "steps": 5,
+    "instruction": "进入当前图层的编辑界面",
+    "version": "0.1",
+    "snapshot": "sci_bench",
+    "initialize": [
+        {
+            "func": "map",
+            "grassdb": "/home/ichinoe/grassdata",
+            "location": "natural_earth_dataset",
+            "mapset": "PERMANENT"
+        },
+        {
+            "func": "layer",
+            "query": {
+                "name": "countries"
+            }
+        }
+    ],
+    "evaluate": [
+        {
+            "type": "info",
+            "key": "lambda dump: dump['toolbars']['keys']",
+            "value": "vdigit",
+            "pred": "lambda key, value: value in key"
+        },
+        {
+            "type": "info",
+            "key": "lambda dump: dump['toolbars']['layer']['name']",
+            "value": "countries@PERMANENT"
+        }
+    ]
+}
