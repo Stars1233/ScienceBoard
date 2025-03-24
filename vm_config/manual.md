@@ -104,6 +104,14 @@
     gnome-terminal -- /bin/bash -ic "FLASK_PORT=8000 grass --gui"
     ```
 
+3. (GUEST) Open Grass and download `Piemonte, Italy dataset` and `Natural Earth Dataset in WGS84` manually.
+4. (GUEST) Open Grass and load `natural_earth_dataset/countries@PERMANENT`, randomly add two points (one in the Mediterranean Sea) and modify `D-04.json`.
+5. (GUEST) Clear GIS lock files
+
+    ```shell
+    rm -rf /home/user/grassdata/*/*/.gislock
+    ```
+
 ### TeXstudio
 - (GUEST) Download TeXstudio
 

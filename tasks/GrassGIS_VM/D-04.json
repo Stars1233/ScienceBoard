@@ -42,7 +42,7 @@
                 "option": "coor"
             },
             "key": "lambda out: out.strip()",
-            "value": "cat|x|y|z",
+            "value": "cat|x|y|z\n257|-79.1050308691105|8.348947891274|0",
             "pred": "lambda key, value: key == value"
         }
     ]
