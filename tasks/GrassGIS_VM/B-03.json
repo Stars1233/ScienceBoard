@@ -1,0 +1,30 @@
+{
+    "type": "GrassGIS",
+    "sort": "Raw",
+    "steps": 5,
+    "instruction": "展示 Category 编号与 Topology 信息",
+    "version": "0.1",
+    "snapshot": "sci_bench",
+    "initialize": [
+        {
+            "func": "map",
+            "grassdb": "/home/ichinoe/grassdata",
+            "location": "grassdata_piemonte_utm32n_wgs84_grass7",
+            "mapset": "PERMANENT"
+        },
+        {
+            "func": "layer",
+            "query": {
+                "name": "boundary_region"
+            }
+        }
+    ],
+    "evaluate": [
+        {
+            "type": "info",
+            "key": "lambda dump: [param for param in [item for item in dump['windows'] if item['name'] == 'boundary_region@PERMANENT'][0]['_data'][1]['params'] if param['name'] == 'display']",
+            "value": ["cat", "topo"],
+            "pred": "lambda key, value: all([val in key[0]['value'] for val in value])"
+        }
+    ]
+}

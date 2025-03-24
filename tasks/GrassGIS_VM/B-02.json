@@ -22,7 +22,7 @@
     "evaluate": [
         {
             "type": "info",
-            "key": "lambda dump: [item for item in dump['layers_window'] if item['_data'][0]['cmd'][1] == 'map=countries@PERMANENT']",
+            "key": "lambda dump: [item for item in dump['windows'] if item['name'] == 'countries@PERMANENT']",
             "value": "country_boundaries",
             "pred": "lambda key, value: key[0]['_text'] == value"
         }
