@@ -1,0 +1,30 @@
+{
+    "type": "GrassGIS",
+    "sort": "Raw",
+    "steps": 5,
+    "instruction": "对 lake 进行单变量栅格统计（univariate raster statistics）",
+    "version": "0.1",
+    "snapshot": "sci_bench",
+    "initialize": [
+        {
+            "func": "map",
+            "grassdb": "/home/ichinoe/grassdata",
+            "location": "grassdata_piemonte_utm32n_wgs84_grass7",
+            "mapset": "PERMANENT"
+        },
+        {
+            "func": "layer",
+            "query": {
+                "name": "boundary_region"
+            }
+        }
+    ],
+    "evaluate": [
+        {
+            "type": "info",
+            "key": "lambda dump: dump['output']",
+            "value": "n: 263975",
+            "pred": "lambda key, value: value in key"
+        }
+    ]
+}
