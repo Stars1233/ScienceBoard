@@ -43,19 +43,28 @@ class TaskMixin:
     ) -> bool:
         return self.manager.operate_scale(scale)
 
+    def _eval_info(self: Union["RawTask", "VMTask"], eval_item, info) -> bool:
+        hkey: Callable = lambda info: info[eval_item["key"]]
+        pred: Callable = lambda left, right: left == right
+
+        if hasattr(key_eval := eval(eval_item["key"]), "__call__"):
+            hkey = key_eval
+        if "pred" in eval_item:
+            pred = eval(eval_item["pred"])
+
+        return pred(hkey(info), eval_item["value"])
+
+    def _eval_db(self: Union["RawTask", "VMTask"], eval_item, _) -> bool:
+        ...
+
     @error_factory(False)
     def eval(self: Union["RawTask", "VMTask"]) -> bool:
         info = self.manager.status_dump()
         for eval_item in self.evaluate:
-            hkey: Callable = lambda info: info[eval_item["key"]]
-            pred: Callable = lambda left, right: left == right
-
-            if hasattr(key_eval := eval(eval_item["key"]), "__call__"):
-                hkey = key_eval
-            if "pred" in eval_item:
-                pred = eval(eval_item["pred"])
-
-            if not pred(hkey(info), eval_item["value"]):
+            eval_type = eval_item["type"]
+            eval_func = getattr(self, f"_eval_{eval_type}")
+            if not eval_func(eval_item, info):
+                self.vlog.info(f"Evaluation failed at {eval_type} of {eval_item['key']}.")
                 return False
         return True
 
