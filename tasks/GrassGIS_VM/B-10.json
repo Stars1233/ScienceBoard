@@ -1,0 +1,42 @@
+{
+    "type": "GrassGIS",
+    "sort": "Raw",
+    "steps": 5,
+    "instruction": "标出各省省名，使用水平居中的 Ubuntu Bold 字体",
+    "version": "0.1",
+    "snapshot": "sci_bench",
+    "initialize": [
+        {
+            "func": "map",
+            "grassdb": "/home/ichinoe/grassdata",
+            "location": "grassdata_piemonte_utm32n_wgs84_grass7",
+            "mapset": "PERMANENT"
+        },
+        {
+            "func": "layer",
+            "query": {
+                "name": "boundary_region"
+            }
+        }
+    ],
+    "evaluate": [
+        {
+            "type": "info",
+            "key": "lambda dump: [param for param in [item for item in dump['windows'] if item['name'] == 'boundary_region@PERMANENT'][0]['_data'][1]['params'] if param['name'] == 'attribute_column']",
+            "value": "NOME",
+            "pred": "lambda key, value: key[0]['value'] == value"
+        },
+        {
+            "type": "info",
+            "key": "lambda dump: [param for param in [item for item in dump['windows'] if item['name'] == 'boundary_region@PERMANENT'][0]['_data'][1]['params'] if param['name'] == 'font']",
+            "value": "Ubuntu:Bold",
+            "pred": "lambda key, value: key[0]['value'] == value"
+        },
+        {
+            "type": "info",
+            "key": "lambda dump: [param for param in [item for item in dump['windows'] if item['name'] == 'boundary_region@PERMANENT'][0]['_data'][1]['params'] if param['name'] == 'xref']",
+            "value": "center",
+            "pred": "lambda key, value: key[0]['value'] == value"
+        }
+    ]
+}

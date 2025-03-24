@@ -1,0 +1,30 @@
+{
+    "type": "GrassGIS",
+    "sort": "Raw",
+    "steps": 5,
+    "instruction": "以大小为 10 的记号标出所有医院",
+    "version": "0.1",
+    "snapshot": "sci_bench",
+    "initialize": [
+        {
+            "func": "map",
+            "grassdb": "/home/ichinoe/grassdata",
+            "location": "grassdata_piemonte_utm32n_wgs84_grass7",
+            "mapset": "PERMANENT"
+        },
+        {
+            "func": "layer",
+            "query": {
+                "name": "boundary_region"
+            }
+        }
+    ],
+    "evaluate": [
+        {
+            "type": "info",
+            "key": "lambda dump: [param for param in [item for item in dump['windows'] if item['name'] == 'hospitals@PERMANENT'][0]['_data'][1]['params'] if param['name'] == 'size']",
+            "value": "10",
+            "pred": "lambda key, value: key[0]['value'] == value"
+        }
+    ]
+}
