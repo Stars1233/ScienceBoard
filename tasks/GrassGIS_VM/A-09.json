@@ -1,6 +1,6 @@
 {
     "type": "GrassGIS",
-    "sort": "Raw",
+    "sort": "VM",
     "steps": 5,
     "instruction": "回答问题：grassdata_piemonte_utm32n_wgs84_grass7/PERMANENT 中栅格/矢量地图哪种更多？回答 raster 或 vector",
     "version": "0.1",

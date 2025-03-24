@@ -1,6 +1,6 @@
 {
     "type": "GrassGIS",
-    "sort": "Raw",
+    "sort": "VM",
     "steps": 5,
     "instruction": "改图层名为 country_boundaries",
     "version": "0.1",

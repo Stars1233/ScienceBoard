@@ -1,6 +1,6 @@
 {
     "type": "GrassGIS",
-    "sort": "Raw",
+    "sort": "VM",
     "steps": 5,
     "instruction": "将透明度设置为 48 ~ 52 之间",
     "version": "0.1",

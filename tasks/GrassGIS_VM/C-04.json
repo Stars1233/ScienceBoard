@@ -1,6 +1,6 @@
 {
     "type": "GrassGIS",
-    "sort": "Raw",
+    "sort": "VM",
     "steps": 5,
     "instruction": "回答问题：当前地图集中，ASTI 境内的医院数量",
     "version": "0.1",

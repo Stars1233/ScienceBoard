@@ -1,6 +1,6 @@
 {
     "type": "GrassGIS",
-    "sort": "Raw",
+    "sort": "VM",
     "steps": 5,
     "instruction": "回答问题：北纬 35.319° 对应的省级行政区，用当地语言回答",
     "version": "0.1",

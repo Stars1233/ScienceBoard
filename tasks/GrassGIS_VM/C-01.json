@@ -1,6 +1,6 @@
 {
     "type": "GrassGIS",
-    "sort": "Raw",
+    "sort": "VM",
     "steps": 5,
     "instruction": "回答问题：当前地图集中，最不发达地区（least developed region）的数量",
     "version": "0.1",

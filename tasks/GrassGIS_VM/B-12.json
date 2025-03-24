@@ -1,6 +1,6 @@
 {
     "type": "GrassGIS",
-    "sort": "Raw",
+    "sort": "VM",
     "steps": 5,
     "instruction": "对 lake 进行单变量栅格统计（univariate raster statistics）",
     "version": "0.1",

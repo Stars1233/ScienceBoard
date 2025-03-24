@@ -1,6 +1,6 @@
 {
     "type": "GrassGIS",
-    "sort": "Raw",
+    "sort": "VM",
     "steps": 5,
     "instruction": "回答问题：学校 Scuola superiore N.Rosa 的邮编（postcode）",
     "version": "0.1",

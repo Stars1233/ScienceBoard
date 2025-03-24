@@ -1,6 +1,6 @@
 {
     "type": "GrassGIS",
-    "sort": "Raw",
+    "sort": "VM",
     "steps": 5,
     "instruction": "为当前地图增加一列 color，类型为 varchar",
     "version": "0.1",

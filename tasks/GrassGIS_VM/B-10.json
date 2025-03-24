@@ -1,6 +1,6 @@
 {
     "type": "GrassGIS",
-    "sort": "Raw",
+    "sort": "VM",
     "steps": 5,
     "instruction": "标出各省省名，使用水平居中的 Ubuntu Bold 字体",
     "version": "0.1",

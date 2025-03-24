@@ -1,6 +1,6 @@
 {
     "type": "GrassGIS",
-    "sort": "Raw",
+    "sort": "VM",
     "steps": 5,
     "instruction": "保持当前比例尺不变，在地图中完整显示保加利亚",
     "version": "0.1",

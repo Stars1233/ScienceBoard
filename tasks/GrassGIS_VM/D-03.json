@@ -1,6 +1,6 @@
 {
     "type": "GrassGIS",
-    "sort": "Raw",
+    "sort": "VM",
     "steps": 5,
     "instruction": "POI 中有且仅有一个点的 start date 中同时含有月份和日期，将其删去，只留年份",
     "version": "0.1",

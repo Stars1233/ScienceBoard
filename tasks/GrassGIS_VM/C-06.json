@@ -1,6 +1,6 @@
 {
     "type": "GrassGIS",
-    "sort": "Raw",
+    "sort": "VM",
     "steps": 5,
     "instruction": "回答问题：3609 个 POI 中，被标记为基督教的点位数",
     "version": "0.1",
