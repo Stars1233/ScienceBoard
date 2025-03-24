@@ -1,0 +1,30 @@
+{
+    "type": "GrassGIS",
+    "sort": "Raw",
+    "steps": 5,
+    "instruction": "将透明度设置为 48 ~ 52 之间",
+    "version": "0.1",
+    "snapshot": "sci_bench",
+    "initialize": [
+        {
+            "func": "map",
+            "grassdb": "/home/ichinoe/grassdata",
+            "location": "natural_earth_dataset",
+            "mapset": "PERMANENT"
+        },
+        {
+            "func": "layer",
+            "query": {
+                "name": "countries"
+            }
+        }
+    ],
+    "evaluate": [
+        {
+            "type": "info",
+            "key": "lambda dump: [item for item in dump['layers'] if item['name'] == 'countries@PERMANENT']",
+            "value": [0.48, 0.52],
+            "pred": "lambda key, value: key[0]['opacity'] > value[0] and key[0]['opacity'] < value[1]"
+        }
+    ]
+}

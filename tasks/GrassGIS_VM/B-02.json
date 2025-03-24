@@ -1,0 +1,30 @@
+{
+    "type": "GrassGIS",
+    "sort": "Raw",
+    "steps": 5,
+    "instruction": "改图层名为 country_boundaries",
+    "version": "0.1",
+    "snapshot": "sci_bench",
+    "initialize": [
+        {
+            "func": "map",
+            "grassdb": "/home/ichinoe/grassdata",
+            "location": "natural_earth_dataset",
+            "mapset": "PERMANENT"
+        },
+        {
+            "func": "layer",
+            "query": {
+                "name": "countries"
+            }
+        }
+    ],
+    "evaluate": [
+        {
+            "type": "info",
+            "key": "lambda dump: [item for item in dump['layers_window'] if item['_data'][0]['cmd'][1] == 'map=countries@PERMANENT']",
+            "value": "country_boundaries",
+            "pred": "lambda key, value: key[0]['_text'] == value"
+        }
+    ]
+}
