@@ -5,7 +5,19 @@
     "instruction": "切换并载入 EARTH/countries",
     "version": "0.1",
     "snapshot": "sci_bench",
-    "initialize": [],
+    "initialize": [
+        {
+            "func": "execute",
+            "command": "rm -rf /home/user/grassdata/*/*/.gislock",
+            "shell": true
+        },
+        {
+            "func": "launch",
+            "wait": 5,
+            "command": "gnome-terminal -- /bin/bash -ic \"FLASK_PORT=8000 grass --gui /home/user/grassdata/world_latlong_wgs84/PERMANENT\"",
+            "shell": true
+        }
+    ],
     "evaluate": [
         {
             "type": "info",
