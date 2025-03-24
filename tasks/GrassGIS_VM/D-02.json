@@ -2,7 +2,7 @@
     "type": "GrassGIS",
     "sort": "Raw",
     "steps": 5,
-    "instruction": "为当前地图增加一列 color，类型为 varchar",
+    "instruction": "删去当前地图的 ISTAT 列",
     "version": "0.1",
     "snapshot": "sci_bench",
     "initialize": [
@@ -28,11 +28,8 @@
                 "format": "json"
             },
             "key": "lambda out: out['info']['columns']",
-            "value": {
-                "name": "color",
-                "sql_type": "CHARACTER"
-            },
-            "pred": "lambda key, value: any([item['name'] == value['name'] and item['sql_type'] == value['sql_type'] for item in key])"
+            "value": "ISTAT",
+            "pred": "lambda key, value: all([item['name'] != value for item in key])"
         }
     ]
 }

@@ -1,0 +1,37 @@
+{
+    "type": "GrassGIS",
+    "sort": "Raw",
+    "steps": 5,
+    "instruction": "当前地图某一点位于地中海，将其删除",
+    "version": "0.1",
+    "snapshot": "sci_bench",
+    "initialize": [
+        {
+            "func": "map",
+            "grassdb": "/home/ichinoe/grassdata",
+            "location": "natural_earth_dataset",
+            "mapset": "PERMANENT"
+        },
+        {
+            "func": "layer",
+            "query": {
+                "name": "countries"
+            }
+        }
+    ],
+    "evaluate": [
+        {
+            "type": "db",
+            "cmd": "v.to.db",
+            "kwargs": {
+                "flags": "p",
+                "map": "countries@PERMANENT",
+                "type": "point",
+                "option": "coor"
+            },
+            "key": "lambda out: out.strip()",
+            "value": "cat|x|y|z",
+            "pred": "lambda key, value: key == value"
+        }
+    ]
+}

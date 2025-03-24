@@ -2,7 +2,7 @@
     "type": "GrassGIS",
     "sort": "Raw",
     "steps": 5,
-    "instruction": "为当前地图增加一列 color，类型为 varchar",
+    "instruction": "POI 中有且仅有一个点的 start date 中同时含有月份和日期，将其删去，只留年份",
     "version": "0.1",
     "snapshot": "sci_bench",
     "initialize": [
@@ -24,15 +24,12 @@
             "type": "db",
             "cmd": "v.db.select",
             "kwargs": {
-                "map": "boundary_region@PERMANENT",
+                "map": "points_of_interest@PERMANENT",
                 "format": "json"
             },
-            "key": "lambda out: out['info']['columns']",
-            "value": {
-                "name": "color",
-                "sql_type": "CHARACTER"
-            },
-            "pred": "lambda key, value: any([item['name'] == value['name'] and item['sql_type'] == value['sql_type'] for item in key])"
+            "key": "lambda out: [item for item in out['records'] if item['name'] == 'Guglielmo Pepe']",
+            "value": "1858",
+            "pred": "lambda key, value: key[0]['start_date'] == value"
         }
     ]
 }
