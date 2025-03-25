@@ -20,7 +20,7 @@ class TaskMixin:
             assert "cmd" in eval_item
             assert "kwargs" in eval_item
         else:
-            assert eval_item[type] == "info"
+            assert eval_item["type"] == "info"
 
         assert "key" in eval_item
         assert "value" in eval_item

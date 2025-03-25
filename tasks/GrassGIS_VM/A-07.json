@@ -36,13 +36,13 @@
             "type": "info",
             "key": "lambda dump: dump['region']['center_easting']",
             "value": 25,
-            "pred": "lambda key, value: abs((key % 360) - value) < 1"
+            "pred": "lambda key, value: abs((key % 360) - value) < 0.1"
         },
         {
             "type": "info",
             "key": "lambda dump: dump['region']['center_northing']",
             "value": 20,
-            "pred": "lambda key, value: abs(key - value) < 1"
+            "pred": "lambda key, value: abs(key - value) < 0.1"
         }
     ]
 }

@@ -30,5 +30,6 @@
             "value": "ANS",
             "args": ["CMP"]
         }
-    ]
+    ],
+    "ans": "ANS CMP"
 }

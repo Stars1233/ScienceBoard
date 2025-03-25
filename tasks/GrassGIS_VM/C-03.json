@@ -30,5 +30,6 @@
             "value": "ANS",
             "args": ["Vigili", "del", "Fuoco"]
         }
-    ]
+    ],
+    "ans": "ANS Vigili del Fuoco"
 }
