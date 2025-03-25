@@ -1,7 +1,7 @@
 {
     "type": "GrassGIS",
     "sort": "VM",
-    "steps": 5,
+    "steps": 10,
     "instruction": "Move the center point to 25°E, 20°N in Grass GIS.",
     "version": "0.1",
     "snapshot": "sci_bench",

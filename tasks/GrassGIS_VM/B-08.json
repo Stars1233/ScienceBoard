@@ -1,7 +1,7 @@
 {
     "type": "GrassGIS",
     "sort": "VM",
-    "steps": 5,
+    "steps": 10,
     "instruction": "Mark all hospitals in Piemonte with a marker size of 10 in Grass GIS.",
     "version": "0.1",
     "snapshot": "sci_bench",

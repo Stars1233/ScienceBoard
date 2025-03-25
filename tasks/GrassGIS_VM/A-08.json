@@ -1,7 +1,7 @@
 {
     "type": "GrassGIS",
     "sort": "VM",
-    "steps": 5,
+    "steps": 10,
     "instruction": "Fully display Bulgaria on the map with the current scale unchanged in Grass GIS.",
     "version": "0.1",
     "snapshot": "sci_bench",

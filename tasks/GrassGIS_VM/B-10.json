@@ -1,7 +1,7 @@
 {
     "type": "GrassGIS",
     "sort": "VM",
-    "steps": 5,
+    "steps": 10,
     "instruction": "Label each province names in Piemonte using horizontally centered Ubuntu:Bold font in Grass GIS.",
     "version": "0.1",
     "snapshot": "sci_bench",

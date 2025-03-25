@@ -1,7 +1,7 @@
 {
     "type": "GrassGIS",
     "sort": "VM",
-    "steps": 5,
+    "steps": 10,
     "instruction": "Add a column named 'COLOR' to the current map with the type to be `varchar` in Grass GIS.",
     "version": "0.1",
     "snapshot": "sci_bench",
