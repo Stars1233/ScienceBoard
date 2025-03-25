@@ -2,7 +2,7 @@
     "type": "GrassGIS",
     "sort": "VM",
     "steps": 5,
-    "instruction": "What is the provincial administrative region corresponding to 35.319° north latitude? Answer it in local language.",
+    "instruction": "What is the provincial administrative region corresponding to 35.319°N? Answer the question in local language.",
     "version": "0.1",
     "snapshot": "sci_bench",
     "initialize": [

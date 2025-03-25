@@ -2,7 +2,7 @@
     "type": "GrassGIS",
     "sort": "VM",
     "steps": 5,
-    "instruction": "There is only one POI whose start date contains both month and day. Delete them and only keep the year data in Grass GIS.",
+    "instruction": "There is only one POI whose start date contains both month and day in the current mapset. Delete them and only keep the year data in Grass GIS.",
     "version": "0.1",
     "snapshot": "sci_bench",
     "initialize": [

@@ -2,7 +2,7 @@
     "type": "GrassGIS",
     "sort": "VM",
     "steps": 5,
-    "instruction": "Answer the question: which type of maps is more than the other in grassdata_piemonte_utm32n_wgs84_grass7/PERMANENT? Answer either 'raster' or 'vector'.",
+    "instruction": "Which type of maps is more than the other in grassdata_piemonte_utm32n_wgs84_grass7/PERMANENT? Answer the question via either `ANS raster` or `ANS vector`.",
     "version": "0.1",
     "snapshot": "sci_bench",
     "initialize": [

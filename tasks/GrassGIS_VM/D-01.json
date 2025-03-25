@@ -2,7 +2,7 @@
     "type": "GrassGIS",
     "sort": "VM",
     "steps": 5,
-    "instruction": "Add a column named 'color' to the current mapset with type to be `varchar` in Grass GIS.",
+    "instruction": "Add a column named 'COLOR' to the current map with the type to be `varchar` in Grass GIS.",
     "version": "0.1",
     "snapshot": "sci_bench",
     "initialize": [
@@ -41,7 +41,7 @@
             },
             "key": "lambda out: out['info']['columns']",
             "value": {
-                "name": "color",
+                "name": "COLOR",
                 "sql_type": "CHARACTER"
             },
             "pred": "lambda key, value: any([item['name'] == value['name'] and item['sql_type'] == value['sql_type'] for item in key])"

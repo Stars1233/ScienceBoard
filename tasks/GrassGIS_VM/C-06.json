@@ -2,7 +2,7 @@
     "type": "GrassGIS",
     "sort": "VM",
     "steps": 5,
-    "instruction": "How many POIs are marked as Christian among the 3609 POIs? Answer the question via an integer.",
+    "instruction": "How many POIs are marked as Christian among the 3609 POIs in the current mapset? Answer the question via an integer.",
     "version": "0.1",
     "snapshot": "sci_bench",
     "initialize": [

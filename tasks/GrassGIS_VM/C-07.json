@@ -2,7 +2,7 @@
     "type": "GrassGIS",
     "sort": "VM",
     "steps": 5,
-    "instruction": "What is the feature code of Capanna Margherita among 10146 geonames? Submit your answer via three letters in upper case.",
+    "instruction": "What is the feature code of Capanna Margherita among 10146 geonames in the current mapset? Submit your answer in upper case.",
     "version": "0.1",
     "snapshot": "sci_bench",
     "initialize": [

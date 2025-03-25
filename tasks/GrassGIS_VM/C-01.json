@@ -2,7 +2,7 @@
     "type": "GrassGIS",
     "sort": "VM",
     "steps": 5,
-    "instruction": "Submit your answer: number of least developed regions in the current mapset.",
+    "instruction": "Submit your answer: number of the least developed regions in the current mapset.",
     "version": "0.1",
     "snapshot": "sci_bench",
     "initialize": [

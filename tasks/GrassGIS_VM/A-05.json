@@ -2,7 +2,7 @@
     "type": "GrassGIS",
     "sort": "VM",
     "steps": 5,
-    "instruction": "Switch the status bar to display rows and cols in Grass GIS.",
+    "instruction": "Switch the status bar to display rows and cols data in Grass GIS.",
     "version": "0.1",
     "snapshot": "sci_bench",
     "initialize": [
