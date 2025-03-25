@@ -44,33 +44,37 @@ if __name__ == "__main__":
     # execute tasks one by one
     Tester.plan([
         {
-            "tasks_path": "./tasks/ChimeraX_VM",
-            "logs_path": "./logs/gpt_4o-chimerax-vm-screenshot",
+            "tasks_path": "./tasks/GrassGIS_VM",
+            "logs_path": "./logs/gpt_4o-grass-vm-screenshot",
             "vm_path": os.environ["VM_PATH"],
             "automata": gpt_4o(),
+            "headless": True,
             "obs_types": {OBS.screenshot}
         },
         {
-            "tasks_path": "./tasks/ChimeraX_VM",
-            "logs_path": "./logs/gpt_4o-chimerax-vm-a11y_tree",
+            "tasks_path": "./tasks/GrassGIS_VM",
+            "logs_path": "./logs/gpt_4o-grass-vm-a11y_tree",
             "vm_path": os.environ["VM_PATH"],
             "automata": gpt_4o(),
+            "headless": True,
             "obs_types": {OBS.a11y_tree}
         },
         {
-            "tasks_path": "./tasks/ChimeraX_VM",
-            "logs_path": "./logs/gpt_4o-chimerax-vm-screenshot+a11y_tree",
+            "tasks_path": "./tasks/GrassGIS_VM",
+            "logs_path": "./logs/gpt_4o-grass-vm-screenshot+a11y_tree",
             "vm_path": os.environ["VM_PATH"],
             "automata": gpt_4o(),
+            "headless": True,
             "obs_types": {OBS.screenshot, OBS.a11y_tree}
         }
     ])
 
     # alternative for Tester.plan
     Tester(
-        tasks_path="./tasks/ChimeraX_VM",
-        logs_path="./logs/gpt_4o-chimerax-vm-set_of_marks",
+        tasks_path="./tasks/GrassGIS_VM",
+        logs_path="./logs/gpt_4o-grass-vm-set_of_marks",
         vm_path=os.environ["VM_PATH"],
         automata=gpt_4o(),
+        headless=True,
         obs_types={OBS.set_of_marks}
     )()
