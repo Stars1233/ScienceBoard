@@ -71,7 +71,7 @@ class Primitive:
     @staticmethod
     @option_handler
     def ANS(*args) -> None:
-        """When you are asked to submit an answer, return «ANS s» without quotation marks surrounding s"""
+        """When you are asked to submit an answer, return «ANS s» without quotation marks surrounding s, and use `FAIL` if there is no answer to the question"""
         raise Primitive.PlannedTermination(Primitive.ANS, *args)
 
     @staticmethod

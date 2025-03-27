@@ -37,8 +37,7 @@ KALGEBRA_VM_TIPS = [
 
 CELESTIA_IS = "a three-dimension space simulator"
 CELESTIA_VM_TIPS = [
-    # TODO: fill tips
-    "..."
+    "The criterion for a celestial body to be displayed on the screen is that the object's center is within the window range and is not blocked by others."
 ]
 
 GRASSGIS_IS = "a GIS software suite used for geospatial data management and analysis, etc."
