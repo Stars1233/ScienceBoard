@@ -19,7 +19,7 @@
     ],
     "evaluate": [
         {
-            "type": "eqn",
+            "type": "stop",
             "value": "FAIL"
         }
     ],
