@@ -11,7 +11,7 @@
             "type": "info",
             "key": "lambda dump: dump['time']['value']",
             "value": 2400000,
-            "pred": "lambda left, right: abs(left - right) < 1"
+            "pred": "lambda key, value: abs(key - value) < 0.1"
         }
     ]
 }

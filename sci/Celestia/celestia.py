@@ -1,5 +1,6 @@
 import sys
 import os
+import json
 import subprocess
 
 from typing import Dict, Any, Self
@@ -22,8 +23,11 @@ class ManagerMixin:
     def status_version(self) -> str:
         return requests.get(self.base_url + "/version").text
 
-    def status_dump(self) -> Dict[str, Any]:
-        return requests.get(self.base_url + "/dump").json()
+    def status_dump(self, query) -> Dict[str, Any]:
+        return requests.post(
+            self.base_url + "/dump",
+            data=json.dumps(query)
+        ).json()
 
 
 class RawManager(Manager, ManagerMixin):

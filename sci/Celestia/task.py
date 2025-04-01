@@ -15,7 +15,7 @@ class TaskMixin:
         raise
 
     @Task._config_handler
-    def check_config(self, eval_item) -> None:
+    def check_config(self: Union["RawTask", "VMTask"], eval_item) -> None:
         assert eval_item["type"] == "info"
         assert "key" in eval_item
         assert "value" in eval_item
@@ -23,9 +23,19 @@ class TaskMixin:
         if "pred" in eval_item:
             assert hasattr(eval(eval_item["pred"]), "__call__")
 
+        if "query" in self.config:
+            self.query = self.config["query"]
+            assert isinstance(self.query, list)
+            for entry in self.query:
+                assert isinstance(entry, dict)
+                assert "name" in entry
+                assert "type" in entry
+                assert isinstance(entry["name"], str)
+                assert isinstance(entry["type"], int)
+
     @error_factory(False)
     def eval(self: Union["RawTask", "VMTask"]) -> bool:
-        info = self.manager.status_dump()
+        info = self.manager.status_dump(self.query)
         for eval_item in self.evaluate:
             hkey: Callable = lambda info: info[eval_item["key"]]
             pred: Callable = lambda left, right: left == right
@@ -53,6 +63,10 @@ class RawTask(Task, TaskMixin):
 
         super().__init__(config_path, manager, *args, **kwargs)
         self.check_config()
+
+    def _init(self) -> bool:
+        # TEMP: do nothing
+        return True
 
     @Task._stop_handler
     def eval(self) -> bool:
