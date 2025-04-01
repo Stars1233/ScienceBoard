@@ -1,0 +1,33 @@
+{
+    "type": "Celestia",
+    "sort": "Raw",
+    "steps": 5,
+    "instruction": "Go to the moon of Eris and display its frame axes and direction vector to sun in Celestia.",
+    "version": "1.0",
+    "snapshot": "sci_bench",
+    "initialize": [],
+    "query": [
+        {
+            "name": "Dysnomia",
+            "type": 2
+        }
+    ],
+    "evaluate": [
+        {
+            "type": "info",
+            "key": "lambda dump: dump['entity']['Dysnomia']['distance']",
+            "value": 0,
+            "pred": "lambda key, value: abs(key - value) < 4000"
+        },
+        {
+            "type": "info",
+            "key": "lambda dump: dump['entity']['Dysnomia']['mark']['frameAxes']",
+            "value": true
+        },
+        {
+            "type": "info",
+            "key": "lambda dump: dump['entity']['Dysnomia']['mark']['sunDirection']",
+            "value": true
+        }
+    ]
+}

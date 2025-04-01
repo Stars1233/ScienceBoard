@@ -1,0 +1,33 @@
+{
+    "type": "Celestia",
+    "sort": "Raw",
+    "steps": 5,
+    "instruction": "Go to Orcus and display its velocity vector and planetographic grid in Celestia.",
+    "version": "1.0",
+    "snapshot": "sci_bench",
+    "initialize": [],
+    "query": [
+        {
+            "name": "Orcus",
+            "type": 2
+        }
+    ],
+    "evaluate": [
+        {
+            "type": "info",
+            "key": "lambda dump: dump['entity']['Orcus']['distance']",
+            "value": 0,
+            "pred": "lambda key, value: abs(key - value) < 4000"
+        },
+        {
+            "type": "info",
+            "key": "lambda dump: dump['entity']['Orcus']['mark']['velocityVector']",
+            "value": true
+        },
+        {
+            "type": "info",
+            "key": "lambda dump: dump['entity']['Orcus']['mark']['planetographicGrid']",
+            "value": true
+        }
+    ]
+}
