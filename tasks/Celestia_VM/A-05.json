@@ -2,26 +2,25 @@
     "type": "Celestia",
     "sort": "Raw",
     "steps": 5,
-    "instruction": "Set the auto magnitude limit at 45 degrees to 9.0 and show labels for stars and open clusters in Celestia.",
+    "instruction": "Display orbits of dwarf planets but not moons in Celestia.",
     "version": "1.0",
     "snapshot": "sci_bench",
     "initialize": [],
     "evaluate": [
         {
             "type": "info",
-            "key": "lambda dump: dump['config']['autoMagnitude']",
-            "value": 9.0,
-            "pred": "lambda key, value: abs(key - value) < 0.01"
-        },
-        {
-            "type": "info",
-            "key": "lambda dump: dump['config']['label']['star']",
+            "key": "lambda dump: dump['config']['render']['orbits']",
             "value": true
         },
         {
             "type": "info",
-            "key": "lambda dump: dump['config']['label']['openCluster']",
+            "key": "lambda dump: dump['config']['orbit']['dwarfPlanet']",
             "value": true
+        },
+        {
+            "type": "info",
+            "key": "lambda dump: dump['config']['orbit']['moon']",
+            "value": false
         }
     ]
 }

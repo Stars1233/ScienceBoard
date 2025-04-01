@@ -2,25 +2,20 @@
     "type": "Celestia",
     "sort": "Raw",
     "steps": 5,
-    "instruction": "Display orbits of dwarf planets but not moons in Celestia.",
+    "instruction": "Display constellations with their boundries in Celestia.",
     "version": "1.0",
     "snapshot": "sci_bench",
     "initialize": [],
     "evaluate": [
         {
             "type": "info",
-            "key": "lambda dump: dump['config']['render']['orbits']",
+            "key": "lambda dump: dump['config']['render']['diagrams']",
             "value": true
         },
         {
             "type": "info",
-            "key": "lambda dump: dump['config']['orbit']['dwarfPlanet']",
+            "key": "lambda dump: dump['config']['render']['boundaries']",
             "value": true
-        },
-        {
-            "type": "info",
-            "key": "lambda dump: dump['config']['orbit']['moon']",
-            "value": false
         }
     ]
 }
