@@ -1,22 +1,15 @@
 {
     "type": "Celestia",
-    "sort": "VM",
+    "sort": "Raw",
     "steps": 5,
     "instruction": "Set the Julian date to 2400000 in Celestia.",
-    "version": "0.1",
+    "version": "1.0",
     "snapshot": "sci_bench",
-    "initialize": [
-        {
-            "func": "launch",
-            "wait": 5,
-            "command": "LD_LIBRARY_PATH=/home/user/6.5.0/gcc_64/lib /app/bin/celestia-qt6 «PORTLIKE»",
-            "shell": true
-        }
-    ],
+    "initialize": [],
     "evaluate": [
         {
             "type": "info",
-            "key": "simTime",
+            "key": "lambda dump: dump['time']['value']",
             "value": 2400000,
             "pred": "lambda left, right: abs(left - right) < 1"
         }

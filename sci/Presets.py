@@ -36,7 +36,7 @@ def spawn_managers(
             "port": 8000
         },
         TypeSort.Raw("Celestia"): lambda: {
-            "version": "0.1",
+            "version": "1.0",
             "bin_path": os.environ["CELE_BIN_PATH"],
             "lib_path": os.environ["QT6_LIB_PATH"],
             "port": 8000

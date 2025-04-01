@@ -27,10 +27,14 @@ class TaskMixin:
     def eval(self: Union["RawTask", "VMTask"]) -> bool:
         info = self.manager.status_dump()
         for eval_item in self.evaluate:
+            hkey: Callable = lambda info: info[eval_item["key"]]
             pred: Callable = lambda left, right: left == right
+
+            if hasattr(key_eval := eval(eval_item["key"]), "__call__"):
+                hkey = key_eval
             if "pred" in eval_item:
                 pred = eval(eval_item["pred"])
-            if not pred(info[eval_item["key"]], eval_item["value"]):
+            if not pred(hkey(info), eval_item["value"]):
                 return False
         return True
 
