@@ -32,6 +32,8 @@ class TaskMixin:
                 assert "type" in entry
                 assert isinstance(entry["name"], str)
                 assert isinstance(entry["type"], int)
+        else:
+            self.query = []
 
     @error_factory(False)
     def eval(self: Union["RawTask", "VMTask"]) -> bool:
