@@ -1,0 +1,16 @@
+{
+    "type": "Celestia",
+    "sort": "Raw",
+    "steps": 5,
+    "instruction": "What is the apparent magnitude of the galaxy closest to the milky way? Submit your answer with two decimal places.",
+    "version": "1.0",
+    "snapshot": "sci_bench",
+    "initialize": [],
+    "evaluate": [
+        {
+            "type": "stop",
+            "value": "ANS",
+            "args": ["4.47"]
+        }
+    ]
+}

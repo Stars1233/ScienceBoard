@@ -1,0 +1,16 @@
+{
+    "type": "Celestia",
+    "sort": "Raw",
+    "steps": 5,
+    "instruction": "Answer the question: how many open clusters are recorded in Celestial browser?",
+    "version": "1.0",
+    "snapshot": "sci_bench",
+    "initialize": [],
+    "evaluate": [
+        {
+            "type": "stop",
+            "value": "ANS",
+            "args": ["16176"]
+        }
+    ]
+}

@@ -1,0 +1,16 @@
+{
+    "type": "Celestia",
+    "sort": "Raw",
+    "steps": 5,
+    "instruction": "What is the radius of UVCet? Answer the question unitted in RSun.",
+    "version": "1.0",
+    "snapshot": "sci_bench",
+    "initialize": [],
+    "evaluate": [
+        {
+            "type": "stop",
+            "value": "ANS",
+            "args": ["0.16"]
+        }
+    ]
+}

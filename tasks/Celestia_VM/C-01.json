@@ -1,0 +1,16 @@
+{
+    "type": "Celestia",
+    "sort": "Raw",
+    "steps": 5,
+    "instruction": "How many moons does Uranus have? Submit your answer without including minor moons.",
+    "version": "1.0",
+    "snapshot": "sci_bench",
+    "initialize": [],
+    "evaluate": [
+        {
+            "type": "stop",
+            "value": "ANS",
+            "args": ["5"]
+        }
+    ]
+}

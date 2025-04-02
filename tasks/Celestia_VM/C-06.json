@@ -1,0 +1,16 @@
+{
+    "type": "Celestia",
+    "sort": "Raw",
+    "steps": 5,
+    "instruction": "Answer the question: what is the name of the only star typed in G0?",
+    "version": "1.0",
+    "snapshot": "sci_bench",
+    "initialize": [],
+    "evaluate": [
+        {
+            "type": "stop",
+            "value": "ANS",
+            "args": ["TYC", "2082-2143-1"]
+        }
+    ]
+}
