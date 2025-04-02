@@ -17,7 +17,7 @@
             "type": "info",
             "key": "lambda dump: dump['entity']['Dysnomia']['distance']",
             "value": 0,
-            "pred": "lambda key, value: abs(key - value) < 4000"
+            "pred": "lambda key, value: abs(key - value) < 3000"
         },
         {
             "type": "info",

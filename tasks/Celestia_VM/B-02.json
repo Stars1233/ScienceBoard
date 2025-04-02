@@ -17,7 +17,7 @@
             "type": "info",
             "key": "lambda dump: dump['entity']['Neptune']['distance']",
             "value": 0,
-            "pred": "lambda key, value: abs(key - value) < 200000"
+            "pred": "lambda key, value: abs(key - value) < 150000"
         }
     ]
 }
