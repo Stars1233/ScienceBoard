@@ -1,7 +1,7 @@
 {
     "type": "Celestia",
     "sort": "Raw",
-    "steps": 5,
+    "steps": 10,
     "instruction": "What is the radius of the farthest globular on the list from the milky way in lightyears? Submit your answer with two decimal places.",
     "version": "1.0",
     "snapshot": "sci_bench",

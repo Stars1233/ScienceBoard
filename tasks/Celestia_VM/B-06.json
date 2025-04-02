@@ -1,7 +1,7 @@
 {
     "type": "Celestia",
     "sort": "Raw",
-    "steps": 5,
+    "steps": 10,
     "instruction": "Go to the brightest star in absolute magnitude within 20ly of Earth in Celestia.",
     "version": "1.0",
     "snapshot": "sci_bench",

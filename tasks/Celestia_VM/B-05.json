@@ -1,7 +1,7 @@
 {
     "type": "Celestia",
     "sort": "Raw",
-    "steps": 5,
+    "steps": 10,
     "instruction": "Go to the moon of Eris and display its frame axes and direction vector to sun in Celestia.",
     "version": "1.0",
     "snapshot": "sci_bench",

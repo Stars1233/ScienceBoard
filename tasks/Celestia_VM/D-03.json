@@ -1,7 +1,7 @@
 {
     "type": "Celestia",
     "sort": "Raw",
-    "steps": 5,
+    "steps": 15,
     "instruction": "What is the difference value in viewing angle between the Sun and the Earth when viewed from Mars on May 28, 2150? Submit your answer with one decimal place.",
     "version": "1.0",
     "snapshot": "sci_bench",

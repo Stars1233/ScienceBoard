@@ -1,7 +1,7 @@
 {
     "type": "Celestia",
     "sort": "Raw",
-    "steps": 5,
+    "steps": 10,
     "instruction": "Completely display the Earth-Moon system and show both ecliptic lines and the ecliptic coordinate grid in Celestia.",
     "version": "1.0",
     "snapshot": "sci_bench",
