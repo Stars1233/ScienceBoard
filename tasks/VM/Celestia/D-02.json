@@ -1,11 +1,18 @@
 {
     "type": "Celestia",
-    "sort": "Raw",
+    "sort": "VM",
     "steps": 15,
     "instruction": "Answer the question: on which day of December will the last lunar eclipse occur on Earth in 2056?",
-    "version": "1.0",
+    "version": "0.1",
     "snapshot": "sci_bench",
-    "initialize": [],
+    "initialize": [
+        {
+            "func": "launch",
+            "wait": 5,
+            "command": "LD_LIBRARY_PATH=/home/user/6.5.0/gcc_64/lib /app/bin/celestia-qt6 «PORTLIKE»",
+            "shell": true
+        }
+    ],
     "evaluate": [
         {
             "type": "stop",
