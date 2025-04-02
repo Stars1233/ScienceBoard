@@ -1,0 +1,37 @@
+{
+    "type": "Celestia",
+    "sort": "Raw",
+    "steps": 5,
+    "instruction": "Approach Pluto and observe sol with time stopped in Celestia.",
+    "version": "1.0",
+    "snapshot": "sci_bench",
+    "initialize": [],
+    "query": [
+        {
+            "name": "Sol",
+            "type": 1
+        },
+        {
+            "name": "Pluto",
+            "type": 2
+        }
+    ],
+    "evaluate": [
+        {
+            "type": "info",
+            "key": "lambda dump: dump['entity']['Sol']['visible']",
+            "value": true
+        },
+        {
+            "type": "info",
+            "key": "lambda dump: dump['entity']['Pluto']['distance']",
+            "value": 0,
+            "pred": "lambda key, value: abs(key - value) < 7000"
+        },
+        {
+            "type": "info",
+            "key": "lambda dump: dump['time']['pause']",
+            "value": true
+        }
+    ]
+}
