@@ -215,10 +215,7 @@ class VMManager(VManager, ManagerMixin):
     def states_dump(self) -> dict:
         timestamp = str(int(time.time() * 1000))
         guest_dir = "/home/user/Downloads"
-
-        guest_file = os.path.join(guest_dir, filename:=f"{timestamp}.json")
-        local_file = self.temp(filename)
+        guest_file = os.path.join(guest_dir, f"{timestamp}.json")
 
         assert self._call(f"states {guest_dir} {timestamp}")[1]
-        assert self._vmrun("CopyFileFromGuestToHost", guest_file, local_file)[1]
-        return json.load(open(local_file, mode="r", encoding="utf-8"))
+        return json.loads(self.read_file(guest_file))

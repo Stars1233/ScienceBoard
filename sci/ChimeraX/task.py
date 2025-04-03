@@ -19,7 +19,7 @@ class TaskMixin:
 
     @Task._config_handler
     def check_config(self, eval_item) -> None:
-        assert eval_item["type"] in ("info", "states")
+        assert eval_item["type"] in ("info", "states", "file")
         assert "key" in eval_item
         if eval_item["type"] == "info":
             assert "value" in eval_item
@@ -28,6 +28,8 @@ class TaskMixin:
                 assert isinstance(sub_item, str)
         elif eval_item["type"] == "states":
             assert "value" in eval_item or "pattern" in eval_item
+        elif eval_item["type"] == "file":
+            assert "value" in eval_item
 
     def _destroy(self: Union["RawTask", "VMTask"]) -> bool:
         _, code = self.manager._call(f"destroy")
@@ -131,6 +133,18 @@ class TaskMixin:
         nested_logs = [log.strip().split("\n") for log in log_message]
         info_list = [log for logs in nested_logs for log in logs if log != ""]
         return set(info_list) == set(value)
+
+    @error_factory(False)
+    def _eval_file(
+        self: Union["RawTask", "VMTask"],
+        eval_item: Dict[str, Any],
+        _: Dict[str, Any]
+    ) -> bool:
+        key = eval_item["key"]
+        value = eval_item["value"]
+
+        content = self.manager.read_file(key)
+        return content is not None and value in content
 
     # prerequisite of calling TaskMixin.eval:
     # - task.evaluate
