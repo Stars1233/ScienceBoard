@@ -15,6 +15,8 @@ from PIL import Image
 sys.dont_write_bytecode = True
 from ..base import Manager
 from ..base import GLOBAL_VLOG
+from ..base.utils import error_factory
+
 from .. import Prompts
 from . import utils
 
@@ -303,3 +305,10 @@ class VManager(Manager):
     @_env_handler
     def record_stop(self, dest_path: str) -> None:
         self.controller.end_recording(dest_path)
+
+    @_env_handler
+    @error_factory(None)
+    def read_file(self, file_path: str) -> Optional[str]:
+        local_file = self.temp(os.path.split(file_path)[1])
+        assert self._vmrun("CopyFileFromGuestToHost", file_path, local_file)[1]
+        return super().read_file(local_file)

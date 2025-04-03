@@ -10,6 +10,7 @@ from PIL import Image
 
 sys.dont_write_bytecode = True
 from .log import VirtualLog
+from .utils import error_factory
 
 T = TypeVar("T")
 
@@ -108,6 +109,9 @@ class Manager:
         if self.is_gui:
             self.vlog.warning(f"record_stop({dest_path}) is not implemented.")
 
+    @error_factory(None)
+    def read_file(self, file_path: str) -> Optional[str]:
+        return open(file_path, mode="r", encoding="utf-8").read()
 
 class OBS:
     textual = Manager.textual.__name__

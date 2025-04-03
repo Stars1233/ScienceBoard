@@ -25,10 +25,10 @@ class TaskMixin:
     def eval(
         self: Union["RawTask", "VMTask"],
         eval_item: Dict[str, Any],
-        file_path: str
+        contents: str
     ) -> bool:
         # TEMP: add concrete evaluation
-        return open(file_path, mode="r", encoding="utf-8").read().__len__() >= 0
+        return contents.__len__() >= 0
 
 
 class RawTask(Task, TaskMixin):
@@ -75,9 +75,10 @@ class VMTask(VTask, TaskMixin):
     @error_factory(False)
     def eval(self) -> bool:
         for eval_item in self.evaluate:
-            local_file = self.manager.dump_tex(eval_item["path"])
+            contents = self.manager.read_file(eval_item["path"])
 
             # MRO: VMTask -> VTask -> Task -> TaskMixin -> object
-            if not super(Task, self).eval(eval_item, local_file):
+            if contents is None or \
+                not super(Task, self).eval(eval_item, contents):
                 return False
         return True
