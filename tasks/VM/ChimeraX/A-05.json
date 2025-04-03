@@ -1,8 +1,8 @@
 {
     "type": "ChimeraX",
     "sort": "VM",
-    "steps": 5,
-    "instruction": "Display atom in sphere style and color them by chain in ChimeraX.",
+    "steps": 10,
+    "instruction": "Select all ligand(s) and color them into magenta in ChimeraX.",
     "version": "0.1",
     "snapshot": "sci_bench",
     "initialize": [
@@ -34,7 +34,7 @@
         },
         {
             "func": "open",
-            "name": "3ppd"
+            "name": "1dns"
         },
         {
             "func": "turn",
@@ -48,23 +48,31 @@
     ],
     "evaluate": [
         {
-            "type": "states",
-            "key": "_state_containers.models._models.(1,)._redraw_needed.cached_drawing_bounds.xyz_min",
-            "value": "[ -1.37   -6.882 -12.582]"
+            "type": "info",
+            "key": "sel",
+            "value": [
+                "atom id /A:9@N1 idatm_type N3+",
+                "atom id /A:9@C2 idatm_type C3",
+                "atom id /A:9@C3 idatm_type C3",
+                "atom id /A:9@C4 idatm_type C3",
+                "atom id /A:9@N5 idatm_type N3+",
+                "atom id /A:9@C6 idatm_type C3",
+                "atom id /A:9@C7 idatm_type C3"
+            ]
         },
         {
             "type": "info",
             "key": "rescolor /A",
             "value": [
-                "#1/A:1 color #7b68ee",
-                "#1/A:2 color #7b68ee",
-                "#1/A:3 color #7b68ee",
-                "#1/A:4 color #7b68ee",
-                "#1/A:5 color #7b68ee",
-                "#1/A:6 color #7b68ee",
-                "#1/A:7 color #7b68ee",
-                "#1/A:8 color #7b68ee",
-                "#1/A:9 color #7b68ee"
+                "#1/A:1 color #d2b48c",
+                "#1/A:2 color #d2b48c",
+                "#1/A:3 color #d2b48c",
+                "#1/A:4 color #d2b48c",
+                "#1/A:5 color #d2b48c",
+                "#1/A:6 color #d2b48c",
+                "#1/A:7 color #d2b48c",
+                "#1/A:8 color #d2b48c",
+                "#1/A:9 color #ff00ff"
             ]
         }
     ]

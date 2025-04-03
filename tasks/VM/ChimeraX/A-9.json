@@ -2,7 +2,7 @@
     "type": "ChimeraX",
     "sort": "VM",
     "steps": 5,
-    "instruction": "Change Lighting Effect to 'Flat' in ChimeraX.",
+    "instruction": "Switch to ambient lighting in ChimeraX.",
     "version": "0.1",
     "snapshot": "sci_bench",
     "initialize": [
@@ -16,6 +16,11 @@
             ]
         },
         {
+            "func": "execute",
+            "command": "rm -f /home/user/.config/ChimeraX/ui-*",
+            "shell": true
+        },
+        {
             "func": "launch",
             "wait": 5,
             "command": [
@@ -26,11 +31,6 @@
         },
         {
             "func": "clear_log"
-        },
-        {
-            "func": "execute",
-            "command": "rm -f /home/user/.config/ChimeraX/ui-*",
-            "shell": true
         },
         {
             "func": "open",
@@ -50,7 +50,7 @@
         {
             "type": "states",
             "key": "_state_containers.models._models.(1,)._atoms_drawing._draw_shape.bindings._opengl_context.window.view._render.lighting.ambient_light_intensity",
-            "value": 1.45
+            "value": 1.5
         },
         {
             "type": "states",
@@ -60,7 +60,7 @@
         {
             "type": "states",
             "key": "_state_containers.models._models.(1,)._atoms_drawing._draw_shape.bindings._opengl_context.window.view._render.silhouette.depth_jump",
-            "value": 0.01
+            "value": 0.03
         }
     ]
 }

@@ -24,7 +24,7 @@
             "type": "info",
             "key": "lambda dump: dump['entity']['Sirius A']['distance']",
             "value": 0,
-            "pred": "lambda key, value: abs(key - value) < 120000000000000"
+            "pred": "lambda key, value: abs(key - value) < 170000000"
         }
     ],
     "ans": "Sirius A"

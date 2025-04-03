@@ -2,7 +2,7 @@
     "type": "ChimeraX",
     "sort": "VM",
     "steps": 5,
-    "instruction": "Switch to ambient lighting in ChimeraX.",
+    "instruction": "Remove nucleotide styling in ChimeraX.",
     "version": "0.1",
     "snapshot": "sci_bench",
     "initialize": [
@@ -34,7 +34,7 @@
         },
         {
             "func": "open",
-            "name": "251d"
+            "name": "3bna"
         },
         {
             "func": "turn",
@@ -49,18 +49,18 @@
     "evaluate": [
         {
             "type": "states",
-            "key": "_state_containers.models._models.(1,)._atoms_drawing._draw_shape.bindings._opengl_context.window.view._render.lighting.ambient_light_intensity",
-            "value": 1.5
+            "key": "lambda key: key.startswith('_state_containers.models._models.(1,)._nucleotide_info')",
+            "value": null
         },
         {
             "type": "states",
-            "key": "_state_containers.models._models.(1,)._atoms_drawing._draw_shape.bindings._opengl_context.window.view._render.lighting.multishadow_depth_bias",
-            "value": 0.01
+            "key": "lambda key: key.startswith('_state_containers.models._models.(1,)._nucleotide_changes')",
+            "value": null
         },
         {
             "type": "states",
-            "key": "_state_containers.models._models.(1,)._atoms_drawing._draw_shape.bindings._opengl_context.window.view._render.silhouette.depth_jump",
-            "value": 0.03
+            "key": "lambda key: key.startswith('_state_containers.models._models.(1,)._ring_drawing.name')",
+            "value": null
         }
     ]
 }
