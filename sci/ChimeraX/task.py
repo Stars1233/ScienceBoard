@@ -144,6 +144,8 @@ class TaskMixin:
         value = eval_item["value"]
 
         content = self.manager.read_file(key)
+        if value.startswith("lambda"):
+            value = eval(value)()
         return content is not None and value in content
 
     # prerequisite of calling TaskMixin.eval:
