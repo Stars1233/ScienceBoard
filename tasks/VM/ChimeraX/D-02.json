@@ -2,7 +2,7 @@
     "type": "ChimeraX",
     "sort": "VM",
     "steps": 10,
-    "instruction": "Find all contacts in default settings in ChimeraX.",
+    "instruction": "Find all contacts with center-center distance ≤ 3.0Å in ChimeraX.",
     "version": "0.1",
     "snapshot": "sci_bench",
     "initialize": [
@@ -66,7 +66,7 @@
             "type": "states",
             "find": "lambda key, value: key.endswith('page_source')",
             "key": "lambda key: key",
-            "pattern": "383 contacts"
+            "pattern": "41 distances"
         }
     ]
 }

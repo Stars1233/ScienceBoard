@@ -2,7 +2,7 @@
     "type": "ChimeraX",
     "sort": "VM",
     "steps": 5,
-    "instruction": "Change Lighting Effect to 'Flat' in ChimeraX.",
+    "instruction": "Change to flat lighting effect in ChimeraX.",
     "version": "0.1",
     "snapshot": "sci_bench",
     "initialize": [

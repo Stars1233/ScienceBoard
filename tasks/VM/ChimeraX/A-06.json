@@ -2,7 +2,7 @@
     "type": "ChimeraX",
     "sort": "VM",
     "steps": 5,
-    "instruction": "Rotates the scene to a standard orientation in ChimeraX.",
+    "instruction": "Rotates the view to standard orientation in ChimeraX.",
     "version": "0.1",
     "snapshot": "sci_bench",
     "initialize": [

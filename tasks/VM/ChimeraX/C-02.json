@@ -2,7 +2,7 @@
     "type": "ChimeraX",
     "sort": "VM",
     "steps": 5,
-    "instruction": "Answer the question: what is the name of residue id /A:6?",
+    "instruction": "Submit your answer: the number of oxygen atoms in the current model.",
     "version": "0.1",
     "snapshot": "sci_bench",
     "initialize": [
@@ -34,20 +34,24 @@
         },
         {
             "func": "open",
-            "name": "3ppd"
+            "name": "2olx"
         },
         {
             "func": "turn",
             "axis": "y",
             "angle": 1
+        },
+        {
+            "func": "destroy",
+            "wait": 2.5
         }
     ],
     "evaluate": [
         {
             "type": "stop",
             "value": "ANS",
-            "args": ["ASN"]
+            "args": ["8"]
         }
     ],
-    "ans": "ANS ASN"
+    "ans": "ANS 8"
 }

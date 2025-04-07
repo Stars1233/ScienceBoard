@@ -2,7 +2,7 @@
     "type": "ChimeraX",
     "sort": "VM",
     "steps": 5,
-    "instruction": "Remove nucleotide styling in ChimeraX.",
+    "instruction": "Remove all nucleotide styling in ChimeraX.",
     "version": "0.1",
     "snapshot": "sci_bench",
     "initialize": [

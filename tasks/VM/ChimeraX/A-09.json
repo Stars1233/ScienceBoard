@@ -2,7 +2,7 @@
     "type": "ChimeraX",
     "sort": "VM",
     "steps": 5,
-    "instruction": "Switch to ambient lighting in ChimeraX.",
+    "instruction": "Let current lighting to be ambient in ChimeraX.",
     "version": "0.1",
     "snapshot": "sci_bench",
     "initialize": [

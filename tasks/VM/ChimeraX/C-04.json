@@ -2,7 +2,7 @@
     "type": "ChimeraX",
     "sort": "VM",
     "steps": 5,
-    "instruction": "Submit your answer: number of Hydrogen atoms in /A:1.",
+    "instruction": "Submit your answer: the number of Hydrogen atoms in /A:1.",
     "version": "0.1",
     "snapshot": "sci_bench",
     "initialize": [

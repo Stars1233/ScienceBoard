@@ -2,7 +2,7 @@
     "type": "ChimeraX",
     "sort": "VM",
     "steps": 5,
-    "instruction": "Draw Coulombic electrostatic potential of 3PPD in ChimeraX.",
+    "instruction": "Draw Coulombic electrostatic potential for 3PPD in ChimeraX.",
     "version": "0.1",
     "snapshot": "sci_bench",
     "initialize": [
