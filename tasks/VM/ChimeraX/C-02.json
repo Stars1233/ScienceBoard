@@ -50,8 +50,8 @@
         {
             "type": "stop",
             "value": "ANS",
-            "args": ["8"]
+            "args": ["9"]
         }
     ],
-    "ans": "ANS 8"
+    "ans": "ANS 9"
 }
