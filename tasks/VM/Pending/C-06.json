@@ -2,7 +2,7 @@
     "type": "ChimeraX",
     "sort": "VM",
     "steps": 10,
-    "instruction": "What is the angle between /A GLN4 OE1, OXT and GLN 3 OE1? Answer the question by pure value with two decimal places.",
+    "instruction": "What is the distance between two atoms named CD? Answer the question by pure value with two decimal places unitted in Å.",
     "version": "0.1",
     "snapshot": "sci_bench",
     "initialize": [
@@ -50,8 +50,8 @@
         {
             "type": "stop",
             "value": "ANS",
-            "args": ["109.03"]
+            "args": ["9.39"]
         }
     ],
-    "ans": "ANS 109.03"
+    "ans": "ANS 9.39"
 }

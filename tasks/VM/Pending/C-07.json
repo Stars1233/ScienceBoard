@@ -1,8 +1,8 @@
 {
     "type": "ChimeraX",
     "sort": "VM",
-    "steps": 5,
-    "instruction": "Submit your answer: number of bonds shown in the base pairs under plain styling.",
+    "steps": 10,
+    "instruction": "What is the angle between /A GLN4 OE1, OXT and GLN 3 OE1? Answer the question by pure value with two decimal places.",
     "version": "0.1",
     "snapshot": "sci_bench",
     "initialize": [
@@ -34,7 +34,7 @@
         },
         {
             "func": "open",
-            "name": "3bna"
+            "name": "2olx"
         },
         {
             "func": "turn",
@@ -50,8 +50,8 @@
         {
             "type": "stop",
             "value": "ANS",
-            "args": ["30"]
+            "args": ["109.03"]
         }
     ],
-    "ans": "ANS 30"
+    "ans": "ANS 109.03"
 }
