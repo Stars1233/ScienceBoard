@@ -7,11 +7,6 @@
     - `DEBUG_ERR_FACT`: insert a breakpoint when eval exception occur
 2. Models
     - `OPENAI_API_KEY`: API key for OpenAI GPT
-    - `OPEN_BASE_URL`: base URL for open-source models
-    - `OPEN_API_KEY`: API key for open-source models
-    - `INTERN_VL_NAME`: model name of Intern-VL
-    - `DEEPSEEK_VL_NAME`: model name of DeepSeek-VL
-    - `QWEN_VL_NAME`: model name of QWen-VL
 3. Raw Apps
     - `LEAN_LIB_PATH`: path for Lean 4 REPL
     - `QT6_LIB_PATH`: dynamic library directory for Qt6

@@ -13,32 +13,37 @@ gpt_4o = lambda: Automata(
     overflow_style="openai_gpt"
 )
 
-intern_vl = lambda: Automata(
+qvq = lambda: Automata(
     model_style="openai",
-    base_url=os.environ["OPEN_BASE_URL"],
-    model_name=os.environ["INTERN_VL_NAME"],
-    overflow_style="openai_lmdeploy"
-)
-
-deepseek_vl = lambda: Automata(
-    model_style="openai",
-    base_url=os.environ["OPEN_BASE_URL"],
-    model_name=os.environ["DEEPSEEK_VL_NAME"],
-    api_key=os.environ["OPEN_API_KEY"],
-    overflow_style="openai_siliconflow",
-    register=Automata.image_token()
-)
-
-qwen_vl = lambda: Automata(
-    model_style="openai",
-    base_url=os.environ["OPEN_BASE_URL"],
-    model_name=os.environ["QWEN_VL_NAME"],
-    api_key=os.environ["OPEN_API_KEY"],
-    overflow_style="openai_siliconflow",
-    context_window=3,
+    base_url=os.environ["QVQ_VL_URL"],
+    model_name=os.environ["QVQ_VL_NAME"],
+    overflow_style="openai_gpt",
     hide_text=True
 )
 
+qwen25_vl = lambda: Automata(
+    model_style="openai",
+    base_url=os.environ["QWEN_VL_URL"],
+    model_name=os.environ["QWEN_VL_NAME"],
+    overflow_style="openai_gpt",
+    hide_text=True
+)
+
+intern_vl = lambda: Automata(
+    model_style="openai",
+    base_url=os.environ["INTERN_VL_URL"],
+    model_name=os.environ["INTERN_VL_NAME"],
+    overflow_style="openai_gpt",
+    hide_text=True
+)
+
+tars_dpo = lambda: Automata(
+    model_style="openai",
+    base_url=os.environ["TARS_DPO_URL"],
+    model_name=os.environ["TARS_DPO_NAME"],
+    overflow_style="openai_gpt",
+    hide_text=True
+)
 
 if __name__ == "__main__":
     # execute tasks one by one
