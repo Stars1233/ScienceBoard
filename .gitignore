@@ -6,6 +6,7 @@
 .VSCodeCounter
 
 /logs/*
+/temp/*
 /vmware/*
 
 .vmware_lck

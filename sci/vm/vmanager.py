@@ -310,5 +310,9 @@ class VManager(Manager):
     @error_factory(None)
     def read_file(self, file_path: str) -> Optional[str]:
         local_file = self.temp(os.path.split(file_path)[1])
-        assert self._vmrun("CopyFileFromGuestToHost", file_path, local_file)[1]
+        assert self._vmrun(
+            "CopyFileFromGuestToHost",
+            file_path.replace("\\", "/"),
+            local_file
+        )[1]
         return super().read_file(local_file)

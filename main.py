@@ -2,6 +2,7 @@ import sys
 import os
 
 sys.dont_write_bytecode = True
+sys.stdout.reconfigure(encoding="utf-8")
 from sci import OBS, Automata, Tester
 
 gpt_4o = lambda: Automata(
