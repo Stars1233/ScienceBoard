@@ -11,6 +11,10 @@
             "libs": ["Mathlib"]
         },
         {
+            "func": "open",
+            "libs": ["ZFSet"]
+        },
+        {
             "func": "query",
             "expr": "theorem ST_1 (X : ZFSet) : ((IsTransitive X) ↔ (X ⊆ powerset X)) ∧ ((IsTransitive X) ↔ ((⋃₀ X : ZFSet) ⊆ X)) := by sorry"
         }
