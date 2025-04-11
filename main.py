@@ -55,7 +55,7 @@ if __name__ == "__main__":
     )()
 
     # alternative for Tester.__call__()
-    # execute tasks one by one
+    # execute tasks one by one immediately
     Tester.plan([
         {
             "tasks_path": "./tasks/VM",
