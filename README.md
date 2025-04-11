@@ -22,3 +22,24 @@
     - `KALG_BIN_PATH`: executable binary file of KAlgebra
     - `CELE_BIN_PATH`: executable binary file of Celestia
     - `GIS_BIN_PATH`: executable binary file of Grass GIS
+
+## Exceptions
+- Error when initializing:
+
+    ```shell
+    Traceback (most recent call last):
+        File "/home/ichinoe/anaconda/envs/sci/lib/python3.11/site-packages/requests/models.py", line 971, in json
+            return complexjson.loads(self.text, **kwargs)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        File "/home/ichinoe/anaconda/envs/sci/lib/python3.11/json/__init__.py", line 346, in loads
+            return _default_decoder.decode(s)
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^
+        File "/home/ichinoe/anaconda/envs/sci/lib/python3.11/json/decoder.py", line 337, in decode
+            obj, end = self.raw_decode(s, idx=_w(s, 0).end())
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        File "/home/ichinoe/anaconda/envs/sci/lib/python3.11/json/decoder.py", line 355, in raw_decode
+            raise JSONDecodeError("Expecting value", s, err.value) from None
+        json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
+    ```
+
+    the target app has not yet been started up, try to assign a bigger value for 'wait' field.

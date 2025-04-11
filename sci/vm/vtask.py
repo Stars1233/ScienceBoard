@@ -5,11 +5,13 @@ from typing import List, Dict, Union, Any, Callable
 
 sys.dont_write_bytecode = True
 from ..base import Task
+from ..base.utils import block
 from .vmanager import VManager
 
 
 class VTask(Task):
     RESET_TIME = 3
+    REVERT_TIME = 120
     PATH_LIKE = "«PORTLIKE»"
 
     def __init__(
@@ -39,7 +41,7 @@ class VTask(Task):
 
     def _init(self) -> bool:
         try:
-            result = self.manager.revert(self.snapshot)
+            result = block(self.REVERT_TIME, self.manager.revert, self.snapshot)
             VManager.pause()
             self._execute(
                 command="/bin/bash /home/user/server/reset.sh",

@@ -1,6 +1,7 @@
 import sys
 import os
 import inspect
+import threading
 
 from enum import Enum
 from typing import Optional, Dict, Any
@@ -92,3 +93,21 @@ def temp_chdir(path):
         yield
     finally:
         os.chdir(last_path)
+
+
+def block(timeout, func, *args, **kwargs):
+    obj = {}
+
+    def wrapper():
+        try:
+            obj["result"] = func(*args, **kwargs)
+        except Exception as err:
+            obj["error"] = err
+
+    thread = threading.Thread(target=wrapper)
+    thread.start()
+    thread.join(timeout)
+
+    assert not thread.is_alive(), f"Timeout after waiting for {timeout}s."
+    assert "error" not in obj, obj["error"].__repr__()
+    return obj.get("result")
