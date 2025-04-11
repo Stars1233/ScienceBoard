@@ -38,7 +38,8 @@ class Task:
         manager: Optional[Manager] = None,
         agent: Optional[Agent] = None,
         obs_types: Optional[Set[str]] = None,
-        debug: bool = False
+        debug: bool = False,
+        relative: bool = False
     ) -> None:
         assert isinstance(config_path, str)
         config_path = os.path.expanduser(config_path)
@@ -79,6 +80,9 @@ class Task:
 
         assert isinstance(debug, bool)
         self.debug = debug
+
+        assert isinstance(relative, bool)
+        self.relative = relative
 
         self.vlog = VirtualLog()
 
@@ -245,6 +249,12 @@ class Task:
                 continue
         return False
 
+    @property
+    def relative_resolver(self) -> str:
+        relative_path = os.path.join(os.path.split(__file__)[0], "relative.py")
+        with open(relative_path, mode="r", encoding="utf-8") as readable:
+            return readable.read().strip()
+
     def _step(self, step_index: int) -> bool:
         obs = {
             obs_type: getattr(self.manager, obs_type)()
@@ -285,8 +295,9 @@ class Task:
         )
 
         results = []
+        prefix = self.relative_resolver if self.relative else None
         for code_like in response_codes:
-            results.append(code_like(self.manager, self.primitives))
+            results.append(code_like(self.manager, self.primitives, prefix))
             Manager.pause()
 
         # Manager.__call__() return True/None if success/undecidable

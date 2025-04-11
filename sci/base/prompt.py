@@ -120,7 +120,12 @@ class CodeLike:
     def wrap_antiquot(doc_str: str) -> str:
         return doc_str.replace("«", "```").replace("»", "```")
 
-    def __call__(self, manager: Manager, primitives: List[str]) -> Optional[bool]:
+    def __call__(
+        self,
+        manager: Manager,
+        primitives: List[str],
+        prefix: Optional[str] = None
+    ) -> Optional[bool]:
         if any([self.code.startswith(prim) for prim in primitives]):
             splits = self.code.split(" ")
             try:
@@ -135,7 +140,8 @@ class CodeLike:
                         + traceback.format_exc()
                 )
         else:
-            return manager(self.code)
+            prefix = "" if prefix in (None, "") else prefix.strip() + "\n\n"
+            return manager(prefix + self.code)
 
 
 class PromptFactory:

@@ -235,6 +235,7 @@ class Tester:
         ignore: bool = True,
         debug: bool = False,
         optimize: bool = True,
+        relative: bool = False,
         handle_managers: Callable = Presets.spawn_managers
     ) -> None:
         assert isinstance(tasks_path, str)
@@ -292,6 +293,9 @@ class Tester:
         assert isinstance(optimize, bool)
         self.optimize = optimize
 
+        assert isinstance(relative, bool)
+        self.relative = relative
+
         self.task_info: List[TaskInfo] = []
         self.__traverse()
         self.task_group = TaskGroup(sorted(self.task_info))
@@ -332,7 +336,8 @@ class Tester:
             manager=self.__manager(type_sort),
             agent=self.agent,
             obs_types=self.obs_types,
-            debug=self.debug
+            debug=self.debug,
+            relative=self.relative
         )
 
     def __traverse(self, current_infix: str = "") -> None:
