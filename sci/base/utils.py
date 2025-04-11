@@ -106,7 +106,11 @@ def block(timeout, func, *args, **kwargs):
 
     obj = {}
     queue = multiprocessing.Queue()
-    proc = multiprocessing.Process(target=wrapper, args=(queue, *args), kwargs=kwargs)
+    proc = multiprocessing.Process(
+        target=wrapper,
+        args=(queue, *args),
+        kwargs=kwargs
+    )
     proc.start()
     proc.join(timeout)
 
