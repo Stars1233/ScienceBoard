@@ -47,40 +47,46 @@ tars_dpo = lambda: Automata(
 )
 
 if __name__ == "__main__":
+    # register a tester and execute it
+    Tester(
+        tasks_path="./tasks/Raw",
+        logs_path="./logs/gpt_4o-raw-textual",
+        automata=gpt_4o()
+    )()
+
+    # alternative for Tester.__call__()
     # execute tasks one by one
     Tester.plan([
         {
             "tasks_path": "./tasks/VM",
             "logs_path": "./logs/gpt_4o-vm-screenshot",
-            "vm_path": os.environ["VM_PATH"],
             "automata": gpt_4o(),
+            "vm_path": os.environ["VM_PATH"],
             "headless": True,
             "obs_types": {OBS.screenshot}
         },
         {
             "tasks_path": "./tasks/VM",
             "logs_path": "./logs/gpt_4o-vm-a11y_tree",
-            "vm_path": os.environ["VM_PATH"],
             "automata": gpt_4o(),
+            "vm_path": os.environ["VM_PATH"],
             "headless": True,
             "obs_types": {OBS.a11y_tree}
         },
         {
             "tasks_path": "./tasks/VM",
             "logs_path": "./logs/gpt_4o-vm-screenshot+a11y_tree",
-            "vm_path": os.environ["VM_PATH"],
             "automata": gpt_4o(),
+            "vm_path": os.environ["VM_PATH"],
             "headless": True,
             "obs_types": {OBS.screenshot, OBS.a11y_tree}
+        },
+        {
+            "tasks_path": "./tasks/VM",
+            "logs_path": "./logs/gpt_4o-vm-set_of_marks",
+            "automata": gpt_4o(),
+            "vm_path": os.environ["VM_PATH"],
+            "headless": True,
+            "obs_types": {OBS.set_of_marks}
         }
     ])
-
-    # alternative for Tester.plan
-    Tester(
-        tasks_path="./tasks/VM",
-        logs_path="./logs/gpt_4o-vm-set_of_marks",
-        vm_path=os.environ["VM_PATH"],
-        automata=gpt_4o(),
-        headless=True,
-        obs_types={OBS.set_of_marks}
-    )()
