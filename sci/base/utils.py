@@ -1,7 +1,8 @@
 import sys
 import os
 import inspect
-import threading
+import multiprocessing
+import traceback
 
 from enum import Enum
 from typing import Optional, Dict, Any
@@ -96,18 +97,30 @@ def temp_chdir(path):
 
 
 def block(timeout, func, *args, **kwargs):
-    obj = {}
-
-    def wrapper():
+    def wrapper(queue, *args, **kwargs):
         try:
-            obj["result"] = func(*args, **kwargs)
-        except Exception as err:
-            obj["error"] = err
+            result = func(*args, **kwargs)
+            queue.put(("result", result))
+        except Exception as e:
+            queue.put(("error", traceback.format_exc()))
 
-    thread = threading.Thread(target=wrapper)
-    thread.start()
-    thread.join(timeout)
+    obj = {}
+    queue = multiprocessing.Queue()
+    proc = multiprocessing.Process(target=wrapper, args=(queue, *args), kwargs=kwargs)
+    proc.start()
+    proc.join(timeout)
 
-    assert not thread.is_alive(), f"Timeout after waiting for {timeout}s."
-    assert "error" not in obj, obj["error"].__repr__()
+    if proc.is_alive():
+        proc.terminate()
+        proc.join()
+        assert False, f"Timeout after waiting for {timeout}s."
+
+    if not queue.empty():
+        status, value = queue.get()
+        if status == "result":
+            obj["result"] = value
+        elif status == "error":
+            obj["error"] = value
+
+    assert "error" not in obj, obj["error"]
     return obj.get("result")

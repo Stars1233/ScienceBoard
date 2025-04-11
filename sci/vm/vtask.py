@@ -10,8 +10,8 @@ from .vmanager import VManager
 
 
 class VTask(Task):
-    RESET_TIME = 3
     REVERT_TIME = 120
+    RESET_TIME = 60
     PATH_LIKE = "«PORTLIKE»"
 
     def __init__(
@@ -43,10 +43,8 @@ class VTask(Task):
         try:
             result = block(self.REVERT_TIME, self.manager.revert, self.snapshot)
             VManager.pause()
-            self._execute(
-                command="/bin/bash /home/user/server/reset.sh",
-                shell=True
-            )
+            reset_cmd = "/bin/bash /home/user/server/reset.sh"
+            block(self.RESET_TIME, self._execute, command=reset_cmd, shell=True)
             VManager.pause()
             return result
         except:
