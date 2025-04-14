@@ -226,7 +226,7 @@ class Log:
         log_file_path = os.path.join(log_path, f"{log_name}.log")
         log_formatter = logging.Formatter(self.FILE_LOG_PATTERN)
 
-        file_handler = logging.FileHandler(log_file_path)
+        file_handler = logging.FileHandler(log_file_path, encoding="utf-8")
         file_handler.setLevel(self.level)
         file_handler.setFormatter(log_formatter)
 

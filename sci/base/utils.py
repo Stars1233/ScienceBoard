@@ -96,6 +96,7 @@ def temp_chdir(path):
         os.chdir(last_path)
 
 
+# only viable under UNIX-like OSs
 def block(timeout, func, *args, **kwargs):
     def wrapper(queue, *args, **kwargs):
         try:

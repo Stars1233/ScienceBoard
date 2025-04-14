@@ -5,13 +5,11 @@ from typing import List, Dict, Union, Any, Callable
 
 sys.dont_write_bytecode = True
 from ..base import Task
-from ..base.utils import block
+from ..base.utils import error_factory
 from .vmanager import VManager
 
 
 class VTask(Task):
-    REVERT_TIME = 120
-    RESET_TIME = 60
     PATH_LIKE = "«PORTLIKE»"
 
     def __init__(
@@ -39,16 +37,15 @@ class VTask(Task):
         return command.replace(VTask.PATH_LIKE, str(self.manager.port)) \
             if hasattr(self.manager, "port") else command
 
+    @error_factory(False)
     def _init(self) -> bool:
-        try:
-            result = block(self.REVERT_TIME, self.manager.revert, self.snapshot)
-            VManager.pause()
-            reset_cmd = "/bin/bash /home/user/server/reset.sh"
-            block(self.RESET_TIME, self._execute, command=reset_cmd, shell=True)
-            VManager.pause()
-            return result
-        except:
-            return False
+        result = self.manager.revert(self.snapshot)
+        VManager.pause()
+        assert self._execute(
+            command="/bin/bash /home/user/server/reset.sh",
+            shell=True
+        ) is not False
+        return result
 
     # OSWorld's request does not check success
     # rewrite requests to make up this flaw
