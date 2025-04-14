@@ -27,7 +27,7 @@
         },
         {
             "func": "launch",
-            "wait": 5,
+            "wait": 7.5,
             "command": [
                 "chimerax",
                 "--cmd",
