@@ -1163,5 +1163,14 @@ def chimerax_run():
     ).json()
 
 
+@app.route("/opt", methods=["POST"])
+def change():
+    global MAX_DEPTH
+    data = request.json
+
+    MAX_DEPTH = data.get("depth", 50)
+    return "OK"
+
+
 if __name__ == '__main__':
     app.run(debug=True, host="0.0.0.0")

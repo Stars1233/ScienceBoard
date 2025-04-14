@@ -89,3 +89,11 @@ class VTask(Task):
     @_request_factory("POST/setup/launch")
     def _launch(self, command: Union[str, List[str]], shell: bool = False) -> Dict:
         return self._execute.__wrapped__(self, command, shell)
+
+    @_request_factory("POST/opt")
+    def _opt(self, depth: int) -> Dict:
+        return {
+            "json": {
+                "depth": depth
+            }
+        }
