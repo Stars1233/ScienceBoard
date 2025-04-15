@@ -121,6 +121,38 @@
     sudo apt install texstudio
     ```
 
+### Lean 4
+1. (GUEST) Install Visual Studio Code and its extension for Lean 4
+2. (GUEST) Install `elan` and `lean`
+
+    ```shell
+    sudo apt install curl
+    curl https://elan.lean-lang.org/elan-init.sh -sSf | sh
+    elan default leanprover/lean4:v4.14.0
+    elan install leanprover/lean4:v4.14.0
+    printf "export PATH=/home/user/.elan/bin:\$PATH" >> ~/.bashrc
+    lake new sci
+    ```
+
+    add prefix of `HTTP_PROXY=... HTTPS_PROXY=...` if `elan install` fail to resolve `github.com`
+
+3. Add mathlib config in `lakefile.toml`
+
+    ```toml
+    [[require]]
+    name = "mathlib"
+    scope = "leanprover-community"
+    rev = "v4.14.0"
+    ```
+
+    and download dependencies:
+
+    ```shell
+    lake update
+    lake exe cache get
+    lake build
+    ```
+
 ## Postprocess
 
 1. (HOST) Move server files into guest OS:
