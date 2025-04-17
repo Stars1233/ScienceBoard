@@ -45,10 +45,6 @@
             "func": "turn",
             "axis": "x",
             "angle": 514
-        },
-        {
-            "func": "destroy",
-            "wait": 2.5
         }
     ],
     "evaluate": [

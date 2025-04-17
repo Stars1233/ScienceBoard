@@ -31,10 +31,6 @@
         },
         {
             "func": "clear_log"
-        },
-        {
-            "func": "destroy",
-            "wait": 2.5
         }
     ],
     "evaluate": [

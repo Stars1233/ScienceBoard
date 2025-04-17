@@ -49,6 +49,10 @@
         {
             "func": "color",
             "style": "bypolymer"
+        },
+        {
+            "func": "destroy",
+            "wait": 2.5
         }
     ],
     "evaluate": [
