@@ -24,6 +24,7 @@ LEAN_RAW_TIPS = [
 LEAN_VM_TIPS = [
     "DO NOT modify anything above the line containing `sorry`.",
     "DO NOT use `sorry` or `admit` to close the proof forcibly, or your input will be ignored.",
+    "DO NOT write lean code in code blocks directly in your response; use `pyautogui` of Python instead.",
     "NEVER submit any Lean 3 code which the compiler of Lean 4 no longer accepts."
 ]
 
