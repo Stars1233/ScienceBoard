@@ -29,6 +29,12 @@
         {
             "func": "query",
             "expr": "def OP_2 (I : Set (Set α)) (h : ideal I) : Decidable (∃ A ⊆ I, (inter_family A) ∧ (∀ B ⊆ I, (inter_family B) → (#B ≤ #A)) ∧ (star A)) := by sorry"
+        },
+        {
+            "func": "launch",
+            "wait": 10,
+            "command": "code /home/user/sci /home/user/sci/Sci/Basic.lean",
+            "shell": true
         }
     ],
     "evaluate": [
