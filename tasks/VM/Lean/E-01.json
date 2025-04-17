@@ -1,6 +1,6 @@
 {
     "type": "Lean",
-    "sort": "Raw",
+    "sort": "VM",
     "steps": 20,
     "instruction": "def OP_1 (n : ℤ) : Decidable (∃ a b c d : ℤ, n = a ^ 3 + b ^ 3 + c ^ 3 + d ^ 3) := by sorry",
     "version": "0.1",
