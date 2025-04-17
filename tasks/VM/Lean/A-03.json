@@ -1,7 +1,7 @@
 {
     "type": "Lean",
     "sort": "VM",
-    "steps": 10,
+    "steps": 15,
     "instruction": "theorem ST_1 (X : ZFSet) : ((IsTransitive X) ↔ (X ⊆ powerset X)) ∧ ((IsTransitive X) ↔ ((⋃₀ X : ZFSet) ⊆ X)) := by sorry",
     "version": "0.1",
     "initialize": [

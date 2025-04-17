@@ -1,0 +1,26 @@
+{
+    "type": "Lean",
+    "sort": "VM",
+    "steps": 15,
+    "instruction": "theorem TP_1 [TopologicalSpace X] [TopologicalSpace Y] (h₁ : X ≃ₜ Y) (h₂ : MetrizableSpace X) : MetrizableSpace Y := by sorry",
+    "version": "0.1",
+    "initialize": [
+        {
+            "func": "import",
+            "libs": ["Mathlib"]
+        },
+        {
+            "func": "open",
+            "libs": ["TopologicalSpace"]
+        },
+        {
+            "func": "query",
+            "expr": "theorem TP_1 [TopologicalSpace X] [TopologicalSpace Y] (h₁ : X ≃ₜ Y) (h₂ : MetrizableSpace X) : MetrizableSpace Y := by sorry"
+        }
+    ],
+    "evaluate": [
+        {
+            "type": "placeholder"
+        }
+    ]
+}
