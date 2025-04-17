@@ -2,7 +2,6 @@
     "type": "Lean",
     "sort": "Raw",
     "steps": 20,
-    "penalty": "1:10",
     "instruction": "def OP_2 (I : Set (Set α)) (h : ideal I) : Decidable (∃ A ⊆ I, (inter_family A) ∧ (∀ B ⊆ I, (inter_family B) → (#B ≤ #A)) ∧ (star A)) := by sorry",
     "version": "0.1",
     "initialize": [

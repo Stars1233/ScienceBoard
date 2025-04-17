@@ -21,6 +21,11 @@ LEAN_RAW_TIPS = [
     "DO NOT use `sorry` or `admit` to close the proof forcibly, or your input will be ignored.",
     "NEVER submit any Lean 3 code which the compiler of Lean 4 no longer accepts."
 ]
+LEAN_VM_TIPS = [
+    "DO NOT modify anything above the line containing `sorry`.",
+    "DO NOT use `sorry` or `admit` to close the proof forcibly, or your input will be ignored.",
+    "NEVER submit any Lean 3 code which the compiler of Lean 4 no longer accepts."
+]
 
 CHIMERAX_IS = "a molecular visualization software"
 CHIMERAX_VM_TIPS = [
