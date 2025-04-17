@@ -9,6 +9,7 @@ from typing import Callable, Self
 sys.dont_write_bytecode = True
 from ..base import utils
 from ..base import Manager, PromptFactory
+from ..vm import VManager
 from .format import *
 
 
@@ -135,3 +136,8 @@ class RawManager(Manager):
             *PromptFactory.filter(self.headers),
             *PromptFactory.option(history_info)
         ])
+
+
+class VMManager(VManager):
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)

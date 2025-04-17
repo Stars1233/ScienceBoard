@@ -1162,15 +1162,50 @@ def chimerax_run():
         params={"command": command}
     ).json()
 
-
 @app.route("/opt", methods=["POST"])
-def change():
+def optimize():
     global MAX_DEPTH
     data = request.json
 
     MAX_DEPTH = data.get("depth", 50)
     return "OK"
 
+@app.route("/append", methods=["POST"])
+def append():
+    data = request.json
+    file_path = data.get("path", "/dev/null")
+    content = data.get("content", "")
+
+    with open(file_path, mode="a", encoding="utf-8") as appendable:
+        appendable.write(content)
+
+    return "OK"
+
+@app.route("/lean/check", methods=["POST"])
+def lean_check():
+    data = request.json
+    header = data.get("header", "__PANIC__")
+
+    no_change = False
+    with open("/home/user/sci/Sci/Basic.lean", mode="r", encoding="utf-8") as r:
+        if header not in r.read().split("\n"):
+            return {
+                "pass": False
+            }
+
+    lake = subprocess.run(
+        ["stdbuf", "-oL", "/home/user/.elan/bin/lake", "build"],
+        cwd="/home/user/sci",
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True
+    )
+
+    no_sorry = "declaration uses 'sorry'" not in lake.stdout
+    no_error = lake.returncode == 0
+    return {
+        "pass": no_sorry and no_error
+    }
 
 if __name__ == '__main__':
     app.run(debug=True, host="0.0.0.0")

@@ -1,9 +1,10 @@
 import sys
-from typing import List, Iterable
+from typing import List
 
 sys.dont_write_bytecode = True
 from ..base import Task
-from .lean import RawManager
+from ..vm import VTask
+from .lean import RawManager, VMManager
 from .format import *
 
 
@@ -11,9 +12,17 @@ class TaskMixin:
     def __init__(self) -> None:
         raise
 
-    # do not use `@Task._config_handler` here
+    # DO NOT use `@Task._config_handler` here
     def check_config(self: Task) -> None:
         assert len(self.evaluate) > 0
+
+        queries = [
+            item for item in self.initialize
+            if item["func"] == "query"
+        ]
+        assert len(queries) == 1
+        assert queries[0]["expr"].endswith("by sorry")
+        self.query = queries[0]["expr"][:-6]
 
 
 class RawTask(Task, TaskMixin):
@@ -112,3 +121,61 @@ class RawTask(Task, TaskMixin):
     @Task._stop_handler
     def eval(self) -> bool:
         return any([item.is_success() for item in self.manager.history])
+
+class VMTask(VTask, TaskMixin):
+    BASE_PATH = "/home/user/sci/Sci/Basic.lean"
+
+    def __init__(
+        self,
+        config_path: str,
+        manager: VMManager,
+        *args,
+        **kwargs
+    ) -> None:
+        # to enable Pylance type checker
+        assert isinstance(manager, VMManager)
+        self.manager = manager
+
+        super().__init__(config_path, manager, *args, **kwargs)
+        self.check_config()
+
+        self.buffer: List[str] = []
+
+    def __probe(self):
+        if len(self.buffer) == 0 or self.buffer[-1] != "":
+            self.buffer.append("")
+
+    # ignore `import Mathlib` because vm has loaded it
+    def _import(self, libs: List[str]) -> bool:
+        libs = [lib for lib in libs if lib != "Mathlib"]
+        if len(libs) > 0:
+            self.__probe()
+            self.buffer.append(f"import {' '.join(libs)}")
+        return True
+
+    def _open(self, libs: List[str]) -> bool:
+        self.__probe()
+        self.buffer.append(f"open {' '.join(libs)}")
+        self.__probe()
+        return True
+
+    def _def(self, expr: str):
+        self.buffer.append(expr)
+        return True
+
+    def _query(self, expr: str) -> bool:
+        self.__probe()
+        self.buffer.append(self.query + "\n  sorry\n")
+        return self._append(
+            path=self.BASE_PATH,
+            content="\n".join(self.buffer)
+        )
+
+    @Task._stop_handler
+    def eval(self) -> bool:
+        response = self.manager._request("POST/lean/check", {
+            "json": {
+                "header": self.query
+            }
+        })
+        return response.json()["pass"]

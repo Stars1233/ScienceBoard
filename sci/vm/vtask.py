@@ -94,3 +94,12 @@ class VTask(Task):
                 "depth": depth
             }
         }
+
+    @_request_factory("POST/append")
+    def _append(self, path: str, content: str) -> Dict:
+        return {
+            "json": {
+                "path": path,
+                "content": content
+            }
+        }
