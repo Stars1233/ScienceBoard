@@ -113,13 +113,37 @@
     ```
 
 ### TeXstudio
-- (GUEST) Download TeXstudio
+1. (GUEST) Download TeXstudio
 
     ```shell
     sudo add-apt-repository ppa:sunderme/texstudio
     sudo apt update
     sudo apt install texstudio
     ```
+
+2. (GUEST) Download MiKTeX
+
+    ```shell
+    sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys D6BC243565B2087BC3F897C9277A7293F59E4889
+    echo "deb http://miktex.org/download/ubuntu jammy universe" | sudo tee /etc/apt/sources.list.d/miktex.list
+    sudo apt update
+    sudo apt install miktex=23.12-jammy1
+    miktexsetup finish
+    sudo apt install texlive-fonts-extra
+    ```
+
+    and goto `miktex-console` to allow auto installation of missing packages.
+
+3. (GUEST) Make sure your templates can be compiled successfully
+
+    ```shell
+    pdflatex main.tex
+    bibtex main
+    pdflatex main.tex
+    pdflatex main.tex
+    ```
+
+    and so does in TeXstuio
 
 ### Lean 4
 1. (GUEST) Install Visual Studio Code and its extension for Lean 4
