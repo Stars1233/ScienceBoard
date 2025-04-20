@@ -16,19 +16,20 @@ class TaskMixin:
         # this class is not independent: manager, evaluate, vlog needed
         raise
 
+    def origin(self: Union["RawTask", "VMTask"], path: str) -> str:
+        return os.path.join(
+            self.path.replace(".json", ""),
+            os.path.split(path)[1]
+        )
+
     @Task._config_handler
     def check_config(self, eval_item) -> None:
-        assert eval_item["type"] == "file"
-        assert "path" in eval_item
+        if eval_item["type"] == "compile":
+            assert "file" in eval_item
+        else:
+            assert eval_item["type"] == "file"
 
-    @error_factory(False)
-    def eval(
-        self: Union["RawTask", "VMTask"],
-        eval_item: Dict[str, Any],
-        contents: str
-    ) -> bool:
-        # TEMP: add concrete evaluation
-        return contents.__len__() >= 0
+        assert "path" in eval_item
 
 
 class RawTask(Task, TaskMixin):
@@ -49,11 +50,7 @@ class RawTask(Task, TaskMixin):
     @Task._stop_handler
     @error_factory(False)
     def eval(self) -> bool:
-        for eval_item in self.evaluate:
-            # MRO: VMTask -> VTask -> Task -> TaskMixin -> object
-            if not super(Task, self).eval(eval_item, eval_item["path"]):
-                return False
-        return True
+        raise NotImplementedError
 
 
 class VMTask(VTask, TaskMixin):
@@ -71,14 +68,40 @@ class VMTask(VTask, TaskMixin):
         super().__init__(config_path, manager, *args, **kwargs)
         self.check_config()
 
+    def __read(self, path: str) -> str:
+        with open(self.origin(path), mode="r", encoding="utf-8") as readable:
+            return readable.read()
+
+    def _drop(self, path: str) -> bool:
+        return self.manager.write_file(
+            self.origin(path),
+            self.__read(path)
+        )
+
+    @error_factory(False)
+    def _eval_file(self: "VMTask", eval_item: Dict[str, Any]) -> bool:
+        before = self.__read(eval_item["path"])
+        after = self.manager.read_file(eval_item["path"])
+        after = after.replace(eval_item["source"], eval_item["target"])
+        return before == after
+
+    @error_factory(False)
+    def _eval_compile(self: "VMTask", eval_item: Dict[str, Any]) -> bool:
+        response = self.manager._request("POST/tex/check", {
+            "json": {
+                "path": eval_item["path"],
+                "file": eval_item["file"]
+            }
+        })
+        return response.json()["pass"]
+
     @Task._stop_handler
     @error_factory(False)
     def eval(self) -> bool:
         for eval_item in self.evaluate:
-            contents = self.manager.read_file(eval_item["path"])
-
-            # MRO: VMTask -> VTask -> Task -> TaskMixin -> object
-            if contents is None or \
-                not super(Task, self).eval(eval_item, contents):
+            eval_type = eval_item["type"]
+            eval_func = getattr(self, f"_eval_{eval_type}")
+            if not eval_func(eval_item):
+                self.vlog.info(f"Evaluation failed at {eval_type} of {eval_item['key']}.")
                 return False
         return True

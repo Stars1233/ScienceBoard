@@ -199,7 +199,7 @@ class VManager(Manager):
         _, success = self._vmrun("snapshot", snapshot_name)
         return success
 
-    # very hard to use, try task._execute()
+    # very hard to use, try task._execute() instead
     def _run(self, text: str, tolerance: Iterable[int] = []) -> bool:
         assert isinstance(text, str)
         return self._vmrun(
@@ -314,10 +314,31 @@ class VManager(Manager):
     @_env_handler
     @error_factory(None)
     def read_file(self, file_path: str) -> Optional[str]:
-        local_file = self.temp(os.path.split(file_path)[1])
-        assert self._vmrun(
-            "CopyFileFromGuestToHost",
-            file_path.replace("\\", "/"),
-            local_file
-        )[1]
-        return super().read_file(local_file)
+        response = self._request(f"GET/read", {
+            "params": {
+                "path": file_path
+            }
+        })
+        return response.text
+
+    @_env_handler
+    @error_factory(None)
+    def write_file(self, file_path: str, data: str) -> bool:
+        response = self._request(f"POST/write", {
+            "json": {
+                "path": file_path,
+                "content": data
+            }
+        })
+        return response.text == "OK"
+
+    @_env_handler
+    @error_factory(None)
+    def append_file(self, file_path: str, data: str) -> bool:
+        response = self._request(f"POST/append", {
+            "json": {
+                "path": file_path,
+                "content": data
+            }
+        })
+        return response.text == "OK"

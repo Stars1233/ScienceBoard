@@ -113,6 +113,16 @@ class Manager:
     def read_file(self, file_path: str) -> Optional[str]:
         return open(file_path, mode="r", encoding="utf-8").read()
 
+    @error_factory(False)
+    def write_file(self, file_path: str, data: str) -> bool:
+        open(file_path, mode="w", encoding="utf-8").write(data)
+        return True
+
+    @error_factory(False)
+    def append_file(self, file_path: str, data: str) -> bool:
+        open(file_path, mode="a", encoding="utf-8").write(data)
+        return True
+
 class OBS:
     textual = Manager.textual.__name__
     screenshot = Manager.screenshot.__name__

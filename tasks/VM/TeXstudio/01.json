@@ -2,10 +2,14 @@
     "type": "TeXstudio",
     "sort": "VM",
     "steps": 5,
-    "instruction": "Create a file named test.tex under directory of /home/user/Downloads.",
+    "instruction": "Create a file named main.tex under directory of /home/user/atelier.",
     "version": "0.1",
     "snapshot": "sci_bench",
     "initialize": [
+        {
+            "func": "drop",
+            "path": "/home/user/atelier/main.tex"
+        },
         {
             "func": "launch",
             "wait": 2.5,
@@ -16,7 +20,14 @@
     "evaluate": [
         {
             "type": "file",
-            "path": "/home/user/Downloads/test.tex"
+            "path": "/home/user/atelier/main.tex",
+            "source": "◇",
+            "target": "233"
+        },
+        {
+            "type": "compile",
+            "path": "/home/user/atelier",
+            "file": "main"
         }
     ]
 }

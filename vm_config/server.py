@@ -1170,6 +1170,25 @@ def optimize():
     MAX_DEPTH = data.get("depth", 50)
     return "OK"
 
+@app.route("/read", methods=["GET"])
+def read():
+    data = request.args
+    file_path = data.get("path", "/dev/null")
+
+    with open(file_path, mode="r", encoding="utf-8") as readable:
+        return readable.read()
+
+@app.route("/write", methods=["POST"])
+def write():
+    data = request.json
+    file_path = data.get("path", "/dev/null")
+    content = data.get("content", "")
+
+    with open(file_path, mode="w", encoding="utf-8") as writable:
+        writable.write(content)
+
+    return "OK"
+
 @app.route("/append", methods=["POST"])
 def append():
     data = request.json
@@ -1186,7 +1205,6 @@ def lean_check():
     data = request.json
     header = data.get("header", "__PANIC__")
 
-    no_change = False
     with open("/home/user/sci/Sci/Basic.lean", mode="r", encoding="utf-8") as r:
         if header not in r.read().split("\n"):
             return {
@@ -1206,6 +1224,52 @@ def lean_check():
     return {
         "pass": no_sorry and no_error
     }
+
+@app.route("/tex/check", methods=["POST"])
+def tex_check():
+    data = request.json
+    path = data.get("path", "/home/user")
+    file = data.get("file", "main")
+
+    passed = lambda arg: {"pass": bool(arg)}
+
+    if subprocess.run(
+        ["pdflatex", f"{file}.tex"],
+        cwd=path,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True
+    ) != 0:
+        return passed(False)
+
+    if subprocess.run(
+        ["bibtex", f"{file}"],
+        cwd=path,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True
+    ) != 0:
+        return passed(False)
+
+    if subprocess.run(
+        ["pdflatex", f"{file}.tex"],
+        cwd=path,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True
+    ) != 0:
+        return passed(False)
+
+    if subprocess.run(
+        ["pdflatex", f"{file}.tex"],
+        cwd=path,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True
+    ) != 0:
+        return passed(False)
+
+    return passed(True)
 
 if __name__ == '__main__':
     app.run(debug=True, host="0.0.0.0")
