@@ -262,9 +262,9 @@ class Task:
         }
 
         # special cases: SoM -> SoM + A11y Tree
-        tags = None
+        nested_tags = None
         if OBS.set_of_marks in obs:
-            tags, som, a11y_tree = obs[OBS.set_of_marks]
+            nested_tags, som, a11y_tree = obs[OBS.set_of_marks]
             obs[OBS.a11y_tree] = a11y_tree
             obs[OBS.set_of_marks] = som
 
@@ -278,7 +278,11 @@ class Task:
         assert len(response_message.content) == 1
 
         response_content = response_message.content[0]
-        response_codes = self.agent.code_handler(response_content, tags)
+        response_codes = self.agent.code_handler(
+            response_content,
+            self.primitives,
+            nested_tags
+        )
         self.vlog.info(
             f"Response {step_index + 1}/{self.steps}: " \
                 + response_content.text

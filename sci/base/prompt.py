@@ -11,7 +11,7 @@ import traceback
 
 from dataclasses import dataclass
 
-from typing import List, FrozenSet, Optional
+from typing import List, Set, FrozenSet, Optional
 from typing import Callable, Self, NoReturn
 
 sys.dont_write_bytecode = True
@@ -95,11 +95,18 @@ class CodeLike:
             tag_prefix += "\n"
         return tag_prefix.strip()
 
+    def is_primitive(self, primitives: List[str]) -> bool:
+        return any([self.code.startswith(prim) for prim in primitives])
+
     @staticmethod
     def _tag_handler(method: Callable[[Content], List[Self]]) -> Callable:
-        def _tag_wrapper(content: Content, tags: List[List[int]]) -> List[Self]:
+        def _tag_wrapper(
+            content: Content,
+            primitives: Set[str],
+            tags: List[List[int]]
+        ) -> List[Self]:
             for code in (codes := method(content)):
-                if tags is not None and code.code not in Primitive.PRIMITIVES:
+                if tags is not None and not code.is_primitive(primitives):
                     code.code = CodeLike.parse_tags(tags) + "\n\n" + code.code
             return codes
         return _tag_wrapper
@@ -110,7 +117,7 @@ class CodeLike:
         occurence = [
             match.group(1).strip()
             for match in re.finditer(
-                r'```(?:\w+\s+)?([\w\W]*?)```',
+                r'```(?:\w*\s+)?([\w\W]*?)```',
                 content.text
             )
         ]
@@ -126,7 +133,7 @@ class CodeLike:
         primitives: List[str],
         prefix: Optional[str] = None
     ) -> Optional[bool]:
-        if any([self.code.startswith(prim) for prim in primitives]):
+        if self.is_primitive(primitives):
             splits = self.code.split(" ")
             try:
                 getattr(Primitive, splits[0])(*splits[1:])

@@ -1,7 +1,7 @@
 import sys
 
 from typing import Optional, List, Tuple, Dict
-from typing import Callable, Any, FrozenSet
+from typing import Callable, Any, Set, FrozenSet
 
 from PIL import Image
 from requests import Response
@@ -72,7 +72,7 @@ class Agent:
         assert hasattr(CodeLike, handler_name:=f"extract_{code_style}")
         self.code_style = code_style
         self.code_handler: Callable[
-            [Content],
+            [Content, Set[str], List[List[int]]],
             List[CodeLike]
         ] = getattr(CodeLike, handler_name)
         self.prompt_factory = PromptFactory(code_style)
