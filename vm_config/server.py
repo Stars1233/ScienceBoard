@@ -1239,7 +1239,7 @@ def tex_check():
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True
-        ) != 0
+        ).returncode != 0
 
     if sub_check("pdflatex", f"{file}.tex"): return passed(False)
     if sub_check("bibtex", f"{file}"):       return passed(False)

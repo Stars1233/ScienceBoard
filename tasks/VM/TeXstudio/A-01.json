@@ -24,7 +24,7 @@
         {
             "func": "launch",
             "wait": 2.5,
-            "command": "texstudio",
+            "command": "texstudio /home/user/atelier/refs.bib /home/user/atelier/code.tex /home/user/atelier/main.tex",
             "shell": true
         }
     ],
