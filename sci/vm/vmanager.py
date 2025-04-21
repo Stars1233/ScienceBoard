@@ -322,7 +322,7 @@ class VManager(Manager):
         return response.text
 
     @_env_handler
-    @error_factory(None)
+    @error_factory(False)
     def write_file(self, file_path: str, data: str) -> bool:
         response = self._request(f"POST/write", {
             "json": {
@@ -333,7 +333,7 @@ class VManager(Manager):
         return response.text == "OK"
 
     @_env_handler
-    @error_factory(None)
+    @error_factory(False)
     def append_file(self, file_path: str, data: str) -> bool:
         response = self._request(f"POST/append", {
             "json": {

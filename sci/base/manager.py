@@ -115,12 +115,14 @@ class Manager:
 
     @error_factory(False)
     def write_file(self, file_path: str, data: str) -> bool:
-        open(file_path, mode="w", encoding="utf-8").write(data)
+        with open(file_path, mode="w", encoding="utf-8") as writable:
+            writable.write(data)
         return True
 
     @error_factory(False)
     def append_file(self, file_path: str, data: str) -> bool:
-        open(file_path, mode="a", encoding="utf-8").write(data)
+        with open(file_path, mode="a", encoding="utf-8") as appendable:
+            appendable.write(data)
         return True
 
 class OBS:

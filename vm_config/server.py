@@ -1151,17 +1151,6 @@ def end_recording():
 
 # self-defined requests start from here
 # use `sudo systemctl restart osworld.service` to take effects
-@app.route("/chimerax/run", methods=["POST"])
-def chimerax_run():
-    data = request.json
-    port = data.get("port", 8000)
-    command = data.get("command", "")
-
-    return requests.get(
-        f"http://localhost:{port}/run",
-        params={"command": command}
-    ).json()
-
 @app.route("/opt", methods=["POST"])
 def optimize():
     global MAX_DEPTH
@@ -1200,6 +1189,17 @@ def append():
 
     return "OK"
 
+@app.route("/chimerax/run", methods=["POST"])
+def chimerax_run():
+    data = request.json
+    port = data.get("port", 8000)
+    command = data.get("command", "")
+
+    return requests.get(
+        f"http://localhost:{port}/run",
+        params={"command": command}
+    ).json()
+
 @app.route("/lean/check", methods=["POST"])
 def lean_check():
     data = request.json
@@ -1232,43 +1232,19 @@ def tex_check():
     file = data.get("file", "main")
 
     passed = lambda arg: {"pass": bool(arg)}
+    def sub_check(*args):
+        return subprocess.run(
+            args,
+            cwd=path,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True
+        ) != 0
 
-    if subprocess.run(
-        ["pdflatex", f"{file}.tex"],
-        cwd=path,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        text=True
-    ) != 0:
-        return passed(False)
-
-    if subprocess.run(
-        ["bibtex", f"{file}"],
-        cwd=path,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        text=True
-    ) != 0:
-        return passed(False)
-
-    if subprocess.run(
-        ["pdflatex", f"{file}.tex"],
-        cwd=path,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        text=True
-    ) != 0:
-        return passed(False)
-
-    if subprocess.run(
-        ["pdflatex", f"{file}.tex"],
-        cwd=path,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.PIPE,
-        text=True
-    ) != 0:
-        return passed(False)
-
+    if sub_check("pdflatex", f"{file}.tex"): return passed(False)
+    if sub_check("bibtex", f"{file}"):       return passed(False)
+    if sub_check("pdflatex", f"{file}.tex"): return passed(False)
+    if sub_check("pdflatex", f"{file}.tex"): return passed(False)
     return passed(True)
 
 if __name__ == '__main__':

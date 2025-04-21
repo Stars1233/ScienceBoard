@@ -2,12 +2,13 @@
     "type": "TeXstudio",
     "sort": "VM",
     "steps": 5,
-    "instruction": "Create a file named main.tex under directory of /home/user/atelier.",
+    "instruction": "Modify the file named main.tex under directory of /home/user/atelier.",
     "version": "0.1",
     "snapshot": "sci_bench",
     "initialize": [
         {
-            "func": "drop",
+            "func": "touch",
+            "text": "◇",
             "path": "/home/user/atelier/main.tex"
         },
         {
