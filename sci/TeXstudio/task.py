@@ -1,5 +1,5 @@
 import sys
-import os
+import re
 
 from typing import Union, Dict, Any
 
@@ -20,6 +20,8 @@ class TaskMixin:
     def check_config(self, eval_item) -> None:
         if eval_item["type"] == "compile":
             assert "file" in eval_item
+        elif eval_item["type"] == "include":
+            assert "pattern" in eval_item
         else:
             assert eval_item["type"] == "file"
 
@@ -32,12 +34,23 @@ class TaskMixin:
         ][0]["text"]
 
     @error_factory(False)
-    def _eval_file(self: Union["RawTask", "VMTask"], eval_item: Dict[str, Any]) -> bool:
+    def _eval_file(
+        self: Union["RawTask", "VMTask"],
+        eval_item: Dict[str, Any]
+    ) -> bool:
         before = self.reverse_touch(eval_item["path"])
         after = self.manager.read_file(eval_item["path"])
         if "source" in eval_item and "target" in eval_item:
             before = before.replace(eval_item["source"], eval_item["target"])
-        return after in before
+        return before == after
+
+    @error_factory(False)
+    def _eval_include(
+        self: Union["RawTask", "VMTask"],
+        eval_item: Dict[str, Any]
+    ) -> bool:
+        after = self.manager.read_file(eval_item["path"])
+        return re.search(eval_item["pattern"], after) is not None
 
     def eval(self) -> bool:
         for eval_item in self.evaluate:

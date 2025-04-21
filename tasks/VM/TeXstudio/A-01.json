@@ -36,6 +36,11 @@
             "target": "233"
         },
         {
+            "type": "include",
+            "path": "/home/user/atelier/code.tex",
+            "pattern": "tik"
+        },
+        {
             "type": "compile",
             "path": "/home/user/atelier",
             "file": "main"
