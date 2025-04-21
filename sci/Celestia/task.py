@@ -47,6 +47,7 @@ class TaskMixin:
             if "pred" in eval_item:
                 pred = eval(eval_item["pred"])
             if not pred(hkey(info), eval_item["value"]):
+                self.vlog.info(f"Evaluation failed at {eval_item['type']} of {eval_item['key']}.")
                 return False
         return True
 
