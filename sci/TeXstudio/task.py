@@ -102,6 +102,15 @@ class VMTask(VTask, TaskMixin):
         super().__init__(config_path, manager, *args, **kwargs)
         self.check_config()
 
+    def _chimerax_open(self: "VMTask", name: str) -> bool:
+        return self.manager._chimerax_execute(f"open {name}")
+
+    def _chimerax_turn(self: "VMTask", axis: str, angle: int) -> bool:
+        return self.manager._chimerax_execute(f"turn {axis} {angle}")
+
+    def _chimerax_clear_log(self: "VMTask") -> bool:
+        return self.manager._chimerax_execute(f"log clear")
+
     @error_factory(False)
     def _eval_compile(self: "VMTask", eval_item: Dict[str, Any]) -> bool:
         response = self.manager._request("POST/tex/check", {

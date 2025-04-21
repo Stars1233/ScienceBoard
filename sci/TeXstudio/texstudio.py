@@ -32,5 +32,19 @@ class RawManager(Manager):
 
 
 class VMManager(VManager):
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(
+        self,
+        *args,
+        port: int = 8000,
+        **kwargs
+    ) -> None:
         super().__init__(*args, **kwargs)
+
+        assert port in range(1024, 65536)
+        self.port = port
+
+    def _chimerax_execute(self, command: str):
+        return self._request(
+            f"POST:{VManager.SERVER_PORT}/chimerax/run",
+            param={"json": {"command": command}}
+        ).json()["error"] is None
