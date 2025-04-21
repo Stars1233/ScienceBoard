@@ -105,7 +105,9 @@
     ```
 
 3. (GUEST) Open Grass and download `Piemonte, Italy dataset` and `Natural Earth Dataset in WGS84` manually.
+
 4. (GUEST) Open Grass and load `natural_earth_dataset/countries@PERMANENT`, randomly add two points (one in the Mediterranean Sea) and modify `D-04.json`.
+
 5. (GUEST) Clear GIS lock files
 
     ```shell
@@ -113,6 +115,7 @@
     ```
 
 ### TeXstudio
+
 1. (GUEST) Download TeXstudio
 
     ```shell
@@ -145,8 +148,12 @@
 
     and so does in TeXstuio
 
+4. (GUEST) Add documents/figures needed by tasks
+
 ### Lean 4
+
 1. (GUEST) Install Visual Studio Code and its extension for Lean 4
+
 2. (GUEST) Install `elan` and `lean`
 
     ```shell
