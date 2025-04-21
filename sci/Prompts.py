@@ -54,6 +54,5 @@ GRASSGIS_VM_TIPS = [
 
 TEXSTUDIO_IS = "an integrated writing environment for creating LaTeX documents"
 TEXSTUDIO_VM_TIPS = [
-    # TODO: fill tips
-    "..."
+    "The sequence of compilation is pdflatex -> bibtex -> pdflatex -> pdflatex, so warnings or errors inside the TeXstudio do not necessarily lead to compiling fail."
 ]
