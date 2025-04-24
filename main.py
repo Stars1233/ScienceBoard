@@ -23,6 +23,24 @@ gpt_o3 = lambda: Automata(
     overflow_style="openai_gpt"
 )
 
+gemini_2 = lambda: Automata(
+    model_style="openai",
+    base_url="https://generativelanguage.googleapis.com/v1beta/openai/chat/completions",
+    model_name="gemini-2.0-flash-exp",
+    api_key=os.environ["GOOGLE_API_KEY"],
+    proxy=os.environ["HTTPX_PROXY"],
+    overflow_style="openai_gpt"
+)
+
+claude_3 = lambda: Automata(
+    model_style="anthropic",
+    base_url="https://api.anthropic.com/v1/messages",
+    model_name="claude-3-7-sonnet-20250219",
+    api_key=os.environ["ANTHROPIC_API_KEY"],
+    proxy=os.environ["HTTPX_PROXY"],
+    overflow_style="anthropic"
+)
+
 qvq = lambda: Automata(
     model_style="openai",
     base_url=os.environ["QVQ_VL_URL"],

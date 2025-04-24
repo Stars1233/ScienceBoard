@@ -7,6 +7,8 @@
     - `DEBUG_ERR_FACT`: insert a breakpoint when eval exception occur
 2. Models
     - `OPENAI_API_KEY`: API key for OpenAI GPT
+    - `GOOGLE_API_KEY`: API key for Google Gemini
+    - `ANTHROPIC_API_KEY`: API key for Anthropic Claude
     - `QVQ_VL_URL`: Base URL for QVQ
     - `QWEN_VL_URL`: Base URL for QwenVL
     - `INTERN_VL_URL`: Base URL for InternVL
