@@ -132,7 +132,7 @@
     sudo apt update
     sudo apt install miktex=23.12-jammy1
     miktexsetup finish
-    sudo apt install texlive-fonts-extra
+    sudo apt install texlive-fonts-extra texlive-science
     ```
 
     and goto `miktex-console` to allow auto installation of missing packages.
