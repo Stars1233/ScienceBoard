@@ -1234,13 +1234,7 @@ def tex_check():
 
     passed = lambda arg: {"pass": bool(arg)}
     def sub_check(*args):
-        return subprocess.run(
-            args,
-            cwd=path,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True
-        ).returncode != 0
+        return subprocess.run(args, cwd=path, text=True).returncode != 0
 
     if sub_check("pdflatex", f"{file}.tex"):
         return passed(False)
