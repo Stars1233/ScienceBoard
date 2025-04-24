@@ -1,7 +1,7 @@
 {
     "type": "TeXstudio",
     "sort": "VM",
-    "steps": 5,
+    "steps": 10,
     "instruction": "The Lean 4 code shown in TeXstudio is erroneous; try to correct it by modifying exact one word. You may use VS Code supplied to debug.",
     "version": "0.1",
     "snapshot": "sci_bench",

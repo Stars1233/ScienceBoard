@@ -1,7 +1,7 @@
 {
     "type": "TeXstudio",
     "sort": "VM",
-    "steps": 5,
+    "steps": 10,
     "instruction": "The depiction of one atom (one of C/O/N) counting in the article shown in TeXstudio is erroneous. Replace it with what you find in ChimeraX.",
     "version": "0.1",
     "snapshot": "sci_bench",

@@ -1,7 +1,7 @@
 {
     "type": "TeXstudio",
     "sort": "VM",
-    "steps": 5,
+    "steps": 10,
     "instruction": "Shown in TeXstudio is deduction rules of λC system of type theory with a typo. Correct it by modifying EXACT ONE letter in the document.",
     "version": "0.1",
     "snapshot": "sci_bench",

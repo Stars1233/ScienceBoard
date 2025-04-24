@@ -1,7 +1,7 @@
 {
     "type": "TeXstudio",
     "sort": "VM",
-    "steps": 5,
+    "steps": 10,
     "instruction": "Modify the shown document in TeXstudio till it can be successfully compiled.",
     "version": "0.1",
     "snapshot": "sci_bench",

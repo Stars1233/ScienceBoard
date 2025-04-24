@@ -1,7 +1,7 @@
 {
     "type": "TeXstudio",
     "sort": "VM",
-    "steps": 5,
+    "steps": 10,
     "instruction": "The DNA sequence of Chain A written in TeXstudio is erroneous. Please find the correct answer in ChimeraX and replace the wrong one with it.",
     "version": "0.1",
     "snapshot": "sci_bench",

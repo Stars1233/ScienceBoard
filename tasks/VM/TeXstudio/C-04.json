@@ -1,7 +1,7 @@
 {
     "type": "TeXstudio",
     "sort": "VM",
-    "steps": 5,
+    "steps": 10,
     "instruction": "Change and only change with of figs/envelope to 0.48 in TeXstudio.",
     "version": "0.1",
     "snapshot": "sci_bench",

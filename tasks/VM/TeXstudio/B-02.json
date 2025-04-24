@@ -1,7 +1,7 @@
 {
     "type": "TeXstudio",
     "sort": "VM",
-    "steps": 5,
+    "steps": 10,
     "instruction": "The citation of Celestia has been written in refs.bib. Find the COSPAR ID for Gemini 9A in Celestia and fill it in the article shown in TeXstudio replacing the placeholder of '????-????', and then cite Celestia right after it by filling the \\cite macro directly.",
     "version": "0.1",
     "snapshot": "sci_bench",

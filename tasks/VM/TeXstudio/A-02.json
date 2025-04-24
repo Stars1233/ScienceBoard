@@ -1,7 +1,7 @@
 {
     "type": "TeXstudio",
     "sort": "VM",
-    "steps": 5,
+    "steps": 10,
     "instruction": "Find the name of residue id /A:6 in ChimeraX and fill it in the table of the article shown in TeXstudio replacing the placeholder of '???'.",
     "version": "0.1",
     "snapshot": "sci_bench",
