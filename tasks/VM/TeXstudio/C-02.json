@@ -2,7 +2,7 @@
     "type": "TeXstudio",
     "sort": "VM",
     "steps": 5,
-    "instruction": "MLTT 的推理树，改一个字母",
+    "instruction": "Shown in TeXstudio is deduction rules of λC system of type theory with a typo. Correct it by modifying EXACT ONE letter in the document.",
     "version": "0.1",
     "snapshot": "sci_bench",
     "initialize": [

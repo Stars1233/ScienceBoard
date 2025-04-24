@@ -2,7 +2,7 @@
     "type": "TeXstudio",
     "sort": "VM",
     "steps": 5,
-    "instruction": "某句话的数据有一个出错，要求修改正确 ChimeraX/C-02",
+    "instruction": "The depiction of one atom (one of C/O/N) counting in the article shown in TeXstudio is erroneous. Replace it with what you find in ChimeraX.",
     "version": "0.1",
     "snapshot": "sci_bench",
     "initialize": [

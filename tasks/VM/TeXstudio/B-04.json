@@ -2,7 +2,7 @@
     "type": "TeXstudio",
     "sort": "VM",
     "steps": 5,
-    "instruction": "Google Scholar 找某篇文章，复制 BibTeX 到本地",
+    "instruction": "Find the paper named 'A New Method in the Problem of Three Cubes' via Google Scholar and copy its BibTeX to refs.bib.",
     "version": "0.1",
     "snapshot": "sci_bench",
     "initialize": [

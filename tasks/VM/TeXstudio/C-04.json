@@ -2,7 +2,7 @@
     "type": "TeXstudio",
     "sort": "VM",
     "steps": 5,
-    "instruction": "修改图像大小至某个指定值，其他不许改动",
+    "instruction": "Change and only change with of figs/envelope to 0.48 in TeXstudio.",
     "version": "0.1",
     "snapshot": "sci_bench",
     "initialize": [

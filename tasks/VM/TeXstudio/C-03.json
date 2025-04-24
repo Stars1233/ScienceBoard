@@ -2,7 +2,7 @@
     "type": "TeXstudio",
     "sort": "VM",
     "steps": 5,
-    "instruction": "图像错误，修改为正确的值",
+    "instruction": "The path of figure 'figs/lat' introduced in the document in TeXstudio is incomplete; try to correct it.",
     "version": "0.1",
     "snapshot": "sci_bench",
     "initialize": [

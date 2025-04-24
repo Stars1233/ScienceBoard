@@ -2,7 +2,7 @@
     "type": "TeXstudio",
     "sort": "VM",
     "steps": 5,
-    "instruction": "公式编译失败，修改到编译成功",
+    "instruction": "Modify the formula of the document in TeXstudio till it can be successfully compiled.",
     "version": "0.1",
     "snapshot": "sci_bench",
     "initialize": [
@@ -24,5 +24,6 @@
             "path": "/home/user/atelier",
             "file": "main"
         }
-    ]
+    ],
+    "ans": "\\or -> \\vee"
 }

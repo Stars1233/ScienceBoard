@@ -2,7 +2,7 @@
     "type": "TeXstudio",
     "sort": "VM",
     "steps": 5,
-    "instruction": "搜寻数据并填写到某个表格的占位符，然后在其后插入引用 GrassGIS/A-10",
+    "instruction": "The citation of Grass GIS has been written in refs.bib. Find the number of provinces in Piemonte and fill it in the table of the article shown in TeXstudio replacing the placeholder of '0', and then cite Grass GIS right after it by filling the \\cite macro directly.",
     "version": "0.1",
     "snapshot": "sci_bench",
     "initialize": [
