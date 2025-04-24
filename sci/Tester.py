@@ -72,7 +72,7 @@ class AutomataType(TypedDict):
     proxy: NotRequired[Optional[str]]
     version: NotRequired[Optional[str]]
     max_tokens: NotRequired[int]
-    top_p: NotRequired[float]
+    top_p: NotRequired[Optional[float]]
     temperature: NotRequired[float]
     overflow_style: NotRequired[Optional[str]]
     context_window: NotRequired[int]

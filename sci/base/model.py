@@ -173,6 +173,9 @@ class Model:
             "temperature": self.temperature
         }
 
+        if self.top_p is None:
+            del payload["top_p"]
+
         return requests.post(
             self.base_url,
             headers=headers,
