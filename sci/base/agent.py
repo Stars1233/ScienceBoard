@@ -34,6 +34,11 @@ class Overflow:
 
     @staticmethod
     @utils.error_factory(False)
+    def openai_newapi(response: Response) -> bool:
+        return response.json()["choices"][0]["finish_reason"] == "length"
+
+    @staticmethod
+    @utils.error_factory(False)
     def anthropic(response: Response) -> bool:
         return response.json()["error"]["type"] == "request_too_large"
 
