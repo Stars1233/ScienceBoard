@@ -8,7 +8,7 @@
     "initialize": [
         {
             "func": "touch",
-            "text": "\\documentclass[11pt,a4paper]{article}\n\\usepackage[utf8]{inputenc}\n\\usepackage[english]{babel}\n\n\\begin{document}\n\n\\begin{figure}[h]\n    \\vspace{-1ex}\n    \\centering\n    \\renewcommand{\\arraystretch}{1.8}\n    \\begin{tabular}{|c|c|c|c|c|c|c|}\n    \\hline\n    $f(8)$\n    & $f(12)$\n    & $f(16)$\n    & $f(20)$\n    & $f(24)$\n    & $f(28)$\n    & $f(32)$ \\\\\n    \\hline\n    $21$\n    & $144$\n    & $987$\n    & $6765$\n    & $28657$\n    & $317811$\n    & $2178309$ \\\\\n    \\hline\n    \\end{tabular}\n    \\vspace{1ex}\n    \\caption{Instances of the Fibonacci Sequence}\n\\end{figure}\n\n\\end{document}\n",
+            "text": "\\documentclass[11pt,a4paper]{article}\n\\usepackage[utf8]{inputenc}\n\\usepackage[english]{babel}\n\n\\begin{document}\n\n\\begin{figure}[h]\n    \\vspace{-1ex}\n    \\centering\n    \\renewcommand{\\arraystretch}{1.8}\n    \\begin{tabular}{|c|c|c|c|c|c|c|}\n    \\hline\n    $f(8)$\n    & $f(12)$\n    & $f(16)$\n    & $f(20)$\n    & $f(24)$\n    & $f(28)$\n    & $f(32)$ \\\\\n    \\hline\n    $21$\n    & $144$\n    & $987$\n    & $6765$\n    & $38657$\n    & $317811$\n    & $2178309$ \\\\\n    \\hline\n    \\end{tabular}\n    \\vspace{1ex}\n    \\caption{Instances of the Fibonacci Sequence}\n\\end{figure}\n\n\\end{document}\n",
             "path": "/home/user/atelier/main.tex"
         },
         {

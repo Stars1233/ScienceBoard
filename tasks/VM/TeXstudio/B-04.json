@@ -27,7 +27,27 @@
         {
             "type": "include",
             "path": "/home/user/atelier/refs.bib",
-            "pattern": "@article{avagyan2018new,\n  title={A New Method in the Problem of Three Cubes},\n  author={Avagyan, Armen and Dallakyan, Gurgen},\n  journal={arXiv preprint arXiv:1802.06776},\n  year={2018}\n}"
+            "pattern": "@article\\{avagyan2018new"
+        },
+        {
+            "type": "include",
+            "path": "/home/user/atelier/refs.bib",
+            "pattern": "title=\\{A New Method in the Problem of Three Cubes\\}"
+        },
+        {
+            "type": "include",
+            "path": "/home/user/atelier/refs.bib",
+            "pattern": "author=\\{Avagyan, Armen and Dallakyan, Gurgen\\}"
+        },
+        {
+            "type": "include",
+            "path": "/home/user/atelier/refs.bib",
+            "pattern": "journal=\\{arXiv preprint arXiv:1802.06776\\}"
+        },
+        {
+            "type": "include",
+            "path": "/home/user/atelier/refs.bib",
+            "pattern": "year=\\{2018\\}"
         },
         {
             "type": "compile",
