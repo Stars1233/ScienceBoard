@@ -14,6 +14,15 @@ gpt_4o = lambda: Automata(
     overflow_style="openai_gpt"
 )
 
+gpt_o3 = lambda: Automata(
+    model_style="openai",
+    base_url="https://api.openai.com/v1/chat/completions",
+    model_name="o3-mini-2025-01-31",
+    api_key=os.environ["OPENAI_API_KEY"],
+    proxy=os.environ["HTTPX_PROXY"],
+    overflow_style="openai_gpt"
+)
+
 qvq = lambda: Automata(
     model_style="openai",
     base_url=os.environ["QVQ_VL_URL"],
