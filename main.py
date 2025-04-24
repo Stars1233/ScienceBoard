@@ -73,6 +73,9 @@ tars_dpo = lambda: Automata(
     hide_text=True
 )
 
+
+# this file somehow acts as a config file
+# with some sensitive contents hidden in env
 if __name__ == "__main__":
     # register a tester and execute it
     Tester(
