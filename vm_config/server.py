@@ -1230,6 +1230,7 @@ def tex_check():
     data = request.json
     path = data.get("path", "/home/user")
     file = data.get("file", "main")
+    bibtex = data.get("bibtex", False)
 
     passed = lambda arg: {"pass": bool(arg)}
     def sub_check(*args):
@@ -1241,10 +1242,12 @@ def tex_check():
             text=True
         ).returncode != 0
 
-    if sub_check("pdflatex", f"{file}.tex"): return passed(False)
-    if sub_check("bibtex", f"{file}"):       return passed(False)
-    if sub_check("pdflatex", f"{file}.tex"): return passed(False)
-    if sub_check("pdflatex", f"{file}.tex"): return passed(False)
+    if sub_check("pdflatex", f"{file}.tex"):
+        return passed(False)
+    if bibtex:
+        if sub_check("bibtex", f"{file}"):       return passed(False)
+        if sub_check("pdflatex", f"{file}.tex"): return passed(False)
+        if sub_check("pdflatex", f"{file}.tex"): return passed(False)
     return passed(True)
 
 if __name__ == '__main__':

@@ -54,10 +54,11 @@ GRASSGIS_VM_TIPS = [
 
 TEXSTUDIO_IS = "an integrated writing environment for creating LaTeX documents"
 LEAN_VM_USAGE = [
-    "You are given a LaTeX project opened in TeXstudio filled with lipsums, and possibly some meaningful text.",
+    "You are given a LaTeX project opened in TeXstudio filled with some text, and possibly some lipsums.",
     "What should be done is to make some minor changes to the documents based on the information obtained from possibly existed meaningful text, other scientific applications or Internet, which depends on concrete problems, while making sure that the project can be compiled successfully."
 ]
 TEXSTUDIO_VM_TIPS = [
-    "DO NOT change irrelevant text because your answer will be executed an exact match between the unique answer after you finish the task.",
-    "The sequence of compilation is pdflatex -> bibtex -> pdflatex -> pdflatex, so warnings or errors inside the TeXstudio do not necessarily lead to compiling fail."
+    "Don't forget to save after you make some editions to the text.",
+    "NEVER change irrelevant text because your answer will be executed an exact match between the unique answer after you finish the task.",
+    "The sequence of compilation is pdflatex (-> bibtex -> pdflatex -> pdflatex if .bib exists), so warnings or errors inside the TeXstudio do not necessarily lead to compiling fail."
 ]
