@@ -2,7 +2,7 @@
     "type": "TeXstudio",
     "sort": "VM",
     "steps": 5,
-    "instruction": "某一句话的占位符 Lean",
+    "instruction": "The citation of Lean 4 has been written in refs.bib. Please fill \\cite in main.tex with it in TeXstudio without modifying .bib file.",
     "version": "0.1",
     "snapshot": "sci_bench",
     "initialize": [

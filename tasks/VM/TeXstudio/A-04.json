@@ -2,7 +2,7 @@
     "type": "TeXstudio",
     "sort": "VM",
     "steps": 5,
-    "instruction": "替换某个表格的某个数据改错 KAlgenra/C-03",
+    "instruction": "The f(24) of the Fibonacci sequence listed in TeXstudio is erroneous. Please find the correct answer in KAlgebra and replace the wrong one with it.",
     "version": "0.1",
     "snapshot": "sci_bench",
     "initialize": [

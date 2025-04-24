@@ -2,7 +2,7 @@
     "type": "TeXstudio",
     "sort": "VM",
     "steps": 5,
-    "instruction": "替换某一句话的某个数据改错 ChimeraX/C-03",
+    "instruction": "The DNA sequence of Chain A written in TeXstudio is erroneous. Please find the correct answer in ChimeraX and replace the wrong one with it.",
     "version": "0.1",
     "snapshot": "sci_bench",
     "initialize": [
@@ -59,11 +59,6 @@
             "path": "/home/user/atelier/main.tex",
             "source": "TGCCAT",
             "target": "CTCGAG"
-        },
-        {
-            "type": "include",
-            "path": "/home/user/atelier/code.tex",
-            "pattern": "tik"
         },
         {
             "type": "compile",

@@ -2,7 +2,7 @@
     "type": "TeXstudio",
     "sort": "VM",
     "steps": 10,
-    "instruction": "某一句话的占位符 ChimeraX/C-07",
+    "instruction": "Find the angle between /A GLN4 OE1, OXT and GLN 3 OE1 in ChimeraX and fill it in the article shown in TeXstudio replacing the placeholder of 'xxx.xx'.",
     "version": "0.1",
     "snapshot": "sci_bench",
     "initialize": [

@@ -2,7 +2,7 @@
     "type": "TeXstudio",
     "sort": "VM",
     "steps": 5,
-    "instruction": "搜寻数据并填写到某句话的占位符，然后在其后插入引用 Celestia/C-03",
+    "instruction": "The citation of Celestia has been written in refs.bib. Find the COSPAR ID for Gemini 9A in Celestia and fill it in the article shown in TeXstudio replacing the placeholder of '????-????', and then cite Celestia right after it by filling the \\cite macro directly.",
     "version": "0.1",
     "snapshot": "sci_bench",
     "initialize": [
