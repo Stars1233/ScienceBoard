@@ -139,9 +139,9 @@ class Model:
     api_key: Optional[str] = None
     proxy: Optional[str] = None
     version: Optional[str] = None
-    max_tokens: int = 1500
-    top_p: float = 0.9
-    temperature: float = 0.5
+    max_tokens: Optional[int] = 1500
+    top_p: Optional[float] = 0.9
+    temperature: Optional[float] = 0.5
 
     def message(
         self,
@@ -173,8 +173,9 @@ class Model:
             "temperature": self.temperature
         }
 
-        if self.top_p is None:
-            del payload["top_p"]
+        if self.max_tokens is None:  del payload["max_tokens"]
+        if self.top_p is None:       del payload["top_p"]
+        if self.temperature is None: del payload["temperature"]
 
         return requests.post(
             self.base_url,
