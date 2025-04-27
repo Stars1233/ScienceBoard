@@ -81,7 +81,8 @@ class RawManager(Manager, ManagerMixin):
     def _execute(self, command: str) -> Dict:
         response = requests.get(
             RawManager.BASE_URL(self.port),
-            params={"command": command}
+            params={"command": command},
+            timeout=Manager.HOMO_TIMEOUT
         ).json()
 
         if response["error"] is not None:

@@ -16,12 +16,21 @@ class ManagerMixin:
     def __init__(self, ip: str, port: int) -> None:
         # legality is not checked due to inner usage
         self.base_url = f"http://{ip}:{port}"
+        self._get = lambda path: requests.get(
+            self.base_url + path,
+            timeout=Manager.HOMO_TIMEOUT
+        )
+        self._post = lambda path, **kwargs: requests.post(
+            self.base_url + path,
+            timeout=Manager.HOMO_TIMEOUT,
+            **kwargs
+        )
 
     def status_version(self) -> str:
-        return requests.get(self.base_url + "/version").text
+        return self._get("/version").text
 
     def status_vars(self) -> Dict[str, str]:
-        return requests.get(self.base_url + "/vars").json()
+        return self._get("/vars").json()
 
     def status_func(
         self,
@@ -31,23 +40,21 @@ class ManagerMixin:
         if dim is None:
             dim = len(points[0])
 
-        if isinstance((result := requests.post(
-            self.base_url + f"/func/{dim}d",
-            json=points
-        ).json()), dict):
+        result = self._post(f"/func/{dim}d", json=points).json()
+        if isinstance(result, dict):
             result = [result]
         return result
 
     def operate_tab(self, index: int) -> bool:
         assert isinstance(index, int)
         assert index >= 0 and index < 4
-        return requests.post(self.base_url + "/tab", json=index).text == "OK"
+        return self._post("/tab", json=index).text == "OK"
 
     def operate_func2d(self, expr: str) -> bool:
-        return requests.post(self.base_url + "/add/2d", data=expr).text == "OK"
+        return self._post("/add/2d", data=expr).text == "OK"
 
     def operate_func3d(self, expr: str) -> bool:
-        return requests.post(self.base_url + "/add/3d", data=expr).text == "OK"
+        return self._post("/add/3d", data=expr).text == "OK"
 
 class RawManager(Manager, ManagerMixin):
     def __init__(

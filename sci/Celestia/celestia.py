@@ -19,15 +19,21 @@ class ManagerMixin:
     def __init__(self, ip: str, port: int) -> None:
         # legality is not checked due to inner usage
         self.base_url = f"http://{ip}:{port}"
+        self._get = lambda path: requests.get(
+            self.base_url + path,
+            timeout=Manager.HOMO_TIMEOUT
+        )
+        self._post = lambda path, **kwargs: requests.post(
+            self.base_url + path,
+            timeout=Manager.HOMO_TIMEOUT,
+            **kwargs
+        )
 
     def status_version(self) -> str:
-        return requests.get(self.base_url + "/version").text
+        return self._get("/version").text
 
     def status_dump(self, query) -> Dict[str, Any]:
-        return requests.post(
-            self.base_url + "/dump",
-            data=json.dumps(query)
-        ).json()
+        return self._post("/dump", data=json.dumps(query)).json()
 
 
 class RawManager(Manager, ManagerMixin):
