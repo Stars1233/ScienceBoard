@@ -149,7 +149,8 @@ class Agent:
         self,
         contents: List[Content],
         shorten: int = 0,
-        retry: int = 3
+        retry: int = 3,
+        timeout: int = Manager.HETERO_TIMEOUT
     ) -> Message:
         assert hasattr(self, "context"), "Call Agent.init() first"
         assert retry > 0, f"Max reties exceeded when calling {self.model.model_name}"
@@ -160,7 +161,7 @@ class Agent:
 
         context_length = self.context_window - shorten
         self.context.append(self.model.message(role="user", content=contents))
-        response = self.model(messages=self.dump_payload(context_length))
+        response = self.model(self.dump_payload(context_length), timeout)
 
         is_overflow = False if self.overflow_handler is None \
             else self.overflow_handler(response)
@@ -170,7 +171,7 @@ class Agent:
                 f"Overflow detected when requesting {self.model.model_name}; "
                 f"set context_window={context_length - 1}."
             )
-            return self(contents, shorten + 1, retry)
+            return self(contents, shorten + 1, retry, timeout)
         assert not is_overflow, f"Unsolvable overflow when requesting {self.model.model_name}"
 
         response_message = self.model.access(response, context_length)
@@ -180,7 +181,7 @@ class Agent:
                     + response.text
             )
             Manager.pause(Primitive.WAIT_TIME)
-            return self(contents, shorten, retry - 1)
+            return self(contents, shorten, retry - 1, timeout)
 
         self.context.append(response_message)
         return response_message

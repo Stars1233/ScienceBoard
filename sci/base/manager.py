@@ -32,6 +32,8 @@ T = TypeVar("T")
 #   - record_start() / record_stop(): record video for log
 class Manager:
     ACTION_INTERVAL = 1
+    HOMO_TIMEOUT = 240
+    HETERO_TIMEOUT = 480
 
     @staticmethod
     def pause(span: Optional[int] = None) -> None:

@@ -44,7 +44,6 @@ class VManager(Manager):
 
     INIT_NAME = "sci_bench"
     SERVER_PORT = 5000
-    REQUEST_TIMEOUT = 240
 
     def __init__(
         self,
@@ -227,7 +226,7 @@ class VManager(Manager):
                 param["headers"]["Content-Type"] = "application/json"
         return request(
             base + port + pathname,
-            timeout=self.REQUEST_TIMEOUT,
+            timeout=self.HOMO_TIMEOUT,
             **param
         )
 

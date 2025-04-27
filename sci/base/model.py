@@ -157,7 +157,7 @@ class Model:
             "https": self.proxy
         }
 
-    def _request_openai(self, messages: Dict) -> Response:
+    def _request_openai(self, messages: Dict, timeout: int) -> Response:
         headers = {
             "Content-Type": "application/json",
         }
@@ -181,10 +181,11 @@ class Model:
             self.base_url,
             headers=headers,
             proxies=self.proxies,
-            json=payload
+            json=payload,
+            timeout=timeout
         )
 
-    def _request_anthropic(self, messages: Dict) -> Response:
+    def _request_anthropic(self, messages: Dict, timeout: int) -> Response:
         assert self.api_key is not None
         assert self.version is not None
         headers = {
@@ -205,11 +206,12 @@ class Model:
             self.base_url,
             headers=headers,
             proxies=self.proxies,
-            json=payload
+            json=payload,
+            timeout=timeout
         )
 
-    def __call__(self, messages: Dict) -> Response:
-        return getattr(self, f"_request_{self.model_style}")(messages)
+    def __call__(self, messages: Dict, timeout: int) -> Response:
+        return getattr(self, f"_request_{self.model_style}")(messages, timeout)
 
     @staticmethod
     def _access_openai(response: Response) -> Message:

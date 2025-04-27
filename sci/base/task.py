@@ -273,8 +273,8 @@ class Task:
             "type_sort": self.type_sort
         } if step_index == 0 else None
 
-        user_contents = self.agent._step(obs, init_kwargs)
-        response_message = self.agent(user_contents)
+        user_content = self.agent._step(obs, init_kwargs)
+        response_message = self.agent(user_content, self.manager.HETERO_TIMEOUT)
         assert len(response_message.content) == 1
 
         response_content = response_message.content[0]
