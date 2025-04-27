@@ -65,10 +65,10 @@ class Agent:
         self.model = model
 
         assert overflow_style is None or hasattr(Overflow, overflow_style)
+        self.overflow_style = overflow_style
         self.overflow_handler: Optional[Callable[[Response], bool]] = None \
             if overflow_style is None \
             else getattr(Overflow, overflow_style)
-        self.overflow_style = overflow_style
 
         assert isinstance(context_window, int)
         assert context_window >= 0
