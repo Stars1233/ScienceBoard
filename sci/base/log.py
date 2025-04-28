@@ -7,7 +7,7 @@ import string
 
 from datetime import datetime
 from enum import Enum
-from typing import Optional, List, Tuple, Dict, Any
+from typing import Optional, List, Dict, Any
 from typing import Callable, Self, TYPE_CHECKING
 
 from PIL import Image
@@ -15,6 +15,7 @@ from PIL import Image
 if TYPE_CHECKING:
     from .task import Task
     from .agent import CodeLike
+    from .community import Community
 
 
 GLOBAL_VLOG = None
@@ -80,9 +81,9 @@ class Log:
     TRAJ_FILENAME    = "traj.jsonl"
     RESULT_FILENAME  = "result.out"
     RECORD_FILENAME  = "record.mp4"
-    REQUEST_FILENAME = "request.json"
-    SIMP_FILENAME    = "request.simp.json"
-    PROMPT_FILENAME  = "prompt.txt"
+    REQUEST_FILENAME = "request_{agent}.json"
+    SIMP_FILENAME    = "request_{agent}.simp.json"
+    PROMPT_FILENAME  = "prompt_{agent}.txt"
 
     @property
     def save_path(self) -> Optional[str]:
@@ -352,7 +353,7 @@ class Log:
         step_index: int,
         obs: Dict[str, Any],
         codes: List["CodeLike"],
-        handle_request: Callable[[], Tuple[Dict[str, Any], Dict[str, Any]]],
+        community: "Community",
         is_textual: bool
     ) -> None:
         assert self.save_path is not None, "Call trigger() first"
@@ -401,15 +402,39 @@ class Log:
             appendable.write(json.dumps(traj_obj, ensure_ascii=False) + "\n")
 
         # save requests by overwriting previous record
-        full_request, simp_request = handle_request()
-        with open(self.request_file_path, mode="w", encoding="utf-8") as writable:
-            json.dump(full_request, writable, ensure_ascii=False, indent=2)
+        for name, agent in community:
+            full_request = agent.dump_history(False)
+            simp_request = agent.dump_history(True)
+            with open(
+                self.request_file_path.format(agent=name),
+                mode="w",
+                encoding="utf-8"
+            ) as writable:
+                json.dump(
+                    full_request,
+                    writable,
+                    ensure_ascii=False,
+                    indent=2
+                )
 
-        with open(self.simp_file_path, mode="w", encoding="utf-8") as writable:
-            json.dump(simp_request, writable, ensure_ascii=False, indent=2)
+            with open(
+                self.simp_file_path.format(agent=name),
+                mode="w",
+                encoding="utf-8"
+            ) as writable:
+                json.dump(
+                    simp_request,
+                    writable,
+                    ensure_ascii=False,
+                    indent=2
+                )
 
-        with open(self.prompt_file_path, mode="w", encoding="utf-8") as writable:
-            writable.write(full_request[0]["content"][0]["text"])
+            with open(
+                self.prompt_file_path.format(agent=name),
+                mode="w",
+                encoding="utf-8"
+            ) as writable:
+                writable.write(full_request[0]["content"][0]["text"])
 
     # should not be set as protected method
     # as they will be used by Task objects

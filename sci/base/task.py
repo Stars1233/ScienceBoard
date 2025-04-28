@@ -8,7 +8,8 @@ from typing import List, Tuple, Set, Union, Optional
 from typing import Any, Iterable, Callable, NoReturn
 
 sys.dont_write_bytecode = True
-from .agent import AIOAgent, Primitive
+from .agent import Primitive
+from .community import Community
 from .manager import OBS, Manager
 from .log import Log, VirtualLog
 from .utils import TypeSort
@@ -36,7 +37,7 @@ class Task:
         self,
         config_path: str,
         manager: Optional[Manager] = None,
-        agent: Optional[AIOAgent] = None,
+        community: Optional[Community] = None,
         obs_types: Optional[Set[str]] = None,
         debug: bool = False,
         relative: bool = False
@@ -50,9 +51,9 @@ class Task:
         self.config = json.load(open(self.path, mode="r", encoding="utf-8"))
 
         assert manager is None or isinstance(manager, Manager)
-        assert agent is None or isinstance(agent, AIOAgent)
+        assert community is None or isinstance(community, Community)
         self.manager = manager
-        self.agent = agent
+        self.community = community
 
         self.primitives = {
             item for item in Primitive.PRIMITIVES
@@ -256,46 +257,35 @@ class Task:
             return readable.read().strip()
 
     def _step(self, step_index: int) -> bool:
-        obs = {
+        observation = {
             obs_type: getattr(self.manager, obs_type)()
             for obs_type in self.obs_types
         }
 
         # special cases: SoM -> SoM + A11y Tree
         nested_tags = None
-        if OBS.set_of_marks in obs:
-            nested_tags, som, a11y_tree = obs[OBS.set_of_marks]
-            obs[OBS.a11y_tree] = a11y_tree
-            obs[OBS.set_of_marks] = som
+        if OBS.set_of_marks in observation:
+            nested_tags, som, a11y_tree = observation[OBS.set_of_marks]
+            observation[OBS.a11y_tree] = a11y_tree
+            observation[OBS.set_of_marks] = som
 
-        init_kwargs = {
-            "inst": self.instruction,
-            "type_sort": self.type_sort
-        } if step_index == 0 else None
-
-        user_content = self.agent._step(obs, init_kwargs)
-        response_message = self.agent(user_content, self.manager.HETERO_TIMEOUT)
-        assert len(response_message.content) == 1
-
-        response_content = response_message.content[0]
-        response_codes = self.agent.code_handler(
-            response_content,
-            self.primitives,
-            nested_tags
-        )
-        self.vlog.info(
-            f"Response {step_index + 1}/{self.steps}: " \
-                + response_content.text
+        # preserved action for multi-agents corporation
+        response_codes = self.community(
+            step_index=step_index,
+            sys_inst=self.instruction,
+            obs=observation,
+            code_info=(self.primitives, nested_tags),
+            type_sort=self.type_sort
         )
 
         # save the log first
         # becase primitives would cause exceptions
         self.vlog.save(
             step_index=step_index,
-            obs=obs,
+            obs=observation,
             codes=response_codes,
-            handle_request=self.agent.dump_history,
-            is_textual=OBS.textual in obs
+            community=self.community,
+            is_textual=OBS.textual in observation
         )
 
         results = []

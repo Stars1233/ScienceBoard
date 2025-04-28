@@ -113,12 +113,11 @@ class Agent:
             not index + 1 == len(payload) and self.hide_text
         )) for index, message in enumerate(payload)]
 
-    def dump_history(self) -> Tuple[Dict, Dict]:
-        dump = lambda hide: [
+    def dump_history(self, hide: bool) -> Tuple[Dict, Dict]:
+        return [
             message._asdict(show_context=True, hide_text=hide, hide_image=hide)
             for message in self.__dump(len(self.context))
         ]
-        return dump(False), dump(True)
 
     def __call__(
         self,
@@ -189,7 +188,7 @@ class AIOAgent(Agent):
     def _step(self, obs: Dict[str, Any]) -> List[Content]:
         obs_keys = frozenset(obs.keys())
         contents = [
-            TextContent(self.USER_OPENING[obs_keys] + AIOAgent.USER_FLATTERY, {
+            TextContent(self.USER_OPENING[obs_keys] + self.USER_FLATTERY, {
                 OBS.textual: utils.getitem(obs, OBS.textual, None),
                 OBS.a11y_tree: utils.getitem(obs, OBS.a11y_tree, None)
             })
