@@ -67,7 +67,7 @@ class AllInOne(Community):
         } if step_index == 0 else None
 
         user_content = self.mono._step(obs, init_kwargs)
-        response_message = self.mono(user_content, timeout)
+        response_message = self.mono(user_content, timeout=timeout)
 
         assert len(response_message.content) == 1
         response_content = response_message.content[0]
