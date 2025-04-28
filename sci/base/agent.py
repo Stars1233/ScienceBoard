@@ -44,15 +44,6 @@ class Overflow:
 
 
 class Agent:
-    USER_FLATTERY = "What's the next step that you will do to help with the task?"
-    USER_OPENING: Dict[FrozenSet[str], str] = {
-        frozenset({OBS.textual}): "Given the textual information as below:\n{textual}\n",
-        frozenset({OBS.screenshot}): "Given the screenshot as below. ",
-        frozenset({OBS.a11y_tree}): "Given the info from accessibility tree as below:\n{a11y_tree}\n",
-        frozenset({OBS.a11y_tree, OBS.set_of_marks}): "Given the tagged screenshot and info from accessibility tree as below:\n{a11y_tree}\n",
-        frozenset({OBS.screenshot, OBS.a11y_tree}): "Given the screenshot and info from accessibility tree as below:\n{a11y_tree}\n"
-    }
-
     def __init__(
         self,
         model: Model,
@@ -74,57 +65,41 @@ class Agent:
         assert context_window >= 0
         self.context_window = context_window
 
+        assert isinstance(hide_text, bool)
+        self.hide_text = hide_text
+
         assert hasattr(CodeLike, handler_name:=f"extract_{code_style}")
         self.code_style = code_style
         self.code_handler: Callable[
             [Content, Set[str], List[List[int]]],
             List[CodeLike]
         ] = getattr(CodeLike, handler_name)
-        self.prompt_factory = PromptFactory(code_style)
-
-        assert isinstance(hide_text, bool)
-        self.hide_text = hide_text
 
         self.vlog = VirtualLog()
 
-    def _init(
-        self,
-        obs_keys: FrozenSet[str],
-        inst: str,
-        type_sort: Optional[TypeSort] = None,
-    ) -> None:
-        system_inst = self.prompt_factory(obs_keys, type_sort)
-
+    def _init(self, inst: str) -> None:
         self.system_message: Message = self.model.message(
             role="system",
-            content=[TextContent(system_inst(inst).strip())]
+            content=[TextContent(inst.strip())]
         )
         self.context: List[Message] = []
 
+    @staticmethod
+    def _init_handler(method: Callable) -> Callable:
+        def _init_wrapper(
+            self,
+            obs: Dict[str, Any],
+            init: Optional[Dict] = None
+        ) -> List[Content]:
+            if init is not None:
+                self._init(obs_keys=frozenset(obs.keys()), **init)
+            return method(self, obs)
+        return _init_wrapper
+
     # crucial: obs here may not be the same as in Task
-    # e.g. Task.obs_types=SoM -> Agent._step(obs={SoM, A11yTree})
-    def _step(
-        self,
-        obs: Dict[str, Any],
-        init_kwargs: Optional[Dict] = None
-    ) -> List[Content]:
-        obs_keys = frozenset(obs.keys())
-        if init_kwargs is not None:
-            self._init(obs_keys=obs_keys, **init_kwargs)
-
-        contents = [
-            TextContent(self.USER_OPENING[obs_keys] + Agent.USER_FLATTERY, {
-                OBS.textual: utils.getitem(obs, OBS.textual, None),
-                OBS.a11y_tree: utils.getitem(obs, OBS.a11y_tree, None)
-            })
-        ]
-
-        images = [
-            item for _, item in obs.items()
-            if isinstance(item, Image.Image)
-        ]
-        contents += [ImageContent(image) for image in images]
-        return contents
+    # e.g. Task.obs_types=SoM -> _step(obs={SoM, A11yTree})
+    def _step(self, obs: Dict[str, Any], init: Optional[Dict] = None) -> None:
+        raise NotImplementedError
 
     def __dump(self, context_count: int) -> List[Message]:
         return [
@@ -152,7 +127,7 @@ class Agent:
         retry: int = 3,
         timeout: int = Manager.HETERO_TIMEOUT
     ) -> Message:
-        assert hasattr(self, "context"), "Call Agent.init() first"
+        assert hasattr(self, "context"), "Call _init() first"
         assert retry > 0, f"Max reties exceeded when calling {self.model.model_name}"
 
         assert isinstance(contents, list)
@@ -171,7 +146,7 @@ class Agent:
                 f"Overflow detected when requesting {self.model.model_name}; "
                 f"set context_window={context_length - 1}."
             )
-            return self(contents, shorten + 1, retry, timeout)
+            return self(self.context.pop(), shorten + 1, retry, timeout)
         assert not is_overflow, f"Unsolvable overflow when requesting {self.model.model_name}"
 
         response_message = self.model.access(response, context_length)
@@ -181,7 +156,48 @@ class Agent:
                     + response.text
             )
             Manager.pause(Primitive.WAIT_TIME)
-            return self(contents, shorten, retry - 1, timeout)
+            return self(self.context.pop(), shorten, retry - 1, timeout)
 
         self.context.append(response_message)
         return response_message
+
+
+class AIOAgent(Agent):
+    USER_FLATTERY = "What's the next step that you will do to help with the task?"
+    USER_OPENING: Dict[FrozenSet[str], str] = {
+        frozenset({OBS.textual}): "Given the textual information as below:\n{textual}\n",
+        frozenset({OBS.screenshot}): "Given the screenshot as below. ",
+        frozenset({OBS.a11y_tree}): "Given the info from accessibility tree as below:\n{a11y_tree}\n",
+        frozenset({OBS.a11y_tree, OBS.set_of_marks}): "Given the tagged screenshot and info from accessibility tree as below:\n{a11y_tree}\n",
+        frozenset({OBS.screenshot, OBS.a11y_tree}): "Given the screenshot and info from accessibility tree as below:\n{a11y_tree}\n"
+    }
+
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        self.prompt_factory = PromptFactory(self.code_style)
+
+    def _init(
+        self,
+        obs_keys: FrozenSet[str],
+        inst: str,
+        type_sort: Optional[TypeSort] = None,
+    ) -> None:
+        system_inst = self.prompt_factory(obs_keys, type_sort)
+        super()._init(system_inst(inst))
+
+    @Agent._init_handler
+    def _step(self, obs: Dict[str, Any]) -> List[Content]:
+        obs_keys = frozenset(obs.keys())
+        contents = [
+            TextContent(self.USER_OPENING[obs_keys] + AIOAgent.USER_FLATTERY, {
+                OBS.textual: utils.getitem(obs, OBS.textual, None),
+                OBS.a11y_tree: utils.getitem(obs, OBS.a11y_tree, None)
+            })
+        ]
+
+        images = [
+            item for _, item in obs.items()
+            if isinstance(item, Image.Image)
+        ]
+        contents += [ImageContent(image) for image in images]
+        return contents

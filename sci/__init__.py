@@ -26,6 +26,11 @@ from .base import PromptFactory
 
 from .base import Overflow
 from .base import Agent
+from .base import AIOAgent
+
+from .base import Community
+from .base import AllInOne
+from .base import SeeAct
 
 from .base import OBS
 from .base import Manager

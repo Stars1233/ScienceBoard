@@ -15,7 +15,7 @@ from typing import NotRequired, TypedDict, Unpack
 
 sys.dont_write_bytecode = True
 from . import TypeSort
-from . import Model, ModelType, Agent
+from . import Model, ModelType, Agent, AIOAgent
 from . import Manager, VManager, Task
 from . import Log, VirtualLog
 from . import OBS, Presets
@@ -114,10 +114,10 @@ class Automata:
             if key in agent_params
         }
 
-    def __call__(self) -> Agent:
+    def __call__(self) -> AIOAgent:
         if not hasattr(self, "agent"):
             model = Model(**self.model_args)
-            self.agent = Agent(model=model, **self.agent_args)
+            self.agent = AIOAgent(model=model, **self.agent_args)
             for handler in self.register:
                 handler(self.agent)
         return self.agent
@@ -126,10 +126,10 @@ class Automata:
     # usage #1: Automata(register=Automata.image_token(), ...)
     # usage #2: Automata(register=[Automata.image_token(), ...], ...)
     @staticmethod
-    def image_token(tag: str = "<IMAGE_TOKEN>") -> Callable[[Agent], None]:
-        def _image_token(agent: Agent) -> None:
+    def image_token(tag: str = "<IMAGE_TOKEN>") -> Callable[[AIOAgent], None]:
+        def _image_token(agent: AIOAgent) -> None:
             assert isinstance(tag, str)
-            agent.USER_OPENING = copy.deepcopy(Agent.USER_OPENING)
+            agent.USER_OPENING = copy.deepcopy(AIOAgent.USER_OPENING)
             for key in agent.USER_OPENING:
                 if key == frozenset({OBS.screenshot}):
                     agent.USER_OPENING[key] += (tag + "\n")

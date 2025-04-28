@@ -8,7 +8,7 @@ from typing import List, Tuple, Set, Union, Optional
 from typing import Any, Iterable, Callable, NoReturn
 
 sys.dont_write_bytecode = True
-from .agent import Agent, Primitive
+from .agent import AIOAgent, Primitive
 from .manager import OBS, Manager
 from .log import Log, VirtualLog
 from .utils import TypeSort
@@ -36,7 +36,7 @@ class Task:
         self,
         config_path: str,
         manager: Optional[Manager] = None,
-        agent: Optional[Agent] = None,
+        agent: Optional[AIOAgent] = None,
         obs_types: Optional[Set[str]] = None,
         debug: bool = False,
         relative: bool = False
@@ -50,7 +50,7 @@ class Task:
         self.config = json.load(open(self.path, mode="r", encoding="utf-8"))
 
         assert manager is None or isinstance(manager, Manager)
-        assert agent is None or isinstance(agent, Agent)
+        assert agent is None or isinstance(agent, AIOAgent)
         self.manager = manager
         self.agent = agent
 
