@@ -90,8 +90,8 @@ class Task:
     @property
     def available(self) -> bool:
         manager = getattr(self, "manager", None)
-        agent = getattr(self, "agent", None)
-        return manager is not None and agent is not None
+        community = getattr(self, "community", None)
+        return manager is not None and community is not None
 
     def __check_config(self) -> None:
         assert "type" in self.config
@@ -271,11 +271,12 @@ class Task:
 
         # preserved action for multi-agents corporation
         response_codes = self.community(
-            step_index=step_index,
-            sys_inst=self.instruction,
+            steps=(step_index, self.steps),
+            inst=self.instruction,
             obs=observation,
             code_info=(self.primitives, nested_tags),
-            type_sort=self.type_sort
+            type_sort=self.type_sort,
+            timeout=self.manager.HETERO_TIMEOUT
         )
 
         # save the log first

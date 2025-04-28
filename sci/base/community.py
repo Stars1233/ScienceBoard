@@ -37,11 +37,12 @@ class Community:
 
     def __call__(
         self,
-        step_index: int,
-        sys_inst: str,
+        steps: Tuple[int, int],
+        inst: str,
         obs: Dict[str, Any],
         code_info: tuple[set[str], Optional[List[List[int]]]],
-        type_sort: TypeSort
+        type_sort: TypeSort,
+        timeout: int
     ) -> List[CodeLike]:
         raise NotImplementedError
 
@@ -52,25 +53,27 @@ class AllInOne(Community):
 
     def __call__(
         self,
-        step_index: int,
-        sys_inst: str,
+        steps: Tuple[int, int],
+        inst: str,
         obs: Dict[str, Any],
         code_info: tuple[set[str], Optional[List[List[int]]]],
-        type_sort: TypeSort
+        type_sort: TypeSort,
+        timeout: int
     ) -> List[CodeLike]:
+        step_index, total_steps = steps
         init_kwargs = {
-            "inst": sys_inst,
+            "inst": inst,
             "type_sort": type_sort
         } if step_index == 0 else None
 
         user_content = self.mono._step(obs, init_kwargs)
-        response_message = self.mono(user_content, Manager.HETERO_TIMEOUT)
+        response_message = self.mono(user_content, timeout)
 
         assert len(response_message.content) == 1
         response_content = response_message.content[0]
 
         self.vlog.info(
-            f"Response {step_index + 1}/{self.steps}: \n" \
+            f"Response {step_index + 1}/{total_steps}: \n" \
                 + response_content.text
         )
         return self.mono.code_handler(response_content, *code_info)
@@ -83,11 +86,12 @@ class SeeAct(Community):
 
     def __call__(
         self,
-        step_index: int,
-        sys_inst: str,
+        steps: Tuple[int, int],
+        inst: str,
         obs: Dict[str, Any],
         code_info: tuple[set[str], Optional[List[List[int]]]],
-        type_sort: TypeSort
+        type_sort: TypeSort,
+        timeout: int
     ) -> List[CodeLike]:
         # TODO
         raise NotImplementedError
