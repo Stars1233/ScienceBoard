@@ -298,13 +298,13 @@ class Task:
         # if all code blocks fail, one liquidation is counted
         return all([item is False for item in results])
 
+    # warning: this method will reset inner status of agents
     def __test_prompt(self) -> None:
         obs = frozenset({OBS.screenshot if self.manager.is_gui else OBS.textual})
-        self.agent._init(obs, self.instruction, self.type_sort)
-        self.vlog.info(
-            "Sample of prompts: \n"
-                + self.agent.system_message.content[0].text
-        )
+        for name, agent in self.community:
+            agent._init(obs, self.instruction, self.type_sort)
+            prompt = agent.system_message.content[0].text
+            self.vlog.info(f"Prompt sample of {name}: \n" + prompt)
 
     @_avail_handler
     @Log.record_handler

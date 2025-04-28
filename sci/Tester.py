@@ -11,15 +11,17 @@ from dataclasses import dataclass
 
 from typing import Union, Optional, List, Set, Dict, Any
 from typing import Iterable, Callable, Generator, FrozenSet
-from typing import NotRequired, TypedDict, Unpack
+from typing import TypeVar, TypedDict, Unpack, NotRequired
 
 sys.dont_write_bytecode = True
 from . import TypeSort
-from . import Model, ModelType, Agent, AIOAgent
+from . import Model, ModelType
+from . import Agent, AIOAgent, Community
 from . import Manager, VManager, Task
 from . import Log, VirtualLog
 from . import OBS, Presets
 
+POLY = TypeVar("POLY")
 
 @dataclass
 class Counter:
@@ -114,15 +116,15 @@ class Automata:
             if key in agent_params
         }
 
-    def __call__(self) -> AIOAgent:
+    def __call__(self, agent_cls: POLY) -> POLY:
         if not hasattr(self, "agent"):
             model = Model(**self.model_args)
-            self.agent = AIOAgent(model=model, **self.agent_args)
+            self.agent = agent_cls(model=model, **self.agent_args)
             for handler in self.register:
                 handler(self.agent)
         return self.agent
 
-    # insert <IMAGE_TOKEN> for DeepSeek-VL
+    # insert <IMAGE_TOKEN> for DeepSeek-VL AIOAgent
     # usage #1: Automata(register=Automata.image_token(), ...)
     # usage #2: Automata(register=[Automata.image_token(), ...], ...)
     @staticmethod
@@ -228,7 +230,7 @@ class Tester:
         self,
         tasks_path: str,
         logs_path: str,
-        automata: Automata,
+        community: Community,
         obs_types: Set[str] = {OBS.screenshot},
         vm_path: Optional[str] = None,
         headless: bool = False,
@@ -265,9 +267,11 @@ class Tester:
         # should be converted into the form of vlog.info()
         self.log = Log()
 
-        assert isinstance(automata, Automata)
-        self.agent = automata()
-        self.agent.vlog.set(self.log)
+        assert isinstance(community, Community)
+        self.community = community
+        self.community.vlog.set(self.log)
+        for _, agent in self.community:
+            agent.vlog.set(self.log)
 
         assert isinstance(obs_types, Iterable)
         self.obs_types = obs_types
@@ -334,7 +338,7 @@ class Tester:
         return task_class(
             config_path=config_path,
             manager=self.__manager(type_sort),
-            agent=self.agent,
+            community=self.community,
             obs_types=self.obs_types,
             debug=self.debug,
             relative=self.relative

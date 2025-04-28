@@ -5,13 +5,17 @@ from typing import Optional, Any, Self
 from dataclasses import dataclass
 
 sys.dont_write_bytecode = True
-from .agent import Message, Agent, AIOAgent
+from .log import VirtualLog
+from .agent import Agent, AIOAgent
 from .prompt import TypeSort, CodeLike
 from .manager import Manager
 
 
 @dataclass
 class Community:
+    def __post_init__(self):
+        self.vlog = VirtualLog()
+
     @property
     def agents(self) -> List[Tuple[str, Agent]]:
         return [
@@ -66,7 +70,7 @@ class AllInOne(Community):
         response_content = response_message.content[0]
 
         self.vlog.info(
-            f"Response {step_index + 1}/{self.steps}: " \
+            f"Response {step_index + 1}/{self.steps}: \n" \
                 + response_content.text
         )
         return self.mono.code_handler(response_content, *code_info)
