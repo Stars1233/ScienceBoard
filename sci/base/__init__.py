@@ -21,7 +21,9 @@ from .model import RoleType
 
 from .prompt import Primitive
 from .prompt import CodeLike
+
 from .prompt import PromptFactory
+from .prompt import AIOPromptFactory
 
 from .agent import Overflow
 from .agent import Agent

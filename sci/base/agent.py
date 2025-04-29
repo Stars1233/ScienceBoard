@@ -13,7 +13,7 @@ from .log import VirtualLog
 from .model import Content, TextContent, ImageContent
 from .model import Message, Model
 from .utils import TypeSort
-from .prompt import CodeLike, Primitive, PromptFactory
+from .prompt import CodeLike, Primitive, AIOPromptFactory
 
 
 class Overflow:
@@ -173,7 +173,7 @@ class AIOAgent(Agent):
 
     def __init__(self, *args, **kwargs) -> None:
         super().__init__(*args, **kwargs)
-        self.prompt_factory = PromptFactory(self.code_style)
+        self.prompt_factory = AIOPromptFactory(self.code_style)
 
     def _init(
         self,

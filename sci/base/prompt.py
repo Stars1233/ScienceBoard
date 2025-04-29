@@ -152,6 +152,25 @@ class CodeLike:
 
 
 class PromptFactory:
+    def __init__(self, code_style: str) -> None:
+        assert hasattr(CodeLike, func_name:=f"wrap_{code_style}")
+        self.code_style = code_style
+        self.code_handler: Callable[[str], str] = getattr(CodeLike, func_name)
+
+    @staticmethod
+    def option(item: Optional[str]) -> List[str]:
+        # usage: [..., *PromptFactory.option("..."), ...]
+        return PromptFactory.filter([item])
+
+    @staticmethod
+    def filter(inputs: List[str]) -> List[str]:
+        return [
+            item for item in inputs
+            if isinstance(item, str) and len(item) > 0
+        ]
+
+
+class AIOPromptFactory(PromptFactory):
     # first section: _intro
     GENERAL_INTRO = "You are an agent which follow my instruction and perform desktop computer tasks as instructed."
     APP_GENERAL = "an application available on Ubuntu"
@@ -191,23 +210,6 @@ class PromptFactory:
     # fourth section: _ending
     ENDING_ULTIMATUM = "First give the current observation and previous things we did a short reflection, then RETURN ME THE CODE OR SPECIAL CODE I ASKED FOR. NEVER EVER RETURN ME ANYTHING ELSE."
     SYSTEM_INSTRUCTION = staticmethod(lambda inst: f"You are asked to complete the following task: {inst}")
-
-    def __init__(self, code_style: str) -> None:
-        assert hasattr(CodeLike, func_name:=f"wrap_{code_style}")
-        self.code_style = code_style
-        self.code_handler: Callable[[str], str] = getattr(CodeLike, func_name)
-
-    @staticmethod
-    def option(item: Optional[str]) -> List[str]:
-        # usage: [..., *PromptFactory.option("..."), ...]
-        return PromptFactory.filter([item])
-
-    @staticmethod
-    def filter(inputs: List[str]) -> List[str]:
-        return [
-            item for item in inputs
-            if isinstance(item, str) and len(item) > 0
-        ]
 
     def getattr(self, type_sort: TypeSort, name: str, default: Any) -> Any:
         assert type(default) == type(results := getattr(

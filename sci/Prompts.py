@@ -3,7 +3,7 @@ VM_PASSWORD = "password"
 
 # naming criteria: `{TYPE_SORT}_{FIELD}`, take `TYPE_SORT=LEAN_RAW, FIELD=TIPS` for example
 # - `TYPE_SORT`: fall back to `LEAN_XXX` if `LEAN_RAW_XXX` does not exist; fall back to default value if `LEAN_XXX` does not exists
-# - `FIELD`: act as a padding for reserved slots in PromptFactory
+# - `FIELD`: act as a padding for reserved slots in AIOPromptFactory
 #    - `IS`: str, a breif introduction of what this application is
 #    - `NEED`: str, a generalization of demanded input
 #    - `USAGE`: List[str], multiple lines of interaction rules to be explained to models
