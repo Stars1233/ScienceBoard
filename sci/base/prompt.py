@@ -303,3 +303,28 @@ class AIOPromptFactory(PromptFactory):
             self._warning(type_sort),
             self._ending()(inst)
         ]))
+
+
+class PlanningPromptFactory(AIOPromptFactory):
+    # first section: _intro
+    APP_INCENTIVE = {VM: lambda type, intro: f"You have good knowledge of {type}, {intro}."}
+
+    # second section: _command
+    RETURN_OVERVIEW = "You are required to make ONE step of the plan in natural language, and then it will be parsed into `pyautogui` codes by another grounding agent."
+    SPECIAL_OVERVIEW = "The grounding agent sometimes should return special code as followings; explicitly clarify it when you think the agent should return these codes."
+
+    # fourth section: _ending
+    ENDING_ULTIMATUM = "First give the current observation and previous things we did a short reflection, then RETURN ME YOUR PLANNING I ASKED FOR. NEVER EVER RETURN ME ANYTHING ELSE."
+
+    def _command(self, obs: FrozenSet[str], type_sort: TypeSort) -> str:
+        return "\n".join(PromptFactory.filter([
+            self.RETURN_OVERVIEW,
+            self._special_command()
+        ]))
+
+    def _warning(self, type_sort: TypeSort) -> str:
+        return "\n".join(self.getattr(type_sort, "TIPS", []))
+
+
+class GroundingPromptFactory(AIOPromptFactory):
+    ...

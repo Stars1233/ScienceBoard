@@ -13,7 +13,10 @@ from .log import VirtualLog
 from .model import Content, TextContent, ImageContent
 from .model import Message, Model
 from .utils import TypeSort
-from .prompt import CodeLike, Primitive, AIOPromptFactory
+from .prompt import CodeLike, Primitive
+from .prompt import AIOPromptFactory
+from .prompt import PlanningPromptFactory
+from .prompt import GroundingPromptFactory
 
 
 class Overflow:
@@ -200,3 +203,15 @@ class AIOAgent(Agent):
         ]
         contents += [ImageContent(image) for image in images]
         return contents
+
+
+class PlanningAgent(AIOAgent):
+    def __init__(self, *args, **kwargs) -> None:
+        super(AIOAgent, self).__init__(*args, **kwargs)
+        self.prompt_factory = PlanningPromptFactory(self.code_style)
+
+
+class GroundingAgent(AIOAgent):
+    def __init__(self, *args, **kwargs) -> None:
+        super(AIOAgent, self).__init__(*args, **kwargs)
+        self.prompt_factory = GroundingPromptFactory(self.code_style)
