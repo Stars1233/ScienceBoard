@@ -79,13 +79,13 @@ tars_dpo = lambda cls: Automata(
 # with some sensitive contents hidden in env
 if __name__ == "__main__":
     MODEL = "gpt_4o"
-    AGENT = gpt_4o(AIOAgent)
+    GROUP = AllInOne(gpt_4o(AIOAgent))
 
     # register a tester and execute it
     Tester(
         tasks_path="./tasks/Raw",
         logs_path=f"./logs/{MODEL}-raw-textual",
-        community=AllInOne(AGENT)
+        community=GROUP
     )()
 
     # alternative for Tester.__call__()
@@ -94,33 +94,33 @@ if __name__ == "__main__":
         {
             "tasks_path": "./tasks/VM",
             "logs_path": f"./logs/{MODEL}-vm-screenshot",
-            "community": AllInOne(AGENT),
+            "community": GROUP,
             "vm_path": os.environ["VM_PATH"],
-            "headless": True,
-            "obs_types": {OBS.screenshot}
+            "obs_types": {OBS.screenshot},
+            "headless": True
         },
         {
             "tasks_path": "./tasks/VM",
             "logs_path": f"./logs/{MODEL}-vm-a11y_tree",
-            "community": AllInOne(AGENT),
+            "community": GROUP,
             "vm_path": os.environ["VM_PATH"],
-            "headless": True,
-            "obs_types": {OBS.a11y_tree}
+            "obs_types": {OBS.a11y_tree},
+            "headless": True
         },
         {
             "tasks_path": "./tasks/VM",
             "logs_path": f"./logs/{MODEL}-vm-screenshot+a11y_tree",
-            "community": AllInOne(AGENT),
+            "community": GROUP,
             "vm_path": os.environ["VM_PATH"],
-            "headless": True,
-            "obs_types": {OBS.screenshot, OBS.a11y_tree}
+            "obs_types": {OBS.screenshot, OBS.a11y_tree},
+            "headless": True
         },
         {
             "tasks_path": "./tasks/VM",
             "logs_path": f"./logs/{MODEL}-vm-set_of_marks",
-            "community": AllInOne(AGENT),
+            "community": GROUP,
             "vm_path": os.environ["VM_PATH"],
-            "headless": True,
-            "obs_types": {OBS.set_of_marks}
+            "obs_types": {OBS.set_of_marks},
+            "headless": True
         }
     ])
