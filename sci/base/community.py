@@ -95,10 +95,12 @@ class SeeAct(Community):
         timeout: int
     ) -> List[CodeLike]:
         step_index, total_steps = steps
+        first_step = step_index == 0
+
         init_kwargs = {
             "inst": inst,
             "type_sort": type_sort
-        } if step_index == 0 else None
+        } if first_step else None
 
         planner_content = self.planner._step(obs, init_kwargs)
         planner_reponse_message = self.planner(planner_content, timeout=timeout)
@@ -112,11 +114,12 @@ class SeeAct(Community):
         )
 
         codes = self.planner.code_handler(planner_response_content, *code_info)
-        self.grounder._init(obs.keys(), **init_kwargs)
+        if first_step == 0:
+            self.grounder._init(obs.keys(), **init_kwargs)
 
         obs[OBS.schedule] = codes[0].code
         grounder_content = self.grounder._step(obs)
-        grounder_response_message = self.planner(grounder_content, timeout=timeout)
+        grounder_response_message = self.grounder(grounder_content, timeout=timeout)
 
         assert len(grounder_response_message.content) == 1
         grounder_response_content = grounder_response_message.content[0]
