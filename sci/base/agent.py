@@ -137,6 +137,8 @@ class Agent:
             assert isinstance(content, Content)
 
         context_length = self.context_window - shorten
+        assert context_length >= 0, "Error when calculating context length"
+
         self.context.append(self.model.message(role="user", content=contents))
         response = self.model(self.dump_payload(context_length), timeout)
 
@@ -206,8 +208,8 @@ class AIOAgent(Agent):
 
 
 class PlanningAgent(AIOAgent):
-    def __init__(self, *args, **kwargs) -> None:
-        super(AIOAgent, self).__init__(*args, **kwargs)
+    def __init__(self, *args, code_style: str = "plain", **kwargs) -> None:
+        super(AIOAgent, self).__init__(*args, code_style=code_style, **kwargs)
         self.prompt_factory = PlanningPromptFactory(self.code_style)
 
 
