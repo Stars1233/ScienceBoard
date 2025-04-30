@@ -315,7 +315,7 @@ class VManager(Manager):
     def read_file(self, file_path: str) -> Optional[str]:
         response = self._request(f"GET/read", {
             "params": {
-                "path": file_path
+                "path": file_path.replace("\\", "/")
             }
         })
         return response.text
@@ -325,7 +325,7 @@ class VManager(Manager):
     def write_file(self, file_path: str, data: str) -> bool:
         response = self._request(f"POST/write", {
             "json": {
-                "path": file_path,
+                "path": file_path.replace("\\", "/"),
                 "content": data
             }
         })
@@ -336,7 +336,7 @@ class VManager(Manager):
     def append_file(self, file_path: str, data: str) -> bool:
         response = self._request(f"POST/append", {
             "json": {
-                "path": file_path,
+                "path": file_path.replace("\\", "/"),
                 "content": data
             }
         })
