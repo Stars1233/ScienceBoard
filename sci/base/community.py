@@ -114,7 +114,7 @@ class SeeAct(Community):
         )
 
         codes = self.planner.code_handler(planner_response_content, *code_info)
-        if first_step == 0:
+        if first_step:
             self.grounder._init(obs.keys(), **init_kwargs)
 
         obs[OBS.schedule] = codes[0].code
