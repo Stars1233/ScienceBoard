@@ -150,7 +150,7 @@ class Agent:
                 f"Overflow detected when requesting {self.model.model_name}; "
                 f"set context_window={context_length - 1}."
             )
-            return self(self.context.pop(), shorten + 1, retry, timeout)
+            return self(self.context.pop().content, shorten + 1, retry, timeout)
         assert not is_overflow, f"Unsolvable overflow when requesting {self.model.model_name}"
 
         response_message = self.model.access(response, context_length)
@@ -160,7 +160,7 @@ class Agent:
                     + response.text
             )
             Manager.pause(Primitive.WAIT_TIME)
-            return self(self.context.pop(), shorten, retry - 1, timeout)
+            return self(self.context.pop().content, shorten, retry - 1, timeout)
 
         self.context.append(response_message)
         return response_message
