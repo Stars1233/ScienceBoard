@@ -5,6 +5,7 @@ from typing import Optional, Any, Self
 from dataclasses import dataclass
 
 sys.dont_write_bytecode = True
+from .manager import OBS
 from .log import VirtualLog
 from .agent import Agent, AIOAgent
 from .agent import PlannerAgent, GrounderAgent
@@ -93,5 +94,34 @@ class SeeAct(Community):
         type_sort: TypeSort,
         timeout: int
     ) -> List[CodeLike]:
-        # TODO
-        raise NotImplementedError
+        step_index, total_steps = steps
+        init_kwargs = {
+            "inst": inst,
+            "type_sort": type_sort
+        } if step_index == 0 else None
+
+        planner_content = self.planner._step(obs, init_kwargs)
+        planner_reponse_message = self.planner(planner_content, timeout=timeout)
+
+        assert len(planner_reponse_message.content) == 1
+        planner_response_content = planner_reponse_message.content[0]
+
+        self.vlog.info(
+            f"Response of planner {step_index + 1}/{total_steps}: \n" \
+                + planner_response_content.text
+        )
+
+        codes = self.planner.code_handler(planner_response_content, *code_info)
+        obs[OBS.schedule] = codes[0].code
+
+        grounder_content = self.grounder._step(obs, init_kwargs)
+        grounder_response_message = self.planner(grounder_content, timeout=timeout)
+
+        assert len(grounder_response_message.content) == 1
+        grounder_response_content = grounder_response_message.content[0]
+
+        self.vlog.info(
+            f"Response of grounder {step_index + 1}/{total_steps}: \n" \
+                + grounder_response_content.text
+        )
+        return self.grounder.code_handler(grounder_response_content, *code_info)

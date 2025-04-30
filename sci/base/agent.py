@@ -103,7 +103,7 @@ class Agent:
         return _init_wrapper
 
     # crucial: obs here may not be the same as in Task
-    # e.g. Task.obs_types=SoM -> _step(obs={SoM, A11yTree})
+    # e.g. Task.obs_types=SoM -> AIOAgent._step(obs={SoM, A11yTree})
     def _step(self, obs: Dict[str, Any], init: Optional[Dict] = None) -> None:
         raise NotImplementedError
 
@@ -237,11 +237,11 @@ class PlannerAgent(AIOAgent):
 
 class GrounderAgent(AIOAgent):
     USER_OPENING: Dict[FrozenSet[str], str] = {
-        frozenset({OBS.textual, OBS.schedule}): "Given the textual information as below:\n{textual}\nand given the schedule from the planner:\n{schedule}\n",
-        frozenset({OBS.screenshot, OBS.schedule}): "Given the screenshot and the schedule from the planner as below:\n{schedule}\n",
-        frozenset({OBS.a11y_tree, OBS.schedule}): "Given the info from accessibility tree as below:\n{a11y_tree}\nand given the schedule from the planner:\n{schedule}\n",
-        frozenset({OBS.a11y_tree, OBS.set_of_marks, OBS.schedule}): "Given the tagged screenshot and info from accessibility tree as below:\n{a11y_tree}\nand given the schedule from the planner:\n{schedule}\n",
-        frozenset({OBS.screenshot, OBS.a11y_tree, OBS.schedule}): "Given the screenshot and info from accessibility tree as below:\n{a11y_tree}\nand given the schedule from the planner:\n{schedule}\n"
+        frozenset({OBS.textual, OBS.schedule}): f"Given the textual information as below:\n{{textual}}\nand given the schedule from the planner:\n{{{OBS.schedule}}}\n",
+        frozenset({OBS.screenshot, OBS.schedule}): f"Given the screenshot and the schedule from the planner as below:\n{{{OBS.schedule}}}\n",
+        frozenset({OBS.a11y_tree, OBS.schedule}): f"Given the info from accessibility tree as below:\n{{a11y_tree}}\nand given the schedule from the planner:\n{{{OBS.schedule}}}\n",
+        frozenset({OBS.a11y_tree, OBS.set_of_marks, OBS.schedule}): f"Given the tagged screenshot and info from accessibility tree as below:\n{{a11y_tree}}\nand given the schedule from the planner:\n{{{OBS.schedule}}}\n",
+        frozenset({OBS.screenshot, OBS.a11y_tree, OBS.schedule}): f"Given the screenshot and info from accessibility tree as below:\n{{a11y_tree}}\nand given the schedule from the planner:\n{{{OBS.schedule}}}\n"
     }
 
     # make sure that `context_window` is captured before kwargs
