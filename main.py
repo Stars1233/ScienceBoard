@@ -79,14 +79,17 @@ tars_dpo = lambda cls: Automata(
 # this file somehow acts as a config file
 # with some sensitive contents hidden in env
 if __name__ == "__main__":
-    GROUP_NAME = "gpt_4o"
-    GROUP_INST = SeeAct(gpt_4o(PlannerAgent), gpt_4o(GrounderAgent))
+    AIO_NAME = "gpt_4o"
+    AIO_GROUP = AllInOne(gpt_4o(AIOAgent))
+
+    SA_NAME = "gpt_4o->got_4o"
+    SA_GROUP = SeeAct(gpt_4o(PlannerAgent), gpt_4o(GrounderAgent))
 
     # register a tester and execute it
     Tester(
         tasks_path="./tasks/Raw",
-        logs_path=f"./logs/{GROUP_NAME}-raw-textual",
-        community=GROUP_INST
+        logs_path=f"./logs/{AIO_NAME}-raw-textual",
+        community=AIO_GROUP
     )()
 
     # alternative for Tester.__call__()
@@ -94,32 +97,32 @@ if __name__ == "__main__":
     Tester.plan([
         {
             "tasks_path": "./tasks/VM",
-            "logs_path": f"./logs/{GROUP_NAME}-vm-screenshot",
-            "community": GROUP_INST,
+            "logs_path": f"./logs/{SA_NAME}-vm-screenshot",
+            "community": SA_GROUP,
             "vm_path": os.environ["VM_PATH"],
             "obs_types": {OBS.screenshot},
             "headless": True
         },
         {
             "tasks_path": "./tasks/VM",
-            "logs_path": f"./logs/{GROUP_NAME}-vm-a11y_tree",
-            "community": GROUP_INST,
+            "logs_path": f"./logs/{SA_NAME}-vm-a11y_tree",
+            "community": SA_GROUP,
             "vm_path": os.environ["VM_PATH"],
             "obs_types": {OBS.a11y_tree},
             "headless": True
         },
         {
             "tasks_path": "./tasks/VM",
-            "logs_path": f"./logs/{GROUP_NAME}-vm-screenshot+a11y_tree",
-            "community": GROUP_INST,
+            "logs_path": f"./logs/{SA_NAME}-vm-screenshot+a11y_tree",
+            "community": SA_GROUP,
             "vm_path": os.environ["VM_PATH"],
             "obs_types": {OBS.screenshot, OBS.a11y_tree},
             "headless": True
         },
         {
             "tasks_path": "./tasks/VM",
-            "logs_path": f"./logs/{GROUP_NAME}-vm-set_of_marks",
-            "community": GROUP_INST,
+            "logs_path": f"./logs/{SA_NAME}-vm-set_of_marks",
+            "community": SA_GROUP,
             "vm_path": os.environ["VM_PATH"],
             "obs_types": {OBS.set_of_marks},
             "headless": True
