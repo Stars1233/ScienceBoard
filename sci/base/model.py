@@ -1,4 +1,5 @@
 import sys
+import string
 import base64
 
 from dataclasses import dataclass, field
@@ -54,10 +55,13 @@ class TextContent(Content):
         use_format: bool = False,
         **_
     ) -> Dict[str, Any]:
-        args = {
-            OBS.textual: Content.PLACEHOLDER,
-            OBS.a11y_tree: Content.PLACEHOLDER
-        } if hide_text else self.args
+        formatter = string.Formatter()
+        slots = [key for _, key, _, _ in formatter.parse(self.text) if key]
+        args = {key: (
+            self.args[key]
+            if key in self.args and not hide_text
+            else Content.PLACEHOLDER
+        ) for key in slots}
 
         return {
             "type": "text",

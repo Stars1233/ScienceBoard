@@ -112,9 +112,10 @@ class SeeAct(Community):
         )
 
         codes = self.planner.code_handler(planner_response_content, *code_info)
-        obs[OBS.schedule] = codes[0].code
+        self.grounder._init(obs.keys(), **init_kwargs)
 
-        grounder_content = self.grounder._step(obs, init_kwargs)
+        obs[OBS.schedule] = codes[0].code
+        grounder_content = self.grounder._step(obs)
         grounder_response_message = self.planner(grounder_content, timeout=timeout)
 
         assert len(grounder_response_message.content) == 1

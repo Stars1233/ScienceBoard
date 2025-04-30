@@ -117,12 +117,11 @@ class Automata:
         }
 
     def __call__(self, agent_cls: POLY) -> POLY:
-        if not hasattr(self, "agent"):
-            model = Model(**self.model_args)
-            self.agent = agent_cls(model=model, **self.agent_args)
-            for handler in self.register:
-                handler(self.agent)
-        return self.agent
+        model = Model(**self.model_args)
+        agent = agent_cls(model=model, **self.agent_args)
+        for handler in self.register:
+            handler(agent)
+        return agent
 
     # insert <IMAGE_TOKEN> for DeepSeek-VL AIOAgent
     # usage #1: Automata(register=Automata.image_token(), ...)

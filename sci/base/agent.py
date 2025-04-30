@@ -198,7 +198,7 @@ class AIOAgent(Agent):
         obs_keys = frozenset(obs.keys())
 
         opening = self.USER_OPENING[obs_keys]
-        slots = [fname for _, fname, _, _ in formatter.parse(opening) if fname]
+        slots = [key for _, key, _, _ in formatter.parse(opening) if key]
 
         contents = [
             TextContent(opening + self.USER_FLATTERY, {
@@ -223,8 +223,9 @@ class PlannerAgent(AIOAgent):
         frozenset({OBS.set_of_marks}): "Given the tagged screenshot as below. "
     }
 
+    # make sure that `code_style` is captured before kwargs
     def __init__(self, *args, code_style: str = "plain", **kwargs) -> None:
-        super(AIOAgent, self).__init__(*args, code_style=code_style, **kwargs)
+        super(AIOAgent, self).__init__(*args, code_style="plain", **kwargs)
         self.prompt_factory = PlannerPromptFactory(self.code_style)
 
     @Agent._init_handler
