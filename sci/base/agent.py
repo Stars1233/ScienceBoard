@@ -15,8 +15,8 @@ from .model import Message, Model
 from .utils import TypeSort
 from .prompt import CodeLike, Primitive
 from .prompt import AIOPromptFactory
-from .prompt import PlanningPromptFactory
-from .prompt import GroundingPromptFactory
+from .prompt import PlannerPromptFactory
+from .prompt import GrounderPromptFactory
 
 
 class Overflow:
@@ -207,13 +207,13 @@ class AIOAgent(Agent):
         return contents
 
 
-class PlanningAgent(AIOAgent):
+class PlannerAgent(AIOAgent):
     def __init__(self, *args, code_style: str = "plain", **kwargs) -> None:
         super(AIOAgent, self).__init__(*args, code_style=code_style, **kwargs)
-        self.prompt_factory = PlanningPromptFactory(self.code_style)
+        self.prompt_factory = PlannerPromptFactory(self.code_style)
 
 
-class GroundingAgent(AIOAgent):
+class GrounderAgent(AIOAgent):
     def __init__(self, *args, **kwargs) -> None:
         super(AIOAgent, self).__init__(*args, **kwargs)
-        self.prompt_factory = GroundingPromptFactory(self.code_style)
+        self.prompt_factory = GrounderPromptFactory(self.code_style)

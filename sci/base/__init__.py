@@ -24,14 +24,14 @@ from .prompt import CodeLike
 
 from .prompt import PromptFactory
 from .prompt import AIOPromptFactory
-from .prompt import PlanningPromptFactory
-from .prompt import GroundingPromptFactory
+from .prompt import PlannerPromptFactory
+from .prompt import GrounderPromptFactory
 
 from .agent import Overflow
 from .agent import Agent
 from .agent import AIOAgent
-from .agent import PlanningAgent
-from .agent import GroundingAgent
+from .agent import PlannerAgent
+from .agent import GrounderAgent
 
 from .community import Community
 from .community import AllInOne

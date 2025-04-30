@@ -7,8 +7,8 @@ from dataclasses import dataclass
 sys.dont_write_bytecode = True
 from .log import VirtualLog
 from .agent import Agent, AIOAgent
+from .agent import PlannerAgent, GrounderAgent
 from .prompt import TypeSort, CodeLike
-from .manager import Manager
 
 
 @dataclass
@@ -81,8 +81,8 @@ class AllInOne(Community):
 
 @dataclass
 class SeeAct(Community):
-    planning: Agent
-    grounding: Agent
+    planner: PlannerAgent
+    grounder: GrounderAgent
 
     def __call__(
         self,
