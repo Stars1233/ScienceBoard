@@ -82,7 +82,7 @@ if __name__ == "__main__":
     AIO_NAME = "gpt_4o"
     AIO_GROUP = AllInOne(gpt_4o(AIOAgent))
 
-    SA_NAME = "gpt_4o->got_4o"
+    SA_NAME = "gpt_4o->gpt_4o"
     SA_GROUP = SeeAct(gpt_4o(PlannerAgent), gpt_4o(GrounderAgent))
 
     # register a tester and execute it
@@ -105,8 +105,8 @@ if __name__ == "__main__":
         },
         {
             "tasks_path": "./tasks/VM",
-            "logs_path": f"./logs/{SA_NAME}-vm-a11y_tree",
-            "community": SA_GROUP,
+            "logs_path": f"./logs/{AIO_NAME}-vm-a11y_tree",
+            "community": AIO_NAME,
             "vm_path": os.environ["VM_PATH"],
             "obs_types": {OBS.a11y_tree},
             "headless": True
