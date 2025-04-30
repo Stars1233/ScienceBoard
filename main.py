@@ -4,7 +4,8 @@ import os
 sys.dont_write_bytecode = True
 sys.stdout.reconfigure(encoding="utf-8")
 from sci import Automata, Tester, OBS
-from sci import AIOAgent, AllInOne
+from sci import AllInOne, AIOAgent
+from sci import SeeAct, PlannerAgent, GrounderAgent
 
 gpt_4o = lambda cls: Automata(
     model_style="openai",
@@ -78,14 +79,14 @@ tars_dpo = lambda cls: Automata(
 # this file somehow acts as a config file
 # with some sensitive contents hidden in env
 if __name__ == "__main__":
-    MODEL = "gpt_4o"
-    GROUP = AllInOne(gpt_4o(AIOAgent))
+    GROUP_NAME = "gpt_4o"
+    GROUP_INST = SeeAct(gpt_4o(PlannerAgent), gpt_4o(GrounderAgent))
 
     # register a tester and execute it
     Tester(
         tasks_path="./tasks/Raw",
-        logs_path=f"./logs/{MODEL}-raw-textual",
-        community=GROUP
+        logs_path=f"./logs/{GROUP_NAME}-raw-textual",
+        community=GROUP_INST
     )()
 
     # alternative for Tester.__call__()
@@ -93,32 +94,32 @@ if __name__ == "__main__":
     Tester.plan([
         {
             "tasks_path": "./tasks/VM",
-            "logs_path": f"./logs/{MODEL}-vm-screenshot",
-            "community": GROUP,
+            "logs_path": f"./logs/{GROUP_NAME}-vm-screenshot",
+            "community": GROUP_INST,
             "vm_path": os.environ["VM_PATH"],
             "obs_types": {OBS.screenshot},
             "headless": True
         },
         {
             "tasks_path": "./tasks/VM",
-            "logs_path": f"./logs/{MODEL}-vm-a11y_tree",
-            "community": GROUP,
+            "logs_path": f"./logs/{GROUP_NAME}-vm-a11y_tree",
+            "community": GROUP_INST,
             "vm_path": os.environ["VM_PATH"],
             "obs_types": {OBS.a11y_tree},
             "headless": True
         },
         {
             "tasks_path": "./tasks/VM",
-            "logs_path": f"./logs/{MODEL}-vm-screenshot+a11y_tree",
-            "community": GROUP,
+            "logs_path": f"./logs/{GROUP_NAME}-vm-screenshot+a11y_tree",
+            "community": GROUP_INST,
             "vm_path": os.environ["VM_PATH"],
             "obs_types": {OBS.screenshot, OBS.a11y_tree},
             "headless": True
         },
         {
             "tasks_path": "./tasks/VM",
-            "logs_path": f"./logs/{MODEL}-vm-set_of_marks",
-            "community": GROUP,
+            "logs_path": f"./logs/{GROUP_NAME}-vm-set_of_marks",
+            "community": GROUP_INST,
             "vm_path": os.environ["VM_PATH"],
             "obs_types": {OBS.set_of_marks},
             "headless": True
