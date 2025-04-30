@@ -132,3 +132,4 @@ class OBS:
     screenshot = Manager.screenshot.__name__
     a11y_tree = Manager.a11y_tree.__name__
     set_of_marks = Manager.set_of_marks.__name__
+    schedule = "schedule"

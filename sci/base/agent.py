@@ -1,4 +1,6 @@
 import sys
+import functools
+import string
 
 from typing import Optional, List, Tuple, Dict
 from typing import Callable, Any, Set, FrozenSet
@@ -89,6 +91,7 @@ class Agent:
 
     @staticmethod
     def _init_handler(method: Callable) -> Callable:
+        @functools.wraps(method)
         def _init_wrapper(
             self,
             obs: Dict[str, Any],
@@ -191,11 +194,16 @@ class AIOAgent(Agent):
 
     @Agent._init_handler
     def _step(self, obs: Dict[str, Any]) -> List[Content]:
+        formatter = string.Formatter()
         obs_keys = frozenset(obs.keys())
+
+        opening = self.USER_OPENING[obs_keys]
+        slots = [fname for _, fname, _, _ in formatter.parse(opening) if fname]
+
         contents = [
-            TextContent(self.USER_OPENING[obs_keys] + self.USER_FLATTERY, {
-                OBS.textual: utils.getitem(obs, OBS.textual, None),
-                OBS.a11y_tree: utils.getitem(obs, OBS.a11y_tree, None)
+            TextContent(opening + self.USER_FLATTERY, {
+                slot: utils.getitem(obs, slot, None)
+                for slot in slots
             })
         ]
 
@@ -208,12 +216,35 @@ class AIOAgent(Agent):
 
 
 class PlannerAgent(AIOAgent):
+    USER_OPENING: Dict[FrozenSet[str], str] = {
+        frozenset({}): "",
+        frozenset({OBS.textual}): "Given the textual information as below:\n{textual}\n",
+        frozenset({OBS.screenshot}): "Given the screenshot as below. ",
+        frozenset({OBS.set_of_marks}): "Given the tagged screenshot as below. "
+    }
+
     def __init__(self, *args, code_style: str = "plain", **kwargs) -> None:
         super(AIOAgent, self).__init__(*args, code_style=code_style, **kwargs)
         self.prompt_factory = PlannerPromptFactory(self.code_style)
 
+    @Agent._init_handler
+    def _step(self, obs: Dict[str, Any]) -> List[Content]:
+        new_obs = obs.copy()
+        if OBS.a11y_tree in new_obs:
+            del new_obs[OBS.a11y_tree]
+        return super()._step.__wrapped__(self, new_obs)
+
 
 class GrounderAgent(AIOAgent):
-    def __init__(self, *args, **kwargs) -> None:
-        super(AIOAgent, self).__init__(*args, **kwargs)
+    USER_OPENING: Dict[FrozenSet[str], str] = {
+        frozenset({OBS.textual, OBS.schedule}): "Given the textual information as below:\n{textual}\nand given the schedule from the planner:\n{schedule}\n",
+        frozenset({OBS.screenshot, OBS.schedule}): "Given the screenshot and the schedule from the planner as below:\n{schedule}\n",
+        frozenset({OBS.a11y_tree, OBS.schedule}): "Given the info from accessibility tree as below:\n{a11y_tree}\nand given the schedule from the planner:\n{schedule}\n",
+        frozenset({OBS.a11y_tree, OBS.set_of_marks, OBS.schedule}): "Given the tagged screenshot and info from accessibility tree as below:\n{a11y_tree}\nand given the schedule from the planner:\n{schedule}\n",
+        frozenset({OBS.screenshot, OBS.a11y_tree, OBS.schedule}): "Given the screenshot and info from accessibility tree as below:\n{a11y_tree}\nand given the schedule from the planner:\n{schedule}\n"
+    }
+
+    # make sure that `context_window` is captured before kwargs
+    def __init__(self, *args, context_window: int = 0, **kwargs) -> None:
+        super(AIOAgent, self).__init__(*args, context_window=0, **kwargs)
         self.prompt_factory = GrounderPromptFactory(self.code_style)

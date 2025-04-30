@@ -24,6 +24,7 @@ RoleType = Literal["system", "user", "assistant"]
 @dataclass
 class Content:
     PLACEHOLDER: ClassVar[str] = "..."
+
     def _asdict(
         self,
         style: ModelType = "openai",
