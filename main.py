@@ -106,23 +106,23 @@ if __name__ == "__main__":
         {
             "tasks_path": "./tasks/VM",
             "logs_path": f"./logs/{AIO_NAME}-vm-a11y_tree",
-            "community": AIO_NAME,
+            "community": AIO_GROUP,
             "vm_path": os.environ["VM_PATH"],
             "obs_types": {OBS.a11y_tree},
             "headless": True
         },
         {
             "tasks_path": "./tasks/VM",
-            "logs_path": f"./logs/{SA_NAME}-vm-screenshot+a11y_tree",
-            "community": SA_GROUP,
+            "logs_path": f"./logs/{AIO_NAME}-vm-screenshot+a11y_tree",
+            "community": AIO_GROUP,
             "vm_path": os.environ["VM_PATH"],
             "obs_types": {OBS.screenshot, OBS.a11y_tree},
             "headless": True
         },
         {
             "tasks_path": "./tasks/VM",
-            "logs_path": f"./logs/{SA_NAME}-vm-set_of_marks",
-            "community": SA_GROUP,
+            "logs_path": f"./logs/{AIO_NAME}-vm-set_of_marks",
+            "community": AIO_GROUP,
             "vm_path": os.environ["VM_PATH"],
             "obs_types": {OBS.set_of_marks},
             "headless": True
