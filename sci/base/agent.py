@@ -40,7 +40,7 @@ class Overflow:
     @staticmethod
     @utils.error_factory(False)
     def openai_newapi(response: Response) -> bool:
-        return response.json()["choices"][0]["finish_reason"] == "length"
+        return response.json()["error"]["message"].startswith("The input token count")
 
     @staticmethod
     @utils.error_factory(False)
