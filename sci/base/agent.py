@@ -224,8 +224,8 @@ class PlannerAgent(AIOAgent):
     }
 
     # make sure that `code_style` is captured before kwargs
-    def __init__(self, *args, code_style: str = "plain", **kwargs) -> None:
-        super(AIOAgent, self).__init__(*args, code_style="plain", **kwargs)
+    def __init__(self, *args, code_style: str = "planner", **kwargs) -> None:
+        super(AIOAgent, self).__init__(*args, code_style="planner", **kwargs)
         self.prompt_factory = PlannerPromptFactory(self.code_style)
 
     @Agent._init_handler

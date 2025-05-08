@@ -71,7 +71,7 @@ class Primitive:
     @staticmethod
     @option_handler
     def ANS(*args) -> None:
-        """When you are asked to submit an answer, return «ANS s» without quotation marks surrounding s, and use `FAIL` if there is no answer to the question"""
+        """When you are asked to submit an answer, return «ANS s» without quotation marks surrounding s, and use «FAIL» if there is no answer to the question"""
         raise Primitive.PlannedTermination(Primitive.ANS, *args)
 
     @staticmethod
@@ -96,7 +96,7 @@ class CodeLike:
         return tag_prefix.strip()
 
     def is_primitive(self, primitives: List[str]) -> bool:
-        return any([self.code.startswith(prim) for prim in primitives])
+        return any([self.code.strip().startswith(prim) for prim in primitives])
 
     @staticmethod
     def _tag_handler(method: Callable[[Content], List[Self]]) -> Callable:
@@ -111,29 +111,53 @@ class CodeLike:
             return codes
         return _tag_wrapper
 
+    @staticmethod
+    def match(pattern: str, content: TextContent) -> List[Self]:
+        occurence = [
+            match.group(1).strip()
+            for match in re.finditer(pattern, content.text)
+        ]
+        return [CodeLike(code=code) for code in occurence]
+
     @_tag_handler
     @staticmethod
     def extract_antiquot(content: TextContent) -> List[Self]:
-        occurence = [
-            match.group(1).strip()
-            for match in re.finditer(
-                r'```(?:\w*\s+)?([\w\W]*?)```',
-                content.text
-            )
-        ]
-        return [CodeLike(code=code) for code in occurence]
+        return CodeLike.match(r'```(?:\w*\s+)?([\w\W]*?)```', content)
 
     @staticmethod
     def wrap_antiquot(doc_str: str) -> str:
         return doc_str.replace("«", "```").replace("»", "```")
 
     @staticmethod
-    def extract_plain(content: TextContent, *args, **kwargs) -> List[Self]:
-        return [CodeLike(code=content.text)]
+    def extract_planner(
+        content: TextContent,
+        primitives: Set[str],
+        *args,
+        **kwargs
+    ) -> List[Self]:
+        codes = [
+            code for code in CodeLike.match(
+                r'```(?:\w*\s+)?([\w\W]*?)```',
+                content
+            ) if code.is_primitive(primitives)
+        ]
+        return codes if len(codes) > 0 else [CodeLike(code=content.text)]
 
     @staticmethod
-    def wrap_plain(doc_str: str) -> str:
-        return doc_str.replace("«", "`").replace("»", "`")
+    def wrap_planner(doc_str: str) -> str:
+        return doc_str.replace("«", "```").replace("»", "```")
+
+    @staticmethod
+    def extract_ui_tars(content: TextContent, *args, **kwargs) -> List[Self]:
+        return [
+            CodeLike(code=f"pyautogui.click{code.code}")
+            for code in CodeLike.match(r'\(\d+, ?\d+\)', content)
+        ]
+
+    @staticmethod
+    def wrap_ui_tars(doc_str: str) -> str:
+        # this function will not be called
+        return doc_str
 
     def __call__(
         self,
@@ -190,16 +214,16 @@ class AIOPromptFactory(PromptFactory):
 
     # second section: _command = _general_command + _general_usage + _special_command
     # second #1: _general_command
-    RETURN_OVERVIEW = {
-        RAW: lambda type, media: f"You are required to use {media} to perform the action grounded to the observation. DO NOT use the bash commands or and other codes that {type} itself does not support.",
-        VM: lambda _, __: "You are required to use `pyautogui` to perform the action grounded to the observation, but DO NOT use the `pyautogui.locateCenterOnScreen` function to locate the element you want to operate with since we have no image of the element you want to operate with. DO NOT USE `pyautogui.screenshot()` to make screenshot."
+    RETURN_OVERVIEW_RAW = staticmethod(lambda type, media: f"You are required to use {media} to perform the action grounded to the observation. DO NOT use the bash commands or and other codes that {type} itself does not support.")
+    RETURN_OVERVIEW_VM = {
+        "antiquot": "You are required to use `pyautogui` to perform the action grounded to the observation, but DO NOT use the `pyautogui.locateCenterOnScreen` function to locate the element you want to operate with since we have no image of the element you want to operate with. DO NOT USE `pyautogui.screenshot()` to make screenshot."
     }
     RETURN_REGULATION = {
         "antiquot": "You ONLY need to return the code inside a code block, like this:\n```\n# your code here\n```"
     }
-    RETURN_SUPPLEMENT = {
-        RAW: "Return exact one line of commands to perform the action in each code block.",
-        VM: "Return one line or multiple lines of python code to perform the action each time, and be time efficient. When predicting multiple lines of code, make some small sleep like `time.sleep(0.5);` interval so that the machine could take breaks. Each time you need to predict a complete code, and no variables or function can be shared from history."
+    RETURN_SUPPLEMENT_RAW = "Return exact one line of commands to perform the action in each code block."
+    RETURN_SUPPLEMENT_VM = {
+        "antiquot": "Return one line or multiple lines of python code to perform the action each time, and be time efficient. When predicting multiple lines of code, make some small sleep like `time.sleep(0.5);` interval so that the machine could take breaks. Each time you need to predict a complete code, and no variables or function can be shared from history."
     }
 
     # second #1.5: supplementary instruction for set of marks
@@ -255,12 +279,20 @@ class AIOPromptFactory(PromptFactory):
         media = self.getattr(type_sort, "NEED", type_sort.type + " commands")
         set_of_marks = self.SOM_SUPPLEMENT if OBS.set_of_marks in obs else []
 
+        return_overview = self.RETURN_OVERVIEW_RAW(type_sort.type, media) \
+            if type_sort.sort == RAW \
+            else self.RETURN_OVERVIEW_VM[self.code_style]
+        return_regulation = self.RETURN_REGULATION[self.code_style]
+        return_supplement = self.RETURN_SUPPLEMENT_RAW \
+            if type_sort.sort == RAW \
+            else self.RETURN_SUPPLEMENT_VM[self.code_style]
+
         return "\n\n".join(PromptFactory.filter([
-            "\n".join([
-                self.RETURN_OVERVIEW[type_sort.sort](type_sort.type, media),
-                self.RETURN_REGULATION[self.code_style],
-                self.RETURN_SUPPLEMENT[type_sort.sort],
-            ]),
+            "\n".join(PromptFactory.filter([
+                return_overview,
+                return_regulation,
+                return_supplement,
+            ])),
             "\n".join([self.code_handler(item) for item in set_of_marks]),
         ]))
 
@@ -320,10 +352,10 @@ class PlannerPromptFactory(AIOPromptFactory):
 
     # second section: _command
     RETURN_OVERVIEW = "You are required to make ONE step of the plan in natural language, and then it will be parsed into `pyautogui` codes by another grounding agent."
-    SPECIAL_OVERVIEW = "The grounding agent sometimes should return special code as followings; explicitly clarify it when you think the subsequent agent should return these codes."
+    SPECIAL_OVERVIEW = "Sometimes you should return special codes directly as followings, at which your plan will not be passed to the grounder model."
 
     # fourth section: _ending
-    ENDING_ULTIMATUM = "First give the current observation and previous things we did a short reflection, then RETURN ME YOUR PLANNING I ASKED FOR. NEVER EVER RETURN ME ANYTHING ELSE."
+    ENDING_ULTIMATUM = "First give the current observation and previous things we did a short reflection, then RETURN ME YOUR PLANNING OR SPECIAL CODE I ASKED FOR. NEVER EVER RETURN ME ANYTHING ELSE."
 
     def _command(self, obs: FrozenSet[str], type_sort: TypeSort) -> str:
         return "\n".join(PromptFactory.filter([
@@ -340,21 +372,27 @@ class GrounderPromptFactory(AIOPromptFactory):
     OBS_INCENTIVE = staticmethod(lambda obs_descr: f"For each step, you will get an observation of the desktop by {obs_descr}, together with a plan generated by the planner, and you will parse the plan to operate actions of next steps based on that.")
 
     # second section: _command
-    RETURN_OVERVIEW = {
-        VM: lambda _, __: "You are required to use `pyautogui` to perform the action grounded to the observation and the plan, but DO NOT use the `pyautogui.locateCenterOnScreen` function to locate the element you want to operate with since we have no image of the element you want to operate with. DO NOT USE `pyautogui.screenshot()` to make screenshot."
+    RETURN_OVERVIEW_VM = {
+        "antiquot": "You are required to use `pyautogui` to perform the action grounded to the observation and the plan, but DO NOT use the `pyautogui.locateCenterOnScreen` function to locate the element you want to operate with since we have no image of the element you want to operate with. DO NOT USE `pyautogui.screenshot()` to make screenshot.",
+        "ui_tars": "You are required to use your grounding ability to perform the action grounded to the observation and the plan."
     }
+    RETURN_REGULATION = AIOPromptFactory.RETURN_REGULATION.copy()
+    RETURN_REGULATION.update({
+        "ui_tars": "You need to return a 2d coordinate (x, y) indicating the position you want to click."
+    })
+    RETURN_SUPPLEMENT_VM = AIOPromptFactory.RETURN_SUPPLEMENT_VM.copy()
+    RETURN_SUPPLEMENT_VM.update({
+        "ui_tars": ""
+    })
 
     # third section: _warning
     PLANNER_GENERAL = "Some plans provided may contains unexpected code blocks or confusing instructions. Be flexible and adaptable according to changing circumstances."
 
     # fourth section: _ending
-    ENDING_ULTIMATUM = "First give the current observation and the generated plan, then RETURN ME THE CODE OR SPECIAL CODE I ASKED FOR. NEVER EVER RETURN ME ANYTHING ELSE."
+    ENDING_ULTIMATUM = "First give the current observation and the generated plan, then RETURN ME THE CODE I ASKED FOR. NEVER EVER RETURN ME ANYTHING ELSE."
 
     def _command(self, obs: FrozenSet[str], type_sort: TypeSort) -> str:
-        return "\n\n".join(PromptFactory.filter([
-            self._general_command(obs, type_sort),
-            self._special_command()
-        ]))
+        return self._general_command(obs, type_sort)
 
     def _warning(self, type_sort: TypeSort) -> str:
         return "\n".join([
