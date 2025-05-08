@@ -151,7 +151,7 @@ class CodeLike:
     def extract_ui_tars(content: TextContent, *args, **kwargs) -> List[Self]:
         return [
             CodeLike(code=f"pyautogui.click{code.code}")
-            for code in CodeLike.match(r'\(\d+, ?\d+\)', content)
+            for code in CodeLike.match(r'(\(\d+, ?\d+\))', content)
         ]
 
     @staticmethod
