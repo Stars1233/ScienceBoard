@@ -114,6 +114,11 @@ class SeeAct(Community):
         )
 
         codes = self.planner.code_handler(planner_response_content, *code_info)
+
+        # to intercept special codes
+        if codes[0].is_primitive(code_info[0]):
+            return codes
+
         if first_step:
             self.grounder._init(obs.keys(), **init_kwargs)
 

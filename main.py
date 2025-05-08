@@ -72,6 +72,7 @@ tars_dpo = lambda cls: Automata(
     base_url=os.environ["TARS_DPO_URL"],
     model_name=os.environ["TARS_DPO_NAME"],
     overflow_style="openai_gpt",
+    code_style="ui_tars",
     hide_text=True
 )(cls)
 

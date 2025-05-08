@@ -116,7 +116,7 @@ class Automata:
             if key in agent_params
         }
 
-    def __call__(self, agent_cls: POLY) -> POLY:
+    def __call__(self, agent_cls: POLY = AIOAgent) -> POLY:
         model = Model(**self.model_args)
         agent = agent_cls(model=model, **self.agent_args)
         for handler in self.register:
