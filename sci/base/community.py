@@ -115,12 +115,12 @@ class SeeAct(Community):
 
         codes = self.planner.code_handler(planner_response_content, *code_info)
 
+        if first_step:
+            self.grounder._init(obs.keys(), **init_kwargs)
+
         # to intercept special codes
         if codes[0].is_primitive(code_info[0]):
             return codes
-
-        if first_step:
-            self.grounder._init(obs.keys(), **init_kwargs)
 
         obs[OBS.schedule] = codes[0].code
         grounder_content = self.grounder._step(obs)
