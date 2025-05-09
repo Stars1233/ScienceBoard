@@ -82,6 +82,8 @@ class Primitive:
 @dataclass
 class CodeLike:
     code: str
+    desc: bool = False
+    prefix: str = ""
 
     @staticmethod
     def parse_tags(tags):
@@ -107,7 +109,10 @@ class CodeLike:
         ) -> List[Self]:
             for code in (codes := method(content)):
                 if tags is not None and not code.is_primitive(primitives):
-                    code.code = CodeLike.parse_tags(tags) + "\n\n" + code.code
+                    code.prefix = "\n\n".join(PromptFactory.filter([
+                        code.prefix,
+                        CodeLike.parse_tags(tags)
+                    ]))
             return codes
         return _tag_wrapper
 
@@ -141,7 +146,8 @@ class CodeLike:
                 content
             ) if code.is_primitive(primitives)
         ]
-        return codes if len(codes) > 0 else [CodeLike(code=content.text)]
+        return codes if len(codes) > 0 \
+            else [CodeLike(code=content.text, desc=True)]
 
     @staticmethod
     def wrap_planner(doc_str: str) -> str:
@@ -153,10 +159,10 @@ class CodeLike:
             match_obj = re.match(r'\((\d+), ?(\d+)\)', code)
             x = int(match_obj[1]) / 1000
             y = int(match_obj[2]) / 1000
-            return relative_py + "\n\n" + f"pyautogui.click({x}, {y})"
+            return f"pyautogui.click({x}, {y})"
 
         return [
-            CodeLike(code=transfer(code.code))
+            CodeLike(code=transfer(code.code), prefix=relative_py)
             for code in CodeLike.match(r'(\(\d+, ?\d+\))', content)
         ]
 
@@ -168,9 +174,10 @@ class CodeLike:
     def __call__(
         self,
         manager: Manager,
-        primitives: List[str],
-        prefix: Optional[str] = None
+        primitives: List[str]
     ) -> Optional[bool]:
+        assert self.desc is False
+
         if self.is_primitive(primitives):
             splits = self.code.split(" ")
             try:
@@ -185,8 +192,10 @@ class CodeLike:
                         + traceback.format_exc()
                 )
         else:
-            prefix = "" if prefix in (None, "") else prefix.strip() + "\n\n"
-            return manager(prefix + self.code)
+            return manager("\n\n".join(PromptFactory.filter([
+                "" if self.prefix is None else self.prefix.strip(),
+                self.code
+            ])))
 
 
 class PromptFactory:

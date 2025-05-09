@@ -119,7 +119,7 @@ class SeeAct(Community):
             self.grounder._init(obs.keys(), **init_kwargs)
 
         # to intercept special codes
-        if codes[0].is_primitive(code_info[0]):
+        if codes[0].desc is False:
             return codes
 
         obs[OBS.schedule] = codes[0].code
