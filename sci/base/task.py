@@ -250,10 +250,6 @@ class Task:
                 continue
         return False
 
-    @property
-    def relative_resolver(self) -> str:
-        return relative_py
-
     def _step(self, step_index: int) -> bool:
         observation = {
             obs_type: getattr(self.manager, obs_type)()
@@ -288,9 +284,10 @@ class Task:
         )
 
         results = []
-        prefix = self.relative_resolver if self.relative else None
         for code_like in response_codes:
-            results.append(code_like(self.manager, self.primitives, prefix))
+            if self.relative:
+                code_like.push_prefix(relative_py, back=False)
+            results.append(code_like(self.manager, self.primitives))
             Manager.pause()
 
         # Manager.__call__() return True/None if success/undecidable

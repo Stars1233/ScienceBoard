@@ -131,9 +131,9 @@ def block(timeout, func, *args, **kwargs):
     return obj.get("result")
 
 
-def __relative() -> str:
+def relative_resolver() -> str:
     relative_path = os.path.join(os.path.split(__file__)[0], "relative.py")
     with open(relative_path, mode="r", encoding="utf-8") as readable:
         return readable.read().strip()
 
-relative_py = __relative()
+relative_py = relative_resolver()
