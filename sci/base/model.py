@@ -55,17 +55,21 @@ class TextContent(Content):
         use_format: bool = False,
         **_
     ) -> Dict[str, Any]:
-        formatter = string.Formatter()
-        slots = [key for _, key, _, _ in formatter.parse(self.text) if key]
-        args = {key: (
-            self.args[key]
-            if key in self.args and not hide_text
-            else Content.PLACEHOLDER
-        ) for key in slots}
+        text = self.text
+        if use_format:
+            formatter = string.Formatter()
+            slots = [key for _, key, _, _ in formatter.parse(self.text) if key]
+
+            args = {key: (
+                self.args[key]
+                if key in self.args and not hide_text
+                else Content.PLACEHOLDER
+            ) for key in slots}
+            text = self.text.format(**args)
 
         return {
             "type": "text",
-            "text": self.text.format(**args) if use_format else self.text
+            "text": text
         }
 
 
