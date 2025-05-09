@@ -286,7 +286,7 @@ class Task:
         results = []
         for code_like in response_codes:
             if self.relative:
-                code_like.push_prefix(relative_py, back=True)
+                code_like.push_prefix(relative_py, back=False)
             results.append(code_like(self.manager, self.primitives))
             Manager.pause()
 
