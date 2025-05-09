@@ -109,10 +109,7 @@ class CodeLike:
         ) -> List[Self]:
             for code in (codes := method(content)):
                 if tags is not None and not code.is_primitive(primitives):
-                    code.prefix = "\n\n".join(PromptFactory.filter([
-                        code.prefix,
-                        CodeLike.parse_tags(tags)
-                    ]))
+                    code.push_prefix(CodeLike.parse_tags(tags))
             return codes
         return _tag_wrapper
 
@@ -170,6 +167,11 @@ class CodeLike:
     def wrap_ui_tars(doc_str: str) -> str:
         # this function will not be called
         return doc_str
+
+    def push_prefix(self, prefix: str, back: bool = True) -> None:
+        new_prefix = [self.prefix, prefix.strip()] if back \
+            else [prefix.strip(), self.prefix]
+        self.prefix = "\n\n".join(PromptFactory.filter(new_prefix))
 
     def __call__(
         self,
