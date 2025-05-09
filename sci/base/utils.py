@@ -129,3 +129,11 @@ def block(timeout, func, *args, **kwargs):
 
     assert "error" not in obj, obj["error"]
     return obj.get("result")
+
+
+def __relative() -> str:
+    relative_path = os.path.join(os.path.split(__file__)[0], "relative.py")
+    with open(relative_path, mode="r", encoding="utf-8") as readable:
+        return readable.read().strip()
+
+relative_py = __relative()

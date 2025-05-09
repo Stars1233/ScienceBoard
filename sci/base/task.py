@@ -12,7 +12,7 @@ from .agent import Primitive
 from .community import Community
 from .manager import OBS, Manager
 from .log import Log, VirtualLog
-from .utils import TypeSort
+from .utils import TypeSort, relative_py
 from . import init
 
 # base class for all tasks
@@ -252,9 +252,7 @@ class Task:
 
     @property
     def relative_resolver(self) -> str:
-        relative_path = os.path.join(os.path.split(__file__)[0], "relative.py")
-        with open(relative_path, mode="r", encoding="utf-8") as readable:
-            return readable.read().strip()
+        return relative_py
 
     def _step(self, step_index: int) -> bool:
         observation = {

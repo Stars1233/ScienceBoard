@@ -19,7 +19,7 @@ from .. import Prompts
 from .override import *
 from .manager import OBS, Manager
 from .model import Content, TextContent
-from .utils import TypeSort
+from .utils import TypeSort, relative_py
 from .log import GLOBAL_VLOG
 
 RAW = TypeSort.Sort.Raw
@@ -149,8 +149,14 @@ class CodeLike:
 
     @staticmethod
     def extract_ui_tars(content: TextContent, *args, **kwargs) -> List[Self]:
+        def transfer(code: str) -> str:
+            match_obj = re.match(r'\((\d+), ?(\d+)\)', code)
+            x = int(match_obj[1]) / 1000
+            y = int(match_obj[2]) / 1000
+            return relative_py + "\n\n" + f"pyautogui.click({x}, {y})"
+
         return [
-            CodeLike(code=f"pyautogui.click{code.code}")
+            CodeLike(code=transfer(code.code))
             for code in CodeLike.match(r'(\(\d+, ?\d+\))', content)
         ]
 
