@@ -77,7 +77,7 @@ os_atlas = lambda cls: Automata(
     base_url=os.environ["OS_ACT_URL"],
     model_name=os.environ["OS_ACT_NAME"],
     overflow_style="openai_lmdeploy",
-    code_style="ui_tars"
+    code_style="os_atlas"
 )(cls)
 
 tars_dpo = lambda cls: Automata(
