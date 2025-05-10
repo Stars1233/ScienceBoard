@@ -77,15 +77,7 @@ os_atlas = lambda cls: Automata(
     base_url=os.environ["OS_ACT_URL"],
     model_name=os.environ["OS_ACT_NAME"],
     overflow_style="openai_lmdeploy",
-    code_style="os_atlas"
-)(cls)
-
-tars_dpo = lambda cls: Automata(
-    model_style="openai",
-    base_url=os.environ["TARS_DPO_URL"],
-    model_name=os.environ["TARS_DPO_NAME"],
-    overflow_style="openai_lmdeploy",
-    code_style="ui_tars"
+    code_style="atlas"
 )(cls)
 
 uground = lambda cls: Automata(
@@ -93,7 +85,15 @@ uground = lambda cls: Automata(
     base_url=os.environ["UGROUND_URL"],
     model_name=os.environ["UGROUND_NAME"],
     overflow_style="openai_lmdeploy",
-    code_style="ui_tars"
+    code_style="uground"
+)(cls)
+
+tars_dpo = lambda cls: Automata(
+    model_style="openai",
+    base_url=os.environ["TARS_DPO_URL"],
+    model_name=os.environ["TARS_DPO_NAME"],
+    overflow_style="openai_lmdeploy",
+    code_style="uground"
 )(cls)
 
 

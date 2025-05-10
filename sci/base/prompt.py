@@ -416,18 +416,18 @@ class GrounderPromptFactory(AIOPromptFactory):
     # second section: _command
     RETURN_OVERVIEW_VM = {
         "antiquot": "You are required to use `pyautogui` to perform the action grounded to the observation and the plan, but DO NOT use the `pyautogui.locateCenterOnScreen` function to locate the element you want to operate with since we have no image of the element you want to operate with. DO NOT USE `pyautogui.screenshot()` to make screenshot.",
-        "os_atlas": "You are required to use your grounding ability to perform the action grounded to the observation and the plan.",
-        "ui_tars": "You are required to use your grounding ability to perform the action grounded to the observation and the plan."
+        "atlas": "You are required to use your grounding ability to perform the action grounded to the observation and the plan.",
+        "uground": "You are required to use your grounding ability to perform the action grounded to the observation and the plan."
     }
     RETURN_REGULATION = AIOPromptFactory.RETURN_REGULATION.copy()
     RETURN_REGULATION.update({
-        "os_atlas": "You need to return 2d coordinates (x, y) indicating the edging points of position you want to click.",
-        "ui_tars": "You need to return a 2d coordinate (x, y) indicating the position you want to click."
+        "atlas": "You need to return 2d coordinates (x, y) indicating the edging points of position you want to click.",
+        "uground": "You need to return a 2d coordinate (x, y) indicating the position you want to click."
     })
     RETURN_SUPPLEMENT_VM = AIOPromptFactory.RETURN_SUPPLEMENT_VM.copy()
     RETURN_SUPPLEMENT_VM.update({
-        "os_atlas": "",
-        "ui_tars": ""
+        "atlas": "",
+        "uground": ""
     })
 
     # third section: _warning
