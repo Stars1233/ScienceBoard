@@ -88,6 +88,14 @@ tars_dpo = lambda cls: Automata(
     code_style="ui_tars"
 )(cls)
 
+uground = lambda cls: Automata(
+    model_style="openai",
+    base_url=os.environ["UGROUND_URL"],
+    model_name=os.environ["UGROUND_NAME"],
+    overflow_style="openai_lmdeploy",
+    code_style="ui_tars"
+)(cls)
+
 
 # this file somehow acts as a config file
 # with some sensitive contents hidden in env
