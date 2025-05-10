@@ -114,9 +114,9 @@ class CodeLike:
         return _tag_wrapper
 
     @staticmethod
-    def match(pattern: str, content: TextContent) -> List[Self]:
+    def match(pattern: str, content: TextContent, index: int = 1) -> List[Self]:
         occurence = [
-            match.group(1).strip()
+            match.group(index).strip()
             for match in re.finditer(pattern, content.text)
         ]
         return [CodeLike(code=code) for code in occurence]
@@ -151,15 +151,40 @@ class CodeLike:
         return doc_str.replace("«", "```").replace("»", "```")
 
     @staticmethod
+    def extract_os_atlas(content: TextContent, *args, **kwargs) -> List[Self]:
+        def parse(code: str) -> str:
+            match_obj = re.match(r'\[\[(\d+), ?(\d+), ?(\d+), ?(\d+)\]\]', code)
+            x_1 = int(match_obj[1]) / 1000
+            y_1 = int(match_obj[2]) / 1000
+            x_2 = int(match_obj[3]) / 1000
+            y_2 = int(match_obj[4]) / 1000
+            x = (x_1 + x_2) / 2
+            y = (y_1 + y_2) / 2
+            return f"pyautogui.click({x}, {y})"
+
+        return [
+            CodeLike(code=parse(code.code), prefix=relative_py)
+            for code in CodeLike.match(
+                r'(\[\[\d+, ?\d+, ?\d+, ?\d+\]\])',
+                content
+            )
+        ]
+
+    @staticmethod
+    def wrap_os_atlas(doc_str: str) -> str:
+        # this function will not be called
+        return doc_str
+
+    @staticmethod
     def extract_ui_tars(content: TextContent, *args, **kwargs) -> List[Self]:
-        def transfer(code: str) -> str:
+        def parse(code: str) -> str:
             match_obj = re.match(r'\((\d+), ?(\d+)\)', code)
             x = int(match_obj[1]) / 1000
             y = int(match_obj[2]) / 1000
             return f"pyautogui.click({x}, {y})"
 
         return [
-            CodeLike(code=transfer(code.code), prefix=relative_py)
+            CodeLike(code=parse(code.code), prefix=relative_py)
             for code in CodeLike.match(r'(\(\d+, ?\d+\))', content)
         ]
 
@@ -391,14 +416,17 @@ class GrounderPromptFactory(AIOPromptFactory):
     # second section: _command
     RETURN_OVERVIEW_VM = {
         "antiquot": "You are required to use `pyautogui` to perform the action grounded to the observation and the plan, but DO NOT use the `pyautogui.locateCenterOnScreen` function to locate the element you want to operate with since we have no image of the element you want to operate with. DO NOT USE `pyautogui.screenshot()` to make screenshot.",
+        "os_atlas": "You are required to use your grounding ability to perform the action grounded to the observation and the plan.",
         "ui_tars": "You are required to use your grounding ability to perform the action grounded to the observation and the plan."
     }
     RETURN_REGULATION = AIOPromptFactory.RETURN_REGULATION.copy()
     RETURN_REGULATION.update({
+        "ui_tars": "You need to return 2d coordinates (x, y) indicating the edging points of position you want to click.",
         "ui_tars": "You need to return a 2d coordinate (x, y) indicating the position you want to click."
     })
     RETURN_SUPPLEMENT_VM = AIOPromptFactory.RETURN_SUPPLEMENT_VM.copy()
     RETURN_SUPPLEMENT_VM.update({
+        "os_atlas": "",
         "ui_tars": ""
     })
 
