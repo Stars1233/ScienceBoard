@@ -23,7 +23,9 @@ gpt_o3 = lambda cls: Automata(
     model_name="o3-mini-2025-01-31",
     api_key=os.environ["OPENAI_API_KEY"],
     proxy=os.environ["HTTPX_PROXY"],
-    overflow_style="openai_gpt"
+    overflow_style="openai_gpt",
+    max_tokens=None,
+    top_p=None
 )(cls)
 
 gemini_2 = lambda cls: Automata(
