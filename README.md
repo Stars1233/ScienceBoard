@@ -9,13 +9,15 @@
     - `OPENAI_API_KEY`: API key for OpenAI GPT
     - `GOOGLE_API_KEY`: API key for Google Gemini
     - `ANTHROPIC_API_KEY`: API key for Anthropic Claude
-    - `QVQ_VL_URL`: Base URL for QVQ
     - `QWEN_VL_URL`: Base URL for QwenVL
     - `INTERN_VL_URL`: Base URL for InternVL
+    - `QVQ_VL_URL`: Base URL for QVQ
+    - `OS_ACT_URL`: Base URL for OS-Atlas
     - `TARS_DPO_URL`: Base URL for UI-Tars
-    - `QVQ_VL_NAME`: Name of QVQ
     - `QWEN_VL_NAME`: Name of QwenVL
     - `INTERN_VL_NAME`: Name of InternVL
+    - `QVQ_VL_NAME`: Name of QVQ
+    - `OS_ACT_NAME`: Name of OS-Atlas
     - `TARS_DPO_NAME`: Name of UI-Tars
 3. Config for raw apps
     - `LEAN_LIB_PATH`: path for Lean 4 REPL
