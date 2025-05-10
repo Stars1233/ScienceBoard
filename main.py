@@ -7,6 +7,7 @@ from sci import Automata, Tester, OBS
 from sci import AllInOne, AIOAgent
 from sci import SeeAct, PlannerAgent, GrounderAgent
 
+# commercial models
 gpt_4o = lambda cls: Automata(
     model_style="openai",
     base_url="https://api.openai.com/v1/chat/completions",
@@ -43,19 +44,12 @@ claude_3 = lambda cls: Automata(
     overflow_style="anthropic"
 )(cls)
 
-qvq = lambda cls: Automata(
-    model_style="openai",
-    base_url=os.environ["QVQ_VL_URL"],
-    model_name=os.environ["QVQ_VL_NAME"],
-    overflow_style="openai_gpt",
-    hide_text=True
-)(cls)
-
+# open-source models
 qwen25_vl = lambda cls: Automata(
     model_style="openai",
     base_url=os.environ["QWEN_VL_URL"],
     model_name=os.environ["QWEN_VL_NAME"],
-    overflow_style="openai_gpt",
+    overflow_style="openai_lmdeploy",
     hide_text=True
 )(cls)
 
@@ -63,17 +57,33 @@ intern_vl = lambda cls: Automata(
     model_style="openai",
     base_url=os.environ["INTERN_VL_URL"],
     model_name=os.environ["INTERN_VL_NAME"],
-    overflow_style="openai_gpt",
+    overflow_style="openai_lmdeploy",
     hide_text=True
+)(cls)
+
+qvq = lambda cls: Automata(
+    model_style="openai",
+    base_url=os.environ["QVQ_VL_URL"],
+    model_name=os.environ["QVQ_VL_NAME"],
+    overflow_style="openai_lmdeploy",
+    hide_text=True
+)(cls)
+
+# grounding models
+os_atlas = lambda cls: Automata(
+    model_style="openai",
+    base_url=os.environ["OS_ACT_URL"],
+    model_name=os.environ["OS_ACT_NAME"],
+    overflow_style="openai_lmdeploy",
+    code_style="ui_tars"
 )(cls)
 
 tars_dpo = lambda cls: Automata(
     model_style="openai",
     base_url=os.environ["TARS_DPO_URL"],
     model_name=os.environ["TARS_DPO_NAME"],
-    overflow_style="openai_gpt",
-    code_style="ui_tars",
-    hide_text=True
+    overflow_style="openai_lmdeploy",
+    code_style="ui_tars"
 )(cls)
 
 
