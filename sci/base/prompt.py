@@ -151,7 +151,7 @@ class CodeLike:
         return doc_str.replace("«", "```").replace("»", "```")
 
     @staticmethod
-    def extract_os_atlas(content: TextContent, *args, **kwargs) -> List[Self]:
+    def extract_atlas(content: TextContent, *args, **kwargs) -> List[Self]:
         def parse(code: str) -> str:
             match_obj = re.match(r'\[\[(\d+), ?(\d+), ?(\d+), ?(\d+)\]\]', code)
             x_1 = int(match_obj[1]) / 1000
@@ -171,12 +171,12 @@ class CodeLike:
         ]
 
     @staticmethod
-    def wrap_os_atlas(doc_str: str) -> str:
+    def wrap_atlas(doc_str: str) -> str:
         # this function will not be called
         return doc_str
 
     @staticmethod
-    def extract_ui_tars(content: TextContent, *args, **kwargs) -> List[Self]:
+    def extract_uground(content: TextContent, *args, **kwargs) -> List[Self]:
         def parse(code: str) -> str:
             match_obj = re.match(r'\((\d+), ?(\d+)\)', code)
             x = int(match_obj[1]) / 1000
@@ -189,7 +189,7 @@ class CodeLike:
         ]
 
     @staticmethod
-    def wrap_ui_tars(doc_str: str) -> str:
+    def wrap_uground(doc_str: str) -> str:
         # this function will not be called
         return doc_str
 
