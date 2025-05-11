@@ -421,7 +421,7 @@ class GrounderPromptFactory(AIOPromptFactory):
     }
     RETURN_REGULATION = AIOPromptFactory.RETURN_REGULATION.copy()
     RETURN_REGULATION.update({
-        "atlas": "You need to return 2d coordinates (x, y) indicating the edging points of position you want to click.",
+        "atlas": "You need to return action together with 2d coordinates (x, y) indicating the position you want to operate.",
         "uground": "You need to return a 2d coordinate (x, y) indicating the position you want to click."
     })
     RETURN_SUPPLEMENT_VM = AIOPromptFactory.RETURN_SUPPLEMENT_VM.copy()
