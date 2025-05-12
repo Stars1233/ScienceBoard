@@ -1,4 +1,5 @@
 import sys
+import json
 import inspect
 
 sys.dont_write_bytecode = True
@@ -152,22 +153,32 @@ class CodeLike:
 
     @staticmethod
     def extract_atlas(content: TextContent, *args, **kwargs) -> List[Self]:
+        pat_click = r'CLICK <point>\[\[(\d+), ?(\d+)\]\]</point>'
+        pat_type = r'TYPE \[(.+?)\]'
+        pat_scroll = r'SCROLL \[(UP|DOWN|LEFT|RIGHT)\]'
+        pat_atlas = fr'({pat_click}|{pat_type}|{pat_scroll})'
+
         def parse(code: str) -> str:
-            match_obj = re.match(r'\[\[(\d+), ?(\d+), ?(\d+), ?(\d+)\]\]', code)
-            x_1 = int(match_obj[1]) / 1000
-            y_1 = int(match_obj[2]) / 1000
-            x_2 = int(match_obj[3]) / 1000
-            y_2 = int(match_obj[4]) / 1000
-            x = (x_1 + x_2) / 2
-            y = (y_1 + y_2) / 2
-            return f"pyautogui.click({x}, {y})"
+            match_obj = None
+            if (match_obj := re.match(pat_click, code)) is not None:
+                x = int(match_obj[1]) / 1000
+                y = int(match_obj[2]) / 1000
+                return f"pyautogui.click({x}, {y})"
+            elif (match_obj := re.match(pat_type, code)) is not None:
+                text = json.dumps(match_obj[1])
+                return f"pyautogui.typewrite({text}, interval=0.1)"
+            elif (match_obj := re.match(pat_scroll, code)) is not None:
+                direction = match_obj[1]
+                return {
+                    "UP": "pyautogui.scroll(10)",
+                    "DOWN": "pyautogui.scroll(-10)",
+                    "LEFT": "pyautogui.hscroll(-10)",
+                    "RIGHT": "pyautogui.hscroll(10)"
+                }[direction]
 
         return [
             CodeLike(code=parse(code.code), prefix=relative_py)
-            for code in CodeLike.match(
-                r'(\[\[\d+, ?\d+, ?\d+, ?\d+\]\])',
-                content
-            )
+            for code in CodeLike.match(pat_atlas, content)
         ]
 
     @staticmethod
@@ -421,12 +432,20 @@ class GrounderPromptFactory(AIOPromptFactory):
     }
     RETURN_REGULATION = AIOPromptFactory.RETURN_REGULATION.copy()
     RETURN_REGULATION.update({
-        "atlas": "You need to return action together with 2d coordinates (x, y) indicating the position you want to operate.",
+        "atlas": "You need to return a basic action together with arguments, of which the available ones are listed below:",
         "uground": "You need to return a 2d coordinate (x, y) indicating the position you want to click."
     })
     RETURN_SUPPLEMENT_VM = AIOPromptFactory.RETURN_SUPPLEMENT_VM.copy()
     RETURN_SUPPLEMENT_VM.update({
-        "atlas": "",
+        "atlas": """CLICK: to click at the specified position.
+    - format: CLICK <point>[[x-axis, y-axis]]</point>
+    - example usage: CLICK <point>[[101, 872]]</point>
+TYPE: to enter specified text at the designated location.
+    - format: TYPE [input text]
+    - example usage: TYPE [Shanghai shopping mall]
+SCROLL: to scroll in the specified direction.
+    - format: SCROLL [direction (UP/DOWN/LEFT/RIGHT)]
+    - example usage: SCROLL [UP]""",
         "uground": ""
     })
 
