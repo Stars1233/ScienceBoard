@@ -1,4 +1,4 @@
-# OS-SCI
+# SciBoard
 
 ## ENV Config
 1. General
