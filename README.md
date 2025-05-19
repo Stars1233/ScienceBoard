@@ -1,4 +1,6 @@
-# SciBoard
+# ScienceBoard
+
+Code, environment and data for "ScienceBoard: Evaluating Multimodal Autonomous Agents in Realistic Scientific Workflows"
 
 ## ENV Config
 1. General
@@ -100,3 +102,6 @@
     ```
 
     input password manually in VMWare and take a new snapshot.
+
+# Citation
+🫶 If you are interested in our work or find this repository / our data helpful, please consider using the following citation format when referencing our paper:
