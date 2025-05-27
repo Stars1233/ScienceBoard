@@ -1,6 +1,15 @@
-# ScienceBoard
+
+
+<img src="./static/scienceboard_badge_v0.png" alt="overview" style="zoom:80%;" />
+
+[![arXiv](https://img.shields.io/badge/arXiv-2505.19897-b31b1b.svg)](https://arxiv.org/abs/2505.19897) 
+![License](https://img.shields.io/badge/License-MIT-blue)
+[![Paper page](https://huggingface.co/datasets/huggingface/badges/resolve/main/paper-page-sm.svg)](https://huggingface.co/papers/2505.19897)
 
 Code, environment and data for "ScienceBoard: Evaluating Multimodal Autonomous Agents in Realistic Scientific Workflows"
+
+## Updates
+- **2025-05-27**: Initial release of our [paper](https://arxiv.org/abs/2505.19897), environment, benchmark, and [project page](https://qiushisun.github.io/ScienceBoard-Home/). Check it out! 🚀
 
 ## ENV Config
 1. General
@@ -105,3 +114,12 @@ Code, environment and data for "ScienceBoard: Evaluating Multimodal Autonomous A
 
 # Citation
 🫶 If you are interested in our work or find this repository / our data helpful, please consider using the following citation format when referencing our paper:
+
+```bibtex
+@article{sun2025scienceboard,
+   title={ScienceBoard: Evaluating Multimodal Autonomous Agents in Realistic Scientific Workflows},
+   author={Qiushi Sun and Zhoumianze Liu and Chang Ma and Zichen Ding and Fangzhi Xu and Zhangyue Yin and Haiteng Zhao and Zhenyu Wu and Kanzhi Cheng and Zhaoyang Liu and others},
+   year={2025},
+   journal={arXiv preprint arXiv:2505.19897}
+}
+```
