@@ -136,7 +136,7 @@ The infrastructure of the framework is based on [OSWorld](https://github.com/xla
 
 ## Development Manual
 ### Introduction of New Apps
-If you are willing to add new applications into ScienceBoard, please make sure that you already have full understanding of your target application and this repository.
+If you are willing to add new applications into ScienceBoard, please make sure that you already have a full understanding of your target application and this repository.
 
 1. Write a plugin or implant a server in your target application revealing its inner states. Listed below is repositories of our modified applications:
     - [chimerax-states](https://github.com/ShiinaHiiragi/chimerax-states): a plugin for ChimeraX;
