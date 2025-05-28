@@ -39,16 +39,16 @@ The infrastructure of the framework is based on [OSWorld](https://github.com/xla
     - `OPENAI_API_KEY`: API key for OpenAI GPT;
     - `GOOGLE_API_KEY`: API key for Google Gemini;
     - `ANTHROPIC_API_KEY`: API key for Anthropic Claude;
-    - `QWEN_VL_URL`: Base URL for QwenVL;
-    - `INTERN_VL_URL`: Base URL for InternVL;
-    - `QVQ_VL_URL`: Base URL for QVQ;
-    - `OS_ACT_URL`: Base URL for OS-Atlas;
-    - `TARS_DPO_URL`: Base URL for UI-Tars;
-    - `QWEN_VL_NAME`: Name of QwenVL;
-    - `INTERN_VL_NAME`: Name of InternVL;
-    - `QVQ_VL_NAME`: Name of QVQ;
-    - `OS_ACT_NAME`: Name of OS-Atlas;
-    - `TARS_DPO_NAME`: Name of UI-Tars.
+
+    and variables for open-source models:
+
+    |  Model   |    Base URL     |       Name       |
+    | :------: | :-------------: | :--------------: |
+    |  QwenVL  |  `QWEN_VL_URL`  |  `QWEN_VL_NAME`  |
+    | InternVL | `INTERN_VL_URL` | `INTERN_VL_NAME` |
+    |   QVQ    |  `QVQ_VL_URL`   |  `QVQ_VL_NAME`   |
+    | OS-Atlas |  `OS_ACT_URL`   |  `OS_ACT_NAME`   |
+    | UI-Tars  | `TARS_DPO_URL`  | `TARS_DPO_NAME`  |
 
 2. Used in `sci/Presets.py`:
     - `LEAN_LIB_PATH`: path for Lean 4 REPL;
