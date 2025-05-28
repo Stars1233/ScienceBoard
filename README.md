@@ -153,7 +153,7 @@ If you are willing to add new applications into ScienceBoard, please make sure t
 See [Staff Manual of VM Image](vm_config/manual.md).
 
 ## Citation
-🫶 If you are interested in our work or find this repository / our data helpful, please consider using the following citation format when referencing our paper:
+📋 If you are interested in our work or find this repository / our data helpful, please consider using the following citation format when referencing our paper:
 
 ```bibtex
 @article{sun2025scienceboard,
