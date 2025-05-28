@@ -11,7 +11,24 @@ Code, environment and data for "ScienceBoard: Evaluating Multimodal Autonomous A
 ## Updates
 - **2025-05-27**: Initial release of our [paper](https://arxiv.org/abs/2505.19897), environment, benchmark, and [project page](https://qiushisun.github.io/ScienceBoard-Home/). Check it out! 🚀
 
-## ENV Config
+## Usage
+### Installation
+The infrastructure of the framework is based on [OSWorld](https://github.com/xlang-ai/OSWorld) together with VMware Workstation Pro (which is free for personal use since May, 2024) in Ubuntu or Windows. Please make sure that your device meets the minimal requirements of these preliminaries.
+
+1. Downloads [VMware Workstation Pro 17](https://support.broadcom.com/group/ecx/productdownloads?subfamily=VMware%20Workstation%20Pro&freeDownloads=true) and our pre-made images from Hugging Face (WIP)
+2. Clone this repository and install packages
+
+    ```shell
+    git clone https://github.com/OS-Copilot/ScienceBoard
+    cd ScienceBoard
+    conda create -n sci python=3.11
+    conda activate sci
+    pip install -r requirements.txt
+    ```
+
+3. We recommend you to change evaluating process in main.py directly with some sensitive information stored in environment variables.
+
+### ENV Config
 1. General
     - `VM_PATH`: path to vmware .vmx file
     - `HTTPX_PROXY`: proxy URL; avoid clashes with HTTP_PROXY and HTTPS_PROXY
@@ -38,7 +55,7 @@ Code, environment and data for "ScienceBoard: Evaluating Multimodal Autonomous A
     - `CELE_BIN_PATH`: executable binary file of Celestia
     - `GIS_BIN_PATH`: executable binary file of Grass GIS
 
-## Exceptions
+### Possible Exceptions
 - Error when initializing:
 
     ```shell
@@ -112,7 +129,7 @@ Code, environment and data for "ScienceBoard: Evaluating Multimodal Autonomous A
 
     input password manually in VMWare and take a new snapshot.
 
-# Citation
+## Citation
 🫶 If you are interested in our work or find this repository / our data helpful, please consider using the following citation format when referencing our paper:
 
 ```bibtex
