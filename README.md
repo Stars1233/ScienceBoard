@@ -136,8 +136,21 @@ The infrastructure of the framework is based on [OSWorld](https://github.com/xla
 
 ## Development Manual
 ### Introduction of New Apps
+If you are willing to add new applications into ScienceBoard, please make sure that you already have full understanding of your target application and this repository.
 
-### Crafting the Image
+1. Write a plugin or implant a server in your target application revealing its inner states. Listed below is repositories of our modified applications:
+    - [chimerax-states](https://github.com/ShiinaHiiragi/chimerax-states): a plugin for ChimeraX;
+    - [kalgebra](https://github.com/ShiinaHiiragi/kalgebra): a recompilation copy of KAlgebra;
+    - [Celestia](https://github.com/ShiinaHiiragi/Celestia): a recompilation copy of Celestia;
+    - [grass-gis](https://github.com/ShiinaHiiragi/grass-gui): GUI part in Python of Grass GIS.
+2. Copy `sci/Template` and rename it to the name of your target application;
+    - `template.py`: direct managers for the Raw / VM application
+    - `task.py`: initialization and evaluation of tasks using RESTful API with your server
+    - `__init__.py`: change the name of `template.py`
+3. Write json files of tasks and modified VM images.
+
+### Crafting VM Image from Scratch
+See [Staff Manual of VM Image](vm_config/manual.md).
 
 ## Citation
 🫶 If you are interested in our work or find this repository / our data helpful, please consider using the following citation format when referencing our paper:
