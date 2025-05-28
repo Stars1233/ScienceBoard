@@ -29,34 +29,36 @@ The infrastructure of the framework is based on [OSWorld](https://github.com/xla
 3. We recommend you to change evaluating process in `main.py` directly with some sensitive information hidden in environment variables.
 
 ### Env Config
-#### As a Functionality
+#### As a functionality
+- `DEBUG_ERR_FACT`: insert a breakpoint when eval exception occur if set to any value;
 
-- `DEBUG_ERR_FACT`: insert a breakpoint when eval exception occur if set
-
-#### As a Storage Location for Sensitive Info
+#### As a storage location for sensitive info
 1. Used in our template of `main.py`:
-    - `VM_PATH`: path to vmware .vmx file
-    - `HTTPX_PROXY`: proxy URL; avoid clashes with HTTP_PROXY and HTTPS_PROXY
-    - `OPENAI_API_KEY`: API key for OpenAI GPT
-    - `GOOGLE_API_KEY`: API key for Google Gemini
-    - `ANTHROPIC_API_KEY`: API key for Anthropic Claude
-    - `QWEN_VL_URL`: Base URL for QwenVL
-    - `INTERN_VL_URL`: Base URL for InternVL
-    - `QVQ_VL_URL`: Base URL for QVQ
-    - `OS_ACT_URL`: Base URL for OS-Atlas
-    - `TARS_DPO_URL`: Base URL for UI-Tars
-    - `QWEN_VL_NAME`: Name of QwenVL
-    - `INTERN_VL_NAME`: Name of InternVL
-    - `QVQ_VL_NAME`: Name of QVQ
-    - `OS_ACT_NAME`: Name of OS-Atlas
-    - `TARS_DPO_NAME`: Name of UI-Tars
+    - `VM_PATH`: path to vmware .vmx file;
+    - `HTTPX_PROXY`: proxy URL; avoid clashes with `HTTP_PROXY` and `HTTPS_PROXY` on Linux;
+    - `OPENAI_API_KEY`: API key for OpenAI GPT;
+    - `GOOGLE_API_KEY`: API key for Google Gemini;
+    - `ANTHROPIC_API_KEY`: API key for Anthropic Claude;
+    - `QWEN_VL_URL`: Base URL for QwenVL;
+    - `INTERN_VL_URL`: Base URL for InternVL;
+    - `QVQ_VL_URL`: Base URL for QVQ;
+    - `OS_ACT_URL`: Base URL for OS-Atlas;
+    - `TARS_DPO_URL`: Base URL for UI-Tars;
+    - `QWEN_VL_NAME`: Name of QwenVL;
+    - `INTERN_VL_NAME`: Name of InternVL;
+    - `QVQ_VL_NAME`: Name of QVQ;
+    - `OS_ACT_NAME`: Name of OS-Atlas;
+    - `TARS_DPO_NAME`: Name of UI-Tars.
+
 2. Used in `sci/Presets.py`:
-    - `LEAN_LIB_PATH`: path for Lean 4 REPL
-    - `QT6_LIB_PATH`: dynamic library directory for Qt6
-    - `FFI_LIB_PATH`: dynamic library file for libffi.so
-    - `KALG_BIN_PATH`: executable binary file of KAlgebra
-    - `CELE_BIN_PATH`: executable binary file of Celestia
-    - `GIS_BIN_PATH`: executable binary file of Grass GIS
+    - `LEAN_LIB_PATH`: path for Lean 4 REPL;
+    - `QT6_LIB_PATH`: dynamic library directory for Qt6;
+    - `FFI_LIB_PATH`: dynamic library file for libffi.so;
+    - `KALG_BIN_PATH`: executable binary file of KAlgebra;
+    - `CELE_BIN_PATH`: executable binary file of Celestia;
+    - `GIS_BIN_PATH`: executable binary file of Grass GIS.
+
+    these configs are only used for debugging under `Raw` settings and would not be loaded unless being used.
 
 ### Possible Exceptions
 1. Error when initializing:
@@ -77,7 +79,7 @@ The infrastructure of the framework is based on [OSWorld](https://github.com/xla
         json.decoder.JSONDecodeError: Expecting value: line 1 column 1 (char 0)
     ```
 
-    the target app has not yet been started up, try to assign a bigger value for 'wait' field.
+    the target app has not yet been started up when trying to initialize due to insufficient performance of your device; try to assign a bigger value for 'wait' field in json files of the tasks.
 
 2. Failed to get accessibility tree:
 
@@ -130,9 +132,12 @@ The infrastructure of the framework is based on [OSWorld](https://github.com/xla
         TypeError: a bytes-like object is required, not 'NoneType'
     ```
 
-    input password manually in VMWare and take a new snapshot.
+    fail to authenticate in newly downloaded images; input password once manually in VMWare and take a new snapshot using the same name as before and delete the former one.
 
 ## Development Manual
+### Introduction of New Apps
+
+### Crafting the Image
 
 ## Citation
 🫶 If you are interested in our work or find this repository / our data helpful, please consider using the following citation format when referencing our paper:
