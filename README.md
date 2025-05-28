@@ -15,8 +15,8 @@ Code, environment and data for "ScienceBoard: Evaluating Multimodal Autonomous A
 ### Installation
 The infrastructure of the framework is based on [OSWorld](https://github.com/xlang-ai/OSWorld) together with VMware Workstation Pro (which is free for personal use since May, 2024) in Ubuntu or Windows. Please make sure that your device meets the minimal requirements of these preliminaries.
 
-1. Downloads [VMware Workstation Pro 17](https://support.broadcom.com/group/ecx/productdownloads?subfamily=VMware%20Workstation%20Pro&freeDownloads=true) and our pre-made images from Hugging Face (WIP)
-2. Clone this repository and install packages
+1. Download [VMware Workstation Pro 17](https://support.broadcom.com/group/ecx/productdownloads?subfamily=VMware%20Workstation%20Pro&freeDownloads=true) and our pre-made images from Hugging Face (WIP);
+2. Clone this repository and install packages needed:
 
     ```shell
     git clone https://github.com/OS-Copilot/ScienceBoard
@@ -26,14 +26,17 @@ The infrastructure of the framework is based on [OSWorld](https://github.com/xla
     pip install -r requirements.txt
     ```
 
-3. We recommend you to change evaluating process in main.py directly with some sensitive information stored in environment variables.
+3. We recommend you to change evaluating process in `main.py` directly with some sensitive information hidden in environment variables.
 
-### ENV Config
-1. General
+### Env Config
+#### As a Functionality
+
+- `DEBUG_ERR_FACT`: insert a breakpoint when eval exception occur if set
+
+#### As a Storage Location for Sensitive Info
+1. Used in our template of `main.py`:
     - `VM_PATH`: path to vmware .vmx file
     - `HTTPX_PROXY`: proxy URL; avoid clashes with HTTP_PROXY and HTTPS_PROXY
-    - `DEBUG_ERR_FACT`: insert a breakpoint when eval exception occur
-2. Models
     - `OPENAI_API_KEY`: API key for OpenAI GPT
     - `GOOGLE_API_KEY`: API key for Google Gemini
     - `ANTHROPIC_API_KEY`: API key for Anthropic Claude
@@ -47,7 +50,7 @@ The infrastructure of the framework is based on [OSWorld](https://github.com/xla
     - `QVQ_VL_NAME`: Name of QVQ
     - `OS_ACT_NAME`: Name of OS-Atlas
     - `TARS_DPO_NAME`: Name of UI-Tars
-3. Config for raw apps
+2. Used in `sci/Presets.py`:
     - `LEAN_LIB_PATH`: path for Lean 4 REPL
     - `QT6_LIB_PATH`: dynamic library directory for Qt6
     - `FFI_LIB_PATH`: dynamic library file for libffi.so
@@ -56,7 +59,7 @@ The infrastructure of the framework is based on [OSWorld](https://github.com/xla
     - `GIS_BIN_PATH`: executable binary file of Grass GIS
 
 ### Possible Exceptions
-- Error when initializing:
+1. Error when initializing:
 
     ```shell
     Traceback (most recent call last):
@@ -76,7 +79,7 @@ The infrastructure of the framework is based on [OSWorld](https://github.com/xla
 
     the target app has not yet been started up, try to assign a bigger value for 'wait' field.
 
-- Failed to get accessibility tree:
+2. Failed to get accessibility tree:
 
     ```shell
     Traceback (most recent call last):
@@ -128,6 +131,8 @@ The infrastructure of the framework is based on [OSWorld](https://github.com/xla
     ```
 
     input password manually in VMWare and take a new snapshot.
+
+## Development Manual
 
 ## Citation
 🫶 If you are interested in our work or find this repository / our data helpful, please consider using the following citation format when referencing our paper:
