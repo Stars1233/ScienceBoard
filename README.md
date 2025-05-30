@@ -157,9 +157,9 @@ See [Staff Manual of VM Image](vm_config/manual.md).
 
 ```bibtex
 @article{sun2025scienceboard,
-   title={ScienceBoard: Evaluating Multimodal Autonomous Agents in Realistic Scientific Workflows},
-   author={Qiushi Sun and Zhoumianze Liu and Chang Ma and Zichen Ding and Fangzhi Xu and Zhangyue Yin and Haiteng Zhao and Zhenyu Wu and Kanzhi Cheng and Zhaoyang Liu and others},
-   year={2025},
-   journal={arXiv preprint arXiv:2505.19897}
+  title={ScienceBoard: Evaluating Multimodal Autonomous Agents in Realistic Scientific Workflows},
+  author={Sun, Qiushi and Liu, Zhoumianze and Ma, Chang and Ding, Zichen and Xu, Fangzhi and Yin, Zhangyue and Zhao, Haiteng and Wu, Zhenyu and Cheng, Kanzhi and Liu, Zhaoyang and others},
+  journal={arXiv preprint arXiv:2505.19897},
+  year={2025}
 }
 ```
