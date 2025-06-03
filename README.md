@@ -15,7 +15,7 @@ Code, environment and data for "ScienceBoard: Evaluating Multimodal Autonomous A
 ### Installation
 The infrastructure of the framework is based on [OSWorld](https://github.com/xlang-ai/OSWorld) together with VMware Workstation Pro (which is free for personal use since May, 2024) in Ubuntu or Windows. Please make sure that your device meets the minimal requirements of these preliminaries.
 
-1. Download [VMware Workstation Pro 17](https://support.broadcom.com/group/ecx/productdownloads?subfamily=VMware%20Workstation%20Pro&freeDownloads=true) and our pre-made images from Hugging Face (WIP);
+1. Download [VMware Workstation Pro 17](https://support.broadcom.com/group/ecx/productdownloads?subfamily=VMware%20Workstation%20Pro&freeDownloads=true) and our pre-made images from [Hugging Face](https://huggingface.co/OS-Copilot/ScienceBoard-Env/blob/main/VM.zip);
 2. Clone this repository and install packages needed:
 
     ```shell
@@ -34,8 +34,8 @@ The infrastructure of the framework is based on [OSWorld](https://github.com/xla
 
 #### As a storage location for sensitive info
 1. Used in our template of `main.py`:
-    - `VM_PATH`: path to vmware .vmx file;
-    - `HTTPX_PROXY`: proxy URL; avoid clashes with `HTTP_PROXY` and `HTTPS_PROXY` on Linux;
+    - `VM_PATH`: path to vmware .vmx file; will be automatically extracted (repeatedly) if set to path of `VM.zip`
+    - `HTTPX_PROXY`: proxy URL if needed; avoid clashes with `HTTP_PROXY` and `HTTPS_PROXY` on Linux;
     - `OPENAI_API_KEY`: API key for OpenAI GPT;
     - `GOOGLE_API_KEY`: API key for Google Gemini;
     - `ANTHROPIC_API_KEY`: API key for Anthropic Claude;
