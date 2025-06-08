@@ -9,6 +9,7 @@
 Code, environment and data for "ScienceBoard: Evaluating Multimodal Autonomous Agents in Realistic Scientific Workflows"
 
 ## Updates
+- **2025-06-08**: ScienceBoard will be presented at [WCUA@ICML 2025](https://www.icml-computeruseagents.com/) as oral paper. 🚀
 - **2025-06-04**: We release the [virtual machine snapshot](https://huggingface.co/OS-Copilot/ScienceBoard-Env) of ScienceBoard.
 - **2025-05-27**: Initial release of our [paper](https://arxiv.org/abs/2505.19897), environment, benchmark, and [project page](https://qiushisun.github.io/ScienceBoard-Home/). Check it out! 🚀
 
