@@ -31,7 +31,10 @@ The infrastructure of the framework is based on [OSWorld](https://github.com/xla
     pip install -r requirements.txt
     ```
 
-3. We recommend you to change evaluating process in [`main.py`](main.py) directly with some sensitive information hidden in environment variables.
+3. We recommend you to change evaluating process in [`main.py`](main.py) directly with some sensitive information hidden in environment variables, especially when it comes to complicate configs concerning [`community`](sci/Tester.py?plain=1#L232).
+
+> [!NOTE]  
+> [`Community`](sci/Tester.py?plain=1#L16) specifies the form of cooperation in which one or more models completes the tasks. You can customize your own multi-agents system by creating a new class inheriting `Community` together with method of `__call__()`.
 
 ### ⚙️ Env Config
 #### 🔐 As a storage location for sensitive info
