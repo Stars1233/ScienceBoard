@@ -65,7 +65,7 @@ The infrastructure of the framework is based on [OSWorld](https://github.com/xla
 
 ### Parameter Config
 1. `Automata`
-2. `Tester`: `__init__()` only register a new config. `__call__()` should be used to execute actual evaluation after initialization.
+2. `Tester`: `__init__()` only register a new config. `__call__()` should be used for actual evaluation after init.
     - `tasks_path`: the directory or file path for json file(s) of task(s); all `*.json` files under the path will be recursively read when a directory path is provided;
     - `logs_path`: the directory path for log files and will be created automatically when not existed; the structure of the directory will be arranged according to that under `tasks_path`;
     - `community`: the way of cooperation among multiple agents; use `AllInOne` for standard setting inherited from OSWorld;
