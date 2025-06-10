@@ -9,10 +9,12 @@
 
 Code, environment and data for "ScienceBoard: Evaluating Multimodal Autonomous Agents in Realistic Scientific Workflows"
 
+
 ## 🗞️ Updates
 - **2025-06-08**: ScienceBoard will be presented at [WCUA@ICML 2025](https://www.icml-computeruseagents.com/) as an oral paper. 🚀
 - **2025-06-04**: We release the [virtual machine snapshot](https://huggingface.co/OS-Copilot/ScienceBoard-Env) of ScienceBoard.
 - **2025-05-27**: Initial release of our [paper](https://arxiv.org/abs/2505.19897), environment, benchmark, and [project page](https://qiushisun.github.io/ScienceBoard-Home/). Check it out! 🚀
+
 
 ## 🛠️ Usage
 ### 📦 Installation
@@ -32,9 +34,6 @@ The infrastructure of the framework is based on [OSWorld](https://github.com/xla
 3. We recommend you to change evaluating process in [`main.py`](main.py) directly with some sensitive information hidden in environment variables.
 
 ### ⚙️ Env Config
-#### 🧪 As a functionality
-- `DEBUG_ERR_FACT`: insert a breakpoint when eval exception occur if set to any value;
-
 #### 🔐 As a storage location for sensitive info
 1. Used in our template of [`main.py`](main.py):
     - `VM_PATH`: path to vmware .vmx file; will be automatically extracted (repeatedly) if set to path of `VM.zip`
@@ -64,6 +63,9 @@ The infrastructure of the framework is based on [OSWorld](https://github.com/xla
 > [!CAUTION]
 > Configs defined in `sci/Presets.py` are only used for debugging under `Raw` settings and would not be loaded unless being used.
 
+#### 🧪 As a functionality
+- `DEBUG_ERR_FACT`: insert a breakpoint when eval exception occur if set to any value;
+
 ### 📏 Parameter Config
 1. [`Automata`](sci/Tester.py?plain=1#L87): a simple encapsulation for [`Model`](sci/base/model.py?plain=1#L144) and [`Agent`](sci/base/agent.py?plain=1#L51)
     - `model_style`: affect the request format and response processing of model calling; you can customize your own style by adding `_request_{style}()` under [`Model`](sci/base/model.py?plain=1#L144);
@@ -72,10 +74,10 @@ The infrastructure of the framework is based on [OSWorld](https://github.com/xla
 2. [`Tester`](sci/Tester.py?plain=1#L225): `__init__()` only register a new config. use `__call__()` for actual evaluation after init.
     - `tasks_path`: the directory or file path for json file(s) of task(s); all `*.json` files under the path will be recursively read when a directory path is provided;
     - `logs_path`: the directory path for log files and will be created automatically when not existed; the structure of the directory will be arranged according to that under `tasks_path`;
-    - `community`: the way of cooperation among multiple agents; use `AllInOne` for standard setting inherited from OSWorld;
+    - `community`: the way of cooperation among multiple agents; use [`AllInOne`](sci/base/community.py?plain=1#L52) for standard setting inherited from OSWorld;
     - `ignore`: skipped when log shows that the task is finished (by checking the existence of `result.out`) if set to `True`; so you can re-run the same program to retry failure cases;
     - `debug`: finish the task manually instead of calling models;
-    - `relative`: allow VM to execute `pyautogui` code with relative coordinates; often used by InternVL-3.
+    - `relative`: allow VM to execute `pyautogui` code with relative coordinates; basically used by InternVL-3.
 
 ### 🚧 Possible Exceptions
 1. Error when initializing:
@@ -151,6 +153,7 @@ The infrastructure of the framework is based on [OSWorld](https://github.com/xla
 
     fail to authenticate in newly downloaded images; input password once manually in VMWare and take a new snapshot using the same name as before and delete the former one.
 
+
 ## 🧑‍💻 Development Manual
 ### 🧩 Introduction of New Apps
 If you are willing to add new applications into ScienceBoard, please make sure that you already have a full understanding of your target application and this repository.
@@ -160,10 +163,10 @@ If you are willing to add new applications into ScienceBoard, please make sure t
     - [kalgebra](https://github.com/ShiinaHiiragi/kalgebra): a recompilation copy of KAlgebra;
     - [Celestia](https://github.com/ShiinaHiiragi/Celestia): a recompilation copy of Celestia;
     - [grass-gis](https://github.com/ShiinaHiiragi/grass-gui): GUI part in Python of Grass GIS.
-2. Copy `sci/Template` and rename it to the name of your target application;
-    - `template.py`: direct managers for the Raw / VM application
-    - `task.py`: initialization and evaluation of tasks using RESTful API with your server
-    - `__init__.py`: change the name of `template.py`
+2. Copy [`sci/Template`](sci/Template/) and rename it to the name of your target application;
+    - [`template.py`](sci/Template/template.py): direct managers for the Raw / VM application;
+    - [`task.py`](sci/Template/task.py): initialization and evaluation of tasks using RESTful API with your server;
+    - [`__init__.py`](sci/Template/__init__.py): change the name of `template.py`.
 3. Write json files of tasks and modified VM images.
 
 ### 🖼️ Crafting VM Image from Scratch
@@ -174,8 +177,8 @@ See [Staff Manual of VM Image](vm_config/manual.md).
 We have collected some questions from emails, Hugging Face, and WeChat communications. Please check the [FAQ](https://github.com/OS-Copilot/ScienceBoard/blob/main/faq.md) 🤖
 
 
-## Citation
-📋 If you are interested in our work or find this repository / our data helpful, please consider using the following citation format when referencing our paper:
+## 📋 Citation
+If you are interested in our work or find this repository / our data helpful, please consider using the following citation format when referencing our paper:
 
 ```bibtex
 @article{sun2025scienceboard,
