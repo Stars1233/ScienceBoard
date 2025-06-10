@@ -62,6 +62,16 @@ The infrastructure of the framework is based on [OSWorld](https://github.com/xla
 
     these configs are only used for debugging under `Raw` settings and would not be loaded unless being used.
 
+### Parameter Config
+1. `Automata`
+2. `Tester`: `__init__()` only register a new config. `__call__()` should be used to execute actual evaluation after initialization.
+    - `tasks_path`: the directory or file path for json file(s) of task(s); all `*.json` files under the path will be recursively read when a directory path is provided;
+    - `logs_path`: the directory path for log files and will be created automatically when not existed; the structure of the directory will be arranged according to that under `tasks_path`;
+    - `community`: the way of cooperation among multiple agents; use `AllInOne` for standard setting inherited from OSWorld;
+    - `ignore`: skipped when log shows that the task is finished (by checking the existence of `result.out`) if set to `True`; so you can re-run the same program to retry failure cases;
+    - `debug`: finish the task manually instead of calling models;
+    - `relative`: allow VM to execute `pyautogui` code with relative coordinates; often used by InternVL-3.
+
 ### Possible Exceptions
 1. Error when initializing:
 

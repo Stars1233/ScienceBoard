@@ -4,6 +4,7 @@
 
 .vscode
 .VSCodeCounter
+.DS_Store
 
 /logs/*
 /temp/*
