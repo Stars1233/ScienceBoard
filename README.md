@@ -34,7 +34,7 @@ The infrastructure of the framework is based on [OSWorld](https://github.com/xla
 3. We recommend you to change evaluating process in [`main.py`](main.py) directly with some sensitive information hidden in environment variables, especially when it comes to complicate configs concerning [`community`](sci/Tester.py?plain=1#L232).
 
 > [!NOTE]  
-> [`Community`](sci/Tester.py?plain=1#L16) specifies the form of cooperation in which one or more models completes the tasks. You can customize your own multi-agents system by creating a new class inheriting `Community` together with method of `__call__()`.
+> [`Community`](sci/Tester.py?plain=1#L16) specifies the form of cooperation in which one or more models completes the tasks. You can customize your own multi-agents system by creating a new class inheriting `Community` together with the method of `__call__()`.
 
 ### ⚙️ Env Config
 #### 🔐 As a storage location for sensitive info
@@ -75,12 +75,12 @@ The infrastructure of the framework is based on [OSWorld](https://github.com/xla
     - `overflow_style`: affect the way we detect overflow of token; you can customize your own style by adding `{style}()` under [`Overflow`](sci/base/agent.py?plain=1#L24);
     - `code_style`: affect the way we process code blocks when communicating with models; you can customize your own style by adding `wrap_{style}()` and `extract_{style}()` under [`CodeLike`](sci/base/prompt.py?plain=1#L84).
 2. [`Tester`](sci/Tester.py?plain=1#L225): `__init__()` only register a new config. use `__call__()` for actual evaluation after init.
-    - `tasks_path`: the directory or file path for json file(s) of task(s); all `*.json` files under the path will be recursively read when a directory path is provided;
+    - `tasks_path`: the directory or file path for json file(s) of task(s); all `*.json` files under the path specified will be recursively loaded when a directory path is provided;
     - `logs_path`: the directory path for log files and will be created automatically when not existed; the structure of the directory will be arranged according to that under `tasks_path`;
     - `community`: the way of cooperation among multiple agents; use [`AllInOne`](sci/base/community.py?plain=1#L52) for standard setting inherited from OSWorld;
-    - `ignore`: skipped when log shows that the task is finished (by checking the existence of `result.out`) if set to `True`; so you can re-run the same program to retry failure cases;
-    - `debug`: finish the task manually instead of calling models;
-    - `relative`: allow VM to execute `pyautogui` code with relative coordinates; basically used by InternVL-3.
+    - `ignore`: skipped when log indicates that the task is finished (by checking the existence of `result.out`) if set to `True`; so you can re-run the same program to retry failure cases only;
+    - `debug`: finish the tasks manually instead of calling models;
+    - `relative`: allow VM to execute `pyautogui` codes with relative coordinates; basically used by InternVL-3.
 
 ### 🚧 Possible Exceptions
 1. Error when initializing:
