@@ -5,16 +5,17 @@
 [![arXiv](https://img.shields.io/badge/arXiv-2505.19897-b31b1b.svg)](https://arxiv.org/abs/2505.19897) 
 ![License](https://img.shields.io/badge/License-MIT-blue)
 [![Paper page](https://huggingface.co/datasets/huggingface/badges/resolve/main/paper-page-sm.svg)](https://huggingface.co/papers/2505.19897)
+[![Discord](https://img.shields.io/discord/1222168244673314847?logo=discord&style=flat)](https://discord.com/invite/rXS2XbgfaD)
 
 Code, environment and data for "ScienceBoard: Evaluating Multimodal Autonomous Agents in Realistic Scientific Workflows"
 
-## Updates
-- **2025-06-08**: ScienceBoard will be presented at [WCUA@ICML 2025](https://www.icml-computeruseagents.com/) as oral paper. 🚀
+## 🗞️ Updates
+- **2025-06-08**: ScienceBoard will be presented at [WCUA@ICML 2025](https://www.icml-computeruseagents.com/) as an oral paper. 🚀
 - **2025-06-04**: We release the [virtual machine snapshot](https://huggingface.co/OS-Copilot/ScienceBoard-Env) of ScienceBoard.
 - **2025-05-27**: Initial release of our [paper](https://arxiv.org/abs/2505.19897), environment, benchmark, and [project page](https://qiushisun.github.io/ScienceBoard-Home/). Check it out! 🚀
 
-## Usage
-### Installation
+## 🛠️ Usage
+### 📦 Installation
 The infrastructure of the framework is based on [OSWorld](https://github.com/xlang-ai/OSWorld) together with VMware Workstation Pro (which is free for personal use since May, 2024) in Ubuntu or Windows. Please make sure that your device meets the minimal requirements of these preliminaries.
 
 1. Download [VMware Workstation Pro 17](https://support.broadcom.com/group/ecx/productdownloads?subfamily=VMware%20Workstation%20Pro&freeDownloads=true) and our pre-made images from [Hugging Face](https://huggingface.co/OS-Copilot/ScienceBoard-Env/blob/main/VM.zip);
@@ -30,11 +31,11 @@ The infrastructure of the framework is based on [OSWorld](https://github.com/xla
 
 3. We recommend you to change evaluating process in `main.py` directly with some sensitive information hidden in environment variables.
 
-### Env Config
-#### As a functionality
+### ⚙️ Env Config
+#### 🧪 As a functionality
 - `DEBUG_ERR_FACT`: insert a breakpoint when eval exception occur if set to any value;
 
-#### As a storage location for sensitive info
+#### 🔐 As a storage location for sensitive info
 1. Used in our template of `main.py`:
     - `VM_PATH`: path to vmware .vmx file; will be automatically extracted (repeatedly) if set to path of `VM.zip`
     - `HTTPX_PROXY`: proxy URL if needed; avoid clashes with `HTTP_PROXY` and `HTTPS_PROXY` on Linux;
@@ -62,7 +63,7 @@ The infrastructure of the framework is based on [OSWorld](https://github.com/xla
 
     these configs are only used for debugging under `Raw` settings and would not be loaded unless being used.
 
-### Possible Exceptions
+### 🚧 Possible Exceptions
 1. Error when initializing:
 
     ```shell
@@ -136,8 +137,8 @@ The infrastructure of the framework is based on [OSWorld](https://github.com/xla
 
     fail to authenticate in newly downloaded images; input password once manually in VMWare and take a new snapshot using the same name as before and delete the former one.
 
-## Development Manual
-### Introduction of New Apps
+## 🧑‍💻 Development Manual
+### 🧩 Introduction of New Apps
 If you are willing to add new applications into ScienceBoard, please make sure that you already have a full understanding of your target application and this repository.
 
 1. Write a plugin or implant a server in your target application revealing its inner states. Listed below is repositories of our modified applications:
@@ -151,8 +152,13 @@ If you are willing to add new applications into ScienceBoard, please make sure t
     - `__init__.py`: change the name of `template.py`
 3. Write json files of tasks and modified VM images.
 
-### Crafting VM Image from Scratch
+### 🖼️ Crafting VM Image from Scratch
 See [Staff Manual of VM Image](vm_config/manual.md).
+
+
+## 🤔 FAQ
+We have collected some questions from emails, Hugging Face, and WeChat communications. Please check the [FAQ](https://github.com/OS-Copilot/ScienceBoard/blob/main/faq.md) 🤖
+
 
 ## Citation
 📋 If you are interested in our work or find this repository / our data helpful, please consider using the following citation format when referencing our paper:
