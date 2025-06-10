@@ -54,6 +54,10 @@ The infrastructure of the framework is based on [OSWorld](https://github.com/xla
     | UI-Tars  | `TARS_DPO_URL`  | `TARS_DPO_NAME`  |
 
 2. Used in [`sci/Presets.py`](sci/Presets.py):
+
+    > [!CAUTION]
+    > The following configs are only used for debugging under `Raw` settings and would not be loaded unless being used.
+
     - `LEAN_LIB_PATH`: path for Lean 4 REPL;
     - `QT6_LIB_PATH`: dynamic library directory for Qt6;
     - `FFI_LIB_PATH`: dynamic library file for libffi.so;
@@ -61,13 +65,11 @@ The infrastructure of the framework is based on [OSWorld](https://github.com/xla
     - `CELE_BIN_PATH`: executable binary file of Celestia;
     - `GIS_BIN_PATH`: executable binary file of Grass GIS.
 
-    these configs are only used for debugging under `Raw` settings and would not be loaded unless being used.
-
 ### 📏 Parameter Config
 1. [`Automata`](sci/Tester.py?plain=1#L87): a simple encapsulation for [`Model`](sci/base/model.py?plain=1#L144) and [`Agent`](sci/base/agent.py?plain=1#L51)
-    - `model_style`: affect the request format and response processing of model calling; you can customize your own style by adding `_request_{style}()` under [`Model`](sci/base/model.py?plain=1#L144)
-    - `overflow_style`: affect the way we detect overflow of token; you can customize your own style by adding `{style}()` under [`Overflow`](sci/base/agent.py?plain=1#L24)
-    - `code_style`: affect the way we process code blocks provided by models; you can customize your own style by adding `wrap_{style}()` and `extract_{style}()` under [`CodeLike`](sci/base/prompt.py?plain=1#L84)
+    - `model_style`: affect the request format and response processing of model calling; you can customize your own style by adding `_request_{style}()` under [`Model`](sci/base/model.py?plain=1#L144);
+    - `overflow_style`: affect the way we detect overflow of token; you can customize your own style by adding `{style}()` under [`Overflow`](sci/base/agent.py?plain=1#L24);
+    - `code_style`: affect the way we process code blocks when communicating with models; you can customize your own style by adding `wrap_{style}()` and `extract_{style}()` under [`CodeLike`](sci/base/prompt.py?plain=1#L84).
 2. [`Tester`](sci/Tester.py?plain=1#L225): `__init__()` only register a new config. use `__call__()` for actual evaluation after init.
     - `tasks_path`: the directory or file path for json file(s) of task(s); all `*.json` files under the path will be recursively read when a directory path is provided;
     - `logs_path`: the directory path for log files and will be created automatically when not existed; the structure of the directory will be arranged according to that under `tasks_path`;
