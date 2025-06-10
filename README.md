@@ -54,16 +54,15 @@ The infrastructure of the framework is based on [OSWorld](https://github.com/xla
     | UI-Tars  | `TARS_DPO_URL`  | `TARS_DPO_NAME`  |
 
 2. Used in [`sci/Presets.py`](sci/Presets.py):
-
-    > [!CAUTION]
-    > The following configs are only used for debugging under `Raw` settings and would not be loaded unless being used.
-
     - `LEAN_LIB_PATH`: path for Lean 4 REPL;
     - `QT6_LIB_PATH`: dynamic library directory for Qt6;
     - `FFI_LIB_PATH`: dynamic library file for libffi.so;
     - `KALG_BIN_PATH`: executable binary file of KAlgebra;
     - `CELE_BIN_PATH`: executable binary file of Celestia;
     - `GIS_BIN_PATH`: executable binary file of Grass GIS.
+
+> [!CAUTION]
+> Configs defined in `sci/Presets.py` are only used for debugging under `Raw` settings and would not be loaded unless being used.
 
 ### 📏 Parameter Config
 1. [`Automata`](sci/Tester.py?plain=1#L87): a simple encapsulation for [`Model`](sci/base/model.py?plain=1#L144) and [`Agent`](sci/base/agent.py?plain=1#L51)
