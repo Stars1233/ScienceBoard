@@ -29,14 +29,14 @@ The infrastructure of the framework is based on [OSWorld](https://github.com/xla
     pip install -r requirements.txt
     ```
 
-3. We recommend you to change evaluating process in `main.py` directly with some sensitive information hidden in environment variables.
+3. We recommend you to change evaluating process in [`main.py`](main.py) directly with some sensitive information hidden in environment variables.
 
 ### ⚙️ Env Config
 #### 🧪 As a functionality
 - `DEBUG_ERR_FACT`: insert a breakpoint when eval exception occur if set to any value;
 
 #### 🔐 As a storage location for sensitive info
-1. Used in our template of `main.py`:
+1. Used in our template of [`main.py`](main.py):
     - `VM_PATH`: path to vmware .vmx file; will be automatically extracted (repeatedly) if set to path of `VM.zip`
     - `HTTPX_PROXY`: proxy URL if needed; avoid clashes with `HTTP_PROXY` and `HTTPS_PROXY` on Linux;
     - `OPENAI_API_KEY`: API key for OpenAI GPT;
@@ -53,7 +53,7 @@ The infrastructure of the framework is based on [OSWorld](https://github.com/xla
     | OS-Atlas |  `OS_ACT_URL`   |  `OS_ACT_NAME`   |
     | UI-Tars  | `TARS_DPO_URL`  | `TARS_DPO_NAME`  |
 
-2. Used in `sci/Presets.py`:
+2. Used in [`sci/Presets.py`](sci/Presets.py):
     - `LEAN_LIB_PATH`: path for Lean 4 REPL;
     - `QT6_LIB_PATH`: dynamic library directory for Qt6;
     - `FFI_LIB_PATH`: dynamic library file for libffi.so;
@@ -63,9 +63,12 @@ The infrastructure of the framework is based on [OSWorld](https://github.com/xla
 
     these configs are only used for debugging under `Raw` settings and would not be loaded unless being used.
 
-### Parameter Config
-1. `Automata`
-2. `Tester`: `__init__()` only register a new config. `__call__()` should be used for actual evaluation after init.
+### 📏 Parameter Config
+1. [`Automata`](sci/Tester.py?plain=1#L87): a simple encapsulation for [`Model`](sci/base/model.py?plain=1#L144) and [`Agent`](sci/base/agent.py?plain=1#L51)
+    - `model_style`: affect the request format and response processing of model calling; you can customize your own style by adding `_request_{style}()` under [`Model`](sci/base/model.py?plain=1#L144)
+    - `overflow_style`: affect the way we detect overflow of token; you can customize your own style by adding `{style}()` under [`Overflow`](sci/base/agent.py?plain=1#L24)
+    - `code_style`: affect the way we process code blocks provided by models; you can customize your own style by adding `wrap_{style}()` and `extract_{style}()` under [`CodeLike`](sci/base/prompt.py?plain=1#L84)
+2. [`Tester`](sci/Tester.py?plain=1#L225): `__init__()` only register a new config. use `__call__()` for actual evaluation after init.
     - `tasks_path`: the directory or file path for json file(s) of task(s); all `*.json` files under the path will be recursively read when a directory path is provided;
     - `logs_path`: the directory path for log files and will be created automatically when not existed; the structure of the directory will be arranged according to that under `tasks_path`;
     - `community`: the way of cooperation among multiple agents; use `AllInOne` for standard setting inherited from OSWorld;
