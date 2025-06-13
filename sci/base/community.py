@@ -1,4 +1,5 @@
 import sys
+import re
 
 from typing import List, Tuple, Dict
 from typing import Optional, Any, Self
@@ -175,16 +176,32 @@ class Disentangled(Community):
         if first_step:
             self.actor._init(obs.keys(), **init_kwargs)
 
-        if all([CoderAgent.PLACEHOLDER not in code.code for code in codes]):
+        pattern = r'# *(.+)\n *' + re.escape(CoderAgent.PLACEHOLDER)
+        has_placeholder = lambda code: CoderAgent.PLACEHOLDER in code
+        has_comment = lambda code: re.search(pattern, code) is not None
+
+        # intercept if no placeholders found
+        if all([not has_placeholder(code.code) for code in codes]):
             return codes
+
+        # skip if some placeholders has no comments
+        # 
+        if all([
+            not has_placeholder(code.code) or has_comment(code.code)
+            for code in codes
+        ]):
+            self.vlog.info(f"Unmarked placeholders found; skip this step.")
+            return []
 
         results = []
         for code in codes:
-            if CoderAgent.PLACEHOLDER not in code.code:
+            code_str = code.code
+            if not has_placeholder(code_str):
                 results.append(code)
                 continue
 
-            obs[OBS.cloze] = self.coder.prompt_factory.code_handler(code.code)
+            match_obj = re.search(pattern, code_str)
+            obs[OBS.cloze] = match_obj[1]
             actor_content = self.actor._step(obs)
             actor_response_message = self.actor(actor_content, timeout=timeout)
 
@@ -196,7 +213,11 @@ class Disentangled(Community):
                     + actor_response_content.text
             )
 
-            processed = self.actor.code_handler(actor_response_content, *code_info)
-            results.append(processed[0])
+            results.append([CodeLike(code=code_str[:match_obj.span()[0]])])
+            results.append(self.actor.code_handler(
+                actor_response_content,
+                *code_info
+            )[0])
+            results.append([CodeLike(code=code_str[match_obj.span()[1]:])])
 
         return results
