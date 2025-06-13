@@ -67,10 +67,6 @@ class RawTask(Task, TaskMixin):
         super().__init__(config_path, manager, *args, **kwargs)
         self.check_config()
 
-    def _init(self) -> bool:
-        # TEMP: do nothing
-        return True
-
     @Task._stop_handler
     def eval(self) -> bool:
         # MRO: RawTask -> Task -> TaskMixin -> object
