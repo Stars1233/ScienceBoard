@@ -173,6 +173,7 @@ class Disentangled(Community):
 
         codes = self.coder.code_handler(coder_response_content, *code_info)
 
+        # a dummy system_message is required for actor._step()
         if first_step:
             self.actor._init(obs.keys(), **init_kwargs)
 
@@ -186,7 +187,7 @@ class Disentangled(Community):
 
         # skip if some placeholders has no comments
         # 
-        if all([
+        if not all([
             not has_placeholder(code.code) or has_comment(code.code)
             for code in codes
         ]):
@@ -213,11 +214,15 @@ class Disentangled(Community):
                     + actor_response_content.text
             )
 
-            results.append([CodeLike(code=code_str[:match_obj.span()[0]])])
+            if len(prev:=code_str[:match_obj.span()[0]]) > 0:
+                results.append(CodeLike(code=prev))
+
             results.append(self.actor.code_handler(
                 actor_response_content,
                 *code_info
             )[0])
-            results.append([CodeLike(code=code_str[match_obj.span()[1]:])])
+
+            if len(post:=code_str[match_obj.span()[1]:]) > 0:
+                results.append(CodeLike(code=post))
 
         return results

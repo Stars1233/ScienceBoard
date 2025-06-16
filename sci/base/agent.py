@@ -240,11 +240,11 @@ class PlannerAgent(AIOAgent):
 
 class GrounderAgent(AIOAgent):
     USER_OPENING: Dict[FrozenSet[str], str] = {
-        frozenset({OBS.textual, OBS.cloze}): f"Given the textual information as below:\n{{textual}}\nand given the schedule from the planner:\n{{{OBS.cloze}}}\n",
-        frozenset({OBS.screenshot, OBS.cloze}): f"Given the screenshot and the schedule from the planner as below:\n{{{OBS.cloze}}}\n",
-        frozenset({OBS.a11y_tree, OBS.cloze}): f"Given the info from accessibility tree as below:\n{{a11y_tree}}\nand given the schedule from the planner:\n{{{OBS.cloze}}}\n",
-        frozenset({OBS.a11y_tree, OBS.set_of_marks, OBS.cloze}): f"Given the tagged screenshot and info from accessibility tree as below:\n{{a11y_tree}}\nand given the schedule from the planner:\n{{{OBS.cloze}}}\n",
-        frozenset({OBS.screenshot, OBS.a11y_tree, OBS.cloze}): f"Given the screenshot and info from accessibility tree as below:\n{{a11y_tree}}\nand given the schedule from the planner:\n{{{OBS.cloze}}}\n"
+        frozenset({OBS.textual, OBS.schedule}): f"Given the textual information as below:\n{{textual}}\nand given the schedule from the planner:\n{{{OBS.schedule}}}\n",
+        frozenset({OBS.screenshot, OBS.schedule}): f"Given the screenshot and the schedule from the planner as below:\n{{{OBS.schedule}}}\n",
+        frozenset({OBS.a11y_tree, OBS.schedule}): f"Given the info from accessibility tree as below:\n{{a11y_tree}}\nand given the schedule from the planner:\n{{{OBS.schedule}}}\n",
+        frozenset({OBS.a11y_tree, OBS.set_of_marks, OBS.schedule}): f"Given the tagged screenshot and info from accessibility tree as below:\n{{a11y_tree}}\nand given the schedule from the planner:\n{{{OBS.schedule}}}\n",
+        frozenset({OBS.screenshot, OBS.a11y_tree, OBS.schedule}): f"Given the screenshot and info from accessibility tree as below:\n{{a11y_tree}}\nand given the schedule from the planner:\n{{{OBS.schedule}}}\n"
     }
 
     # make sure that `context_window` is captured before kwargs
@@ -276,15 +276,18 @@ class CoderAgent(AIOAgent):
 
 
 class ActorAgent(AIOAgent):
-    USER_OPENING: Dict[FrozenSet[str], str] = {
-        frozenset({OBS.textual, OBS.cloze}): f"Given the textual information as below:\n{{textual}}\nand given the next-step action:\n{{{OBS.cloze}}}\n",
-        frozenset({OBS.screenshot, OBS.cloze}): f"Given the screenshot and the next-step action as below:\n{{{OBS.cloze}}}\n",
-        frozenset({OBS.a11y_tree, OBS.cloze}): f"Given the info from accessibility tree as below:\n{{a11y_tree}}\nand given the next-step action:\n{{{OBS.cloze}}}\n",
-        frozenset({OBS.a11y_tree, OBS.set_of_marks, OBS.cloze}): f"Given the tagged screenshot and info from accessibility tree as below:\n{{a11y_tree}}\nand given the next-step action:\n{{{OBS.cloze}}}\n",
-        frozenset({OBS.screenshot, OBS.a11y_tree, OBS.cloze}): f"Given the screenshot and info from accessibility tree as below:\n{{a11y_tree}}\nand given the next-step action:\n{{{OBS.cloze}}}\n"
-    }
-
     # make sure that `context_window` is captured before kwargs
     def __init__(self, *args, context_window: int = 0, **kwargs) -> None:
         super(AIOAgent, self).__init__(*args, context_window=0, **kwargs)
         self.prompt_factory = ActorPromptFactory(self.code_style)
+
+    # no need to check system_message
+    def _step(self, obs: Dict[str, Any]) -> List[Content]:
+        contents = [TextContent(obs[OBS.cloze])]
+
+        images = [
+            item for _, item in obs.items()
+            if isinstance(item, Image.Image)
+        ]
+        contents += [ImageContent(image) for image in images]
+        return contents

@@ -505,4 +505,4 @@ class ActorPromptFactory(PromptFactory):
         type_sort: TypeSort
     ) -> Callable[[str], str]:
         # prompts are processed at server side
-        return obs[OBS.cloze]
+        return lambda _: ""

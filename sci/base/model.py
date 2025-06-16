@@ -103,6 +103,11 @@ class ImageContent(Content):
             }
         }
 
+    def _gui_actor(self, hide_image: bool = False, **_) -> Dict[str, Any]:
+        return {
+            "image_base64": f"data:image/png;base64,{self.base64_png}"
+        }
+
 
 @dataclass
 class Message:
@@ -219,10 +224,11 @@ class Model:
         )
 
     def _request_gui_actor(self, messages: Dict, timeout: int) -> Response:
-        index = 0 if messages["content"][0]["type"] == "text" else 1
+        content = messages[1]["content"]
+        index = 0 if content[0]["type"] == "text" else 1
         payload = {
-            "instruction": messages["content"][index]["text"],
-            "image_base64": messages["content"][index ^ 1]["image_url"]["url"],
+            "instruction": content[index]["text"],
+            "image_base64": content[index ^ 1]["image_base64"],
             "model_name_or_path": self.model_name
         }
 
