@@ -19,6 +19,8 @@ from .prompt import CodeLike, Primitive
 from .prompt import AIOPromptFactory
 from .prompt import PlannerPromptFactory
 from .prompt import GrounderPromptFactory
+from .prompt import CoderPromptFactory
+from .prompt import ActorPromptFactory
 
 
 class Overflow:
@@ -249,3 +251,43 @@ class GrounderAgent(AIOAgent):
     def __init__(self, *args, context_window: int = 0, **kwargs) -> None:
         super(AIOAgent, self).__init__(*args, context_window=0, **kwargs)
         self.prompt_factory = GrounderPromptFactory(self.code_style)
+
+
+class CoderAgent(AIOAgent):
+    PLACEHOLDER = CoderPromptFactory.PLACEHOLDER
+    USER_OPENING: Dict[FrozenSet[str], str] = {
+        frozenset({}): "",
+        frozenset({OBS.textual}): "Given the textual information as below:\n{textual}\n",
+        frozenset({OBS.screenshot}): "Given the screenshot as below. ",
+        frozenset({OBS.set_of_marks}): "Given the tagged screenshot as below. "
+    }
+
+    # make sure that `code_style` is captured before kwargs
+    def __init__(self, *args, **kwargs) -> None:
+        super(AIOAgent, self).__init__(*args, **kwargs)
+        self.prompt_factory = CoderPromptFactory(self.code_style)
+
+    @Agent._init_handler
+    def _step(self, obs: Dict[str, Any]) -> List[Content]:
+        new_obs = obs.copy()
+        if OBS.a11y_tree in new_obs:
+            del new_obs[OBS.a11y_tree]
+        return super()._step.__wrapped__(self, new_obs)
+
+
+class ActorAgent(AIOAgent):
+    # make sure that `context_window` is captured before kwargs
+    def __init__(self, *args, context_window: int = 0, **kwargs) -> None:
+        super(AIOAgent, self).__init__(*args, context_window=0, **kwargs)
+        self.prompt_factory = ActorPromptFactory(self.code_style)
+
+    # no need to check system_message
+    def _step(self, obs: Dict[str, Any]) -> List[Content]:
+        contents = [TextContent(obs[OBS.cloze])]
+
+        images = [
+            item for _, item in obs.items()
+            if isinstance(item, Image.Image)
+        ]
+        contents += [ImageContent(image) for image in images]
+        return contents

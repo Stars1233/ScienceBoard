@@ -47,13 +47,14 @@ The infrastructure of the framework is based on [OSWorld](https://github.com/xla
 
     and variables for open-source models:
 
-    |  Model   |    Base URL     |       Name       |
-    | :------: | :-------------: | :--------------: |
-    |  QwenVL  |  `QWEN_VL_URL`  |  `QWEN_VL_NAME`  |
-    | InternVL | `INTERN_VL_URL` | `INTERN_VL_NAME` |
-    |   QVQ    |  `QVQ_VL_URL`   |  `QVQ_VL_NAME`   |
-    | OS-Atlas |  `OS_ACT_URL`   |  `OS_ACT_NAME`   |
-    | UI-Tars  | `TARS_DPO_URL`  | `TARS_DPO_NAME`  |
+    |   Model   |    Base URL     |       Name       |
+    | :-------: | :-------------: | :--------------: |
+    |  QwenVL   |  `QWEN_VL_URL`  |  `QWEN_VL_NAME`  |
+    | InternVL  | `INTERN_VL_URL` | `INTERN_VL_NAME` |
+    |    QVQ    |  `QVQ_VL_URL`   |  `QVQ_VL_NAME`   |
+    | OS-Atlas  |  `OS_ACT_URL`   |  `OS_ACT_NAME`   |
+    | GUI-Actor | `GUI_ACTOR_URL` | `GUI_ACTOR_NAME` |
+    |  UI-Tars  | `TARS_DPO_URL`  | `TARS_DPO_NAME`  |
 
 2. Used in [`sci/Presets.py`](sci/Presets.py):
     - `LEAN_LIB_PATH`: path for Lean 4 REPL;
@@ -71,7 +72,7 @@ The infrastructure of the framework is based on [OSWorld](https://github.com/xla
 
 ### 📏 Parameter Config
 1. [`Automata`](sci/Tester.py?plain=1#L87): a simple encapsulation for [`Model`](sci/base/model.py?plain=1#L144) and [`Agent`](sci/base/agent.py?plain=1#L51)
-    - `model_style`: affect the request format and response processing of model calling; you can customize your own style by adding `_request_{style}()` under [`Model`](sci/base/model.py?plain=1#L144);
+    - `model_style`: affect the request format and response processing of model calling; you can customize your own style by adding `_request_{style}()` and `_access_{style}()` under [`Model`](sci/base/model.py?plain=1#L144);
     - `overflow_style`: affect the way we detect overflow of token; you can customize your own style by adding `{style}()` under [`Overflow`](sci/base/agent.py?plain=1#L24);
     - `code_style`: affect the way we process code blocks when communicating with models; you can customize your own style by adding `wrap_{style}()` and `extract_{style}()` under [`CodeLike`](sci/base/prompt.py?plain=1#L84).
 2. [`Tester`](sci/Tester.py?plain=1#L225): `__init__()` only register a new config. use `__call__()` for actual evaluation after init.

@@ -1,4 +1,5 @@
 import sys
+import re
 
 from typing import List, Tuple, Dict
 from typing import Optional, Any, Self
@@ -9,6 +10,7 @@ from .manager import OBS
 from .log import VirtualLog
 from .agent import Agent, AIOAgent
 from .agent import PlannerAgent, GrounderAgent
+from .agent import CoderAgent, ActorAgent
 from .prompt import TypeSort, CodeLike
 
 
@@ -134,3 +136,93 @@ class SeeAct(Community):
                 + grounder_response_content.text
         )
         return self.grounder.code_handler(grounder_response_content, *code_info)
+
+
+@dataclass
+class Disentangled(Community):
+    coder: CoderAgent
+    actor: ActorAgent
+
+    def __call__(
+        self,
+        steps: Tuple[int, int],
+        inst: str,
+        obs: Dict[str, Any],
+        code_info: tuple[set[str], Optional[List[List[int]]]],
+        type_sort: TypeSort,
+        timeout: int
+    ) -> List[CodeLike]:
+        step_index, total_steps = steps
+        first_step = step_index == 0
+
+        init_kwargs = {
+            "inst": inst,
+            "type_sort": type_sort
+        } if first_step else None
+
+        coder_content = self.coder._step(obs, init_kwargs)
+        coder_reponse_message = self.coder(coder_content, timeout=timeout)
+
+        assert len(coder_reponse_message.content) == 1
+        coder_response_content = coder_reponse_message.content[0]
+
+        self.vlog.info(
+            f"Response of coder {step_index + 1}/{total_steps}: \n" \
+                + coder_response_content.text
+        )
+
+        codes = self.coder.code_handler(coder_response_content, *code_info)
+
+        # a dummy system_message is required for actor._step()
+        if first_step:
+            self.actor._init(obs.keys(), **init_kwargs)
+
+        pattern = r'# *(.+)\n *' + re.escape(CoderAgent.PLACEHOLDER)
+        has_placeholder = lambda code: CoderAgent.PLACEHOLDER in code
+        has_comment = lambda code: re.search(pattern, code) is not None
+
+        # intercept if no placeholders found
+        if all([not has_placeholder(code.code) for code in codes]):
+            return codes
+
+        # skip if some placeholders has no comments
+        # 
+        if not all([
+            not has_placeholder(code.code) or has_comment(code.code)
+            for code in codes
+        ]):
+            self.vlog.info(f"Unmarked placeholders found; skip this step.")
+            return []
+
+        results = []
+        for code in codes:
+            code_str = code.code
+            if not has_placeholder(code_str):
+                results.append(code)
+                continue
+
+            match_obj = re.search(pattern, code_str)
+            obs[OBS.cloze] = match_obj[1]
+            actor_content = self.actor._step(obs)
+            actor_response_message = self.actor(actor_content, timeout=timeout)
+
+            assert len(actor_response_message.content) == 1
+            actor_response_content = actor_response_message.content[0]
+
+            self.vlog.info(
+                f"Response of actor {step_index + 1}/{total_steps}: \n" \
+                    + actor_response_content.text
+            )
+
+            if len(prev:=code_str[:match_obj.span()[0]]) > 0:
+                results.append(CodeLike(code=prev))
+
+            results.append(self.actor.code_handler(
+                actor_response_content,
+                *code_info
+            )[0])
+
+            if len(post:=code_str[match_obj.span()[1]:]) > 0:
+                results.append(CodeLike(code=post))
+
+        return results

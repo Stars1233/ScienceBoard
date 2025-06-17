@@ -1,4 +1,5 @@
 import sys
+import json
 import string
 import base64
 
@@ -8,14 +9,12 @@ from io import BytesIO
 from typing import Optional, List, Dict
 from typing import Literal, Any, ClassVar
 
-from PIL import Image
-
 import requests
 from requests import Response
+from PIL import Image
 
 sys.dont_write_bytecode = True
 from . import utils
-from .manager import OBS
 from .override import *
 
 ModelType = Literal["openai", "anthropic"]
@@ -102,6 +101,11 @@ class ImageContent(Content):
                 "media_type": "image/png",
                 "data": Content.PLACEHOLDER if hide_image else self.base64_png
             }
+        }
+
+    def _gui_actor(self, hide_image: bool = False, **_) -> Dict[str, Any]:
+        return {
+            "image_base64": f"data:image/png;base64,{self.base64_png}"
         }
 
 
@@ -204,7 +208,7 @@ class Model:
         }
 
         payload = {
-            "model": self.model,
+            "model": self.model_name,
             "max_tokens": self.max_tokens,
             "messages": messages,
             "temperature": self.temperature,
@@ -216,6 +220,23 @@ class Model:
             headers=headers,
             proxies=self.proxies,
             json=payload,
+            timeout=timeout
+        )
+
+    def _request_gui_actor(self, messages: Dict, timeout: int) -> Response:
+        content = messages[1]["content"]
+        index = 0 if content[0]["type"] == "text" else 1
+        payload = {
+            "instruction": content[index]["text"],
+            "image_base64": content[index ^ 1]["image_base64"],
+            "model_name_or_path": self.model_name
+        }
+
+        return requests.post(
+            self.base_url,
+            proxies=self.proxies,
+            json=payload,
+            verify=False,
             timeout=timeout
         )
 
@@ -238,6 +259,15 @@ class Model:
             style="anthropic",
             role=message["role"],
             content=[TextContent(message["content"][0]["text"])]
+        )
+
+    @staticmethod
+    def _access_gui_actor(response: Response) -> Message:
+        message = response.json()
+        return Message(
+            style="gui_actor",
+            role="assistant",
+            content=[TextContent(json.dumps(message["xy"]))]
         )
 
     @utils.error_factory(None)

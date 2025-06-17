@@ -6,6 +6,7 @@ sys.stdout.reconfigure(encoding="utf-8")
 from sci import Automata, Tester, OBS
 from sci import AllInOne, AIOAgent
 from sci import SeeAct, PlannerAgent, GrounderAgent
+from sci import Disentangled, CoderAgent, ActorAgent
 
 # commercial models
 gpt_4o = lambda cls: Automata(
@@ -80,6 +81,13 @@ os_atlas = lambda cls: Automata(
     code_style="atlas"
 )(cls)
 
+gui_actor = lambda cls: Automata(
+    model_style="gui_actor",
+    base_url=os.environ["GUI_ACTOR_URL"],
+    model_name=os.environ["GUI_ACTOR_NAME"],
+    code_style="gui_actor"
+)(cls)
+
 uground = lambda cls: Automata(
     model_style="openai",
     base_url=os.environ["UGROUND_URL"],
@@ -100,11 +108,17 @@ tars_dpo = lambda cls: Automata(
 # this file somehow acts as a config file
 # with some sensitive contents hidden in env
 if __name__ == "__main__":
+    # default setting
     AIO_NAME = "gpt_4o"
     AIO_GROUP = AllInOne(gpt_4o(AIOAgent))
 
+    # SeeAct for screenshot setting
     SA_NAME = "gpt_4o->gpt_4o"
     SA_GROUP = SeeAct(gpt_4o(PlannerAgent), gpt_4o(GrounderAgent))
+
+    # Disentangled for screenshot setting
+    DT_NAME = "gpt_4o->gui-actor"
+    DT_GROUP = Disentangled(gpt_4o(CoderAgent), gui_actor(ActorAgent))
 
     # register a tester and execute it
     Tester(
@@ -118,8 +132,8 @@ if __name__ == "__main__":
     Tester.plan([
         {
             "tasks_path": "./tasks/VM",
-            "logs_path": f"./logs/{SA_NAME}-vm-screenshot",
-            "community": SA_GROUP,
+            "logs_path": f"./logs/{AIO_NAME}-vm-screenshot",
+            "community": AIO_GROUP,
             "vm_path": os.environ["VM_PATH"],
             "obs_types": {OBS.screenshot},
             "headless": True
