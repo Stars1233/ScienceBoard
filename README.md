@@ -6,6 +6,7 @@
 ![License](https://img.shields.io/badge/License-MIT-blue)
 [![Paper page](https://huggingface.co/datasets/huggingface/badges/resolve/main/paper-page-sm.svg)](https://huggingface.co/papers/2505.19897)
 [![Discord](https://img.shields.io/discord/1222168244673314847?logo=discord&style=flat)](https://discord.com/invite/rXS2XbgfaD)
+[![🌐 Website](https://img.shields.io/badge/Website-🌐-informational)](https://qiushisun.github.io/ScienceBoard-Home/)
 
 Code, environment and data for "ScienceBoard: Evaluating Multimodal Autonomous Agents in Realistic Scientific Workflows"
 
@@ -13,7 +14,7 @@ Code, environment and data for "ScienceBoard: Evaluating Multimodal Autonomous A
 ## 🗞️ Updates
 - **2025-06-08**: ScienceBoard will be presented at [WCUA@ICML 2025](https://www.icml-computeruseagents.com/) as an oral paper. 🚀
 - **2025-06-04**: We release the [virtual machine snapshot](https://huggingface.co/OS-Copilot/ScienceBoard-Env) of ScienceBoard.
-- **2025-05-27**: Initial release of our [paper](https://arxiv.org/abs/2505.19897), environment, benchmark, and [project page](https://qiushisun.github.io/ScienceBoard-Home/). Check it out! 🚀
+- **2025-05-27**: Initial release of our [paper](https://arxiv.org/abs/2505.19897), environment, benchmark, and [🌐 Project Website](https://qiushisun.github.io/ScienceBoard-Home/). Check it out! 🚀
 
 
 ## 🛠️ Usage
@@ -173,8 +174,15 @@ If you are willing to add new applications into ScienceBoard, please make sure t
     - [`__init__.py`](sci/Template/__init__.py): change the name of `template.py`.
 3. Write json files of tasks and modified VM images.
 
-### 🖼️ Crafting VM Image from Scratch
+### 🖼️ Crafting VM Image from Scratch 
 See [Staff Manual of VM Image](vm_config/manual.md).
+
+### 💻 Recommended Configuration 
+
+- CPU: Intel Core i7-11700
+- GPU: Integrated graphics is sufficient
+- Memory: 32 GB RAM
+- Storage: > 100 GB available disk space
 
 
 ## 🤔 FAQ
