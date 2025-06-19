@@ -179,11 +179,12 @@ See [Staff Manual of VM Image](vm_config/manual.md).
 
 ### 💻 Recommended Configuration 
 
+It is recommended to run this project with at least the following configuration:
+
 - CPU: Intel Core i7-11700
 - GPU: Integrated graphics is sufficient
 - Memory: 32 GB RAM
 - Storage: > 100 GB available disk space
-
 
 ## 🤔 FAQ
 We have collected some questions from emails, Hugging Face, and WeChat communications. Please check the [FAQ](https://github.com/OS-Copilot/ScienceBoard/blob/main/faq.md) 🤖
