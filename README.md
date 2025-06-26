@@ -6,6 +6,7 @@
 ![License](https://img.shields.io/badge/License-MIT-blue)
 [![Paper page](https://huggingface.co/datasets/huggingface/badges/resolve/main/paper-page-sm.svg)](https://huggingface.co/papers/2505.19897)
 [![Discord](https://img.shields.io/discord/1222168244673314847?logo=discord&style=flat)](https://discord.com/invite/rXS2XbgfaD)
+[![Generic badge](https://img.shields.io/badge/WeChat-机器之心-green.svg?logo=wechat)](https://mp.weixin.qq.com/s/naVskQ9btJFkoUyyQVr7zA)
 [![🌐 Website](https://img.shields.io/badge/Website-🌐-informational)](https://qiushisun.github.io/ScienceBoard-Home/)
 
 Code, environment and data for "ScienceBoard: Evaluating Multimodal Autonomous Agents in Realistic Scientific Workflows"
