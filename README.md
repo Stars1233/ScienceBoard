@@ -13,8 +13,10 @@ Code, environment and data for "ScienceBoard: Evaluating Multimodal Autonomous A
 
 
 ## 🗞️ Updates
-- **2025-06-08**: ScienceBoard will be presented at [WCUA@ICML 2025](https://www.icml-computeruseagents.com/) as an oral paper. 🚀
-- **2025-06-04**: We release the [virtual machine snapshot](https://huggingface.co/OS-Copilot/ScienceBoard-Env) of ScienceBoard.
+
+- **2025-06-30**: We release new evaluation results (GUI-Actor, UI-TARS-1.5) and [agent trajectories](https://huggingface.co/datasets/OS-Copilot/ScienceBoard-Traj/tree/main). 🎊
+- **2025-06-08**: ScienceBoard will be presented at [WCUA@ICML 2025](https://www.icml-computeruseagents.com/) as an oral paper! 🚀
+- **2025-06-04**: We release the [virtual machine snapshot](https://huggingface.co/OS-Copilot/ScienceBoard-Env) of ScienceBoard. 🌏
 - **2025-05-27**: Initial release of our [paper](https://arxiv.org/abs/2505.19897), environment, benchmark, and [🌐 Project Website](https://qiushisun.github.io/ScienceBoard-Home/). Check it out! 🚀
 
 
