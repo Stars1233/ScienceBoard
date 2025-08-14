@@ -66,7 +66,8 @@ class AllInOne(Community):
         step_index, total_steps = steps
         init_kwargs = {
             "inst": inst,
-            "type_sort": type_sort
+            "type_sort": type_sort,
+            "primitives": code_info[0]
         } if step_index == 0 else None
 
         user_content = self.mono._step(obs, init_kwargs)
@@ -101,7 +102,8 @@ class SeeAct(Community):
 
         init_kwargs = {
             "inst": inst,
-            "type_sort": type_sort
+            "type_sort": type_sort,
+            "primitives": code_info[0]
         } if first_step else None
 
         planner_content = self.planner._step(obs, init_kwargs)
@@ -157,7 +159,8 @@ class Disentangled(Community):
 
         init_kwargs = {
             "inst": inst,
-            "type_sort": type_sort
+            "type_sort": type_sort,
+            "primitives": code_info[0]
         } if first_step else None
 
         coder_content = self.coder._step(obs, init_kwargs)

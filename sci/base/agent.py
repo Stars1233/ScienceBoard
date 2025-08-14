@@ -190,8 +190,9 @@ class AIOAgent(Agent):
         obs_keys: FrozenSet[str],
         inst: str,
         type_sort: Optional[TypeSort] = None,
+        primitives: Set[str] = Primitive.PRIMITIVES
     ) -> None:
-        system_inst = self.prompt_factory(obs_keys, type_sort)
+        system_inst = self.prompt_factory(obs_keys, type_sort, primitives)
         super()._init(system_inst(inst))
 
     @Agent._init_handler

@@ -365,10 +365,10 @@ class AIOPromptFactory(PromptFactory):
     def _general_usage(self, type_sort: TypeSort) -> str:
         return "\n".join(self.getattr(type_sort, "USAGE", []))
 
-    def _special_command(self) -> str:
+    def _special_command(self, primitives: Set[str]) -> str:
         docs = [
             self.code_handler(getattr(Primitive, item).__doc__)
-            for item in Primitive.PRIMITIVES
+            for item in primitives
         ]
 
         return "\n".join([self.SPECIAL_OVERVIEW, *[
@@ -376,11 +376,16 @@ class AIOPromptFactory(PromptFactory):
             for index, item in enumerate(docs)
         ]])
 
-    def _command(self, obs: FrozenSet[str], type_sort: TypeSort) -> str:
+    def _command(
+        self,
+        obs: FrozenSet[str],
+        type_sort: TypeSort,
+        primitives: Set[str]
+    ) -> str:
         return "\n\n".join(PromptFactory.filter([
             self._general_command(obs, type_sort),
             self._general_usage(type_sort),
-            self._special_command()
+            self._special_command(primitives)
         ]))
 
     def _warning(self, type_sort: TypeSort) -> str:
@@ -401,11 +406,12 @@ class AIOPromptFactory(PromptFactory):
     def __call__(
         self,
         obs: FrozenSet[str],
-        type_sort: TypeSort
+        type_sort: TypeSort,
+        primitives: Set[str]
     ) -> Callable[[str], str]:
         return lambda inst: "\n\n".join(PromptFactory.filter([
             self._intro(obs, type_sort),
-            self._command(obs, type_sort),
+            self._command(obs, type_sort, primitives),
             self._warning(type_sort),
             self._ending()(inst)
         ]))
@@ -423,10 +429,15 @@ class PlannerPromptFactory(AIOPromptFactory):
     # fourth section: _ending
     ENDING_ULTIMATUM = "First give the current observation and previous things we did a short reflection, then RETURN ME YOUR PLANNING OR SPECIAL CODE I ASKED FOR. NEVER EVER RETURN ME ANYTHING ELSE."
 
-    def _command(self, obs: FrozenSet[str], type_sort: TypeSort) -> str:
+    def _command(
+        self,
+        obs: FrozenSet[str],
+        type_sort: TypeSort,
+        primitives: Set[str]
+    ) -> str:
         return "\n".join(PromptFactory.filter([
             self.RETURN_OVERVIEW,
-            self._special_command()
+            self._special_command(primitives)
         ]))
 
     def _warning(self, type_sort: TypeSort) -> str:
@@ -468,7 +479,12 @@ SCROLL: to scroll in the specified direction.
     # fourth section: _ending
     ENDING_ULTIMATUM = "First give the current observation and the generated plan, then RETURN ME THE CODE I ASKED FOR. NEVER EVER RETURN ME ANYTHING ELSE."
 
-    def _command(self, obs: FrozenSet[str], type_sort: TypeSort) -> str:
+    def _command(
+        self,
+        obs: FrozenSet[str],
+        type_sort: TypeSort,
+        primitives: Set[str]
+    ) -> str:
         return self._general_command(obs, type_sort)
 
     def _warning(self, type_sort: TypeSort) -> str:

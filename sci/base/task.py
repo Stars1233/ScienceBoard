@@ -298,7 +298,7 @@ class Task:
     def __test_prompt(self) -> None:
         obs = frozenset({OBS.screenshot if self.manager.is_gui else OBS.textual})
         for name, agent in self.community:
-            agent._init(obs, self.instruction, self.type_sort)
+            agent._init(obs, self.instruction, self.type_sort, self.primitives)
             prompt = agent.system_message.content[0].text
             self.vlog.info(f"Prompt sample of {name}: \n" + prompt)
 
