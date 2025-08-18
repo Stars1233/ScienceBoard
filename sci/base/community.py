@@ -78,7 +78,7 @@ class AllInOne(Community):
 
         self.vlog.info(
             f"Response {step_index + 1}/{total_steps}: \n" \
-                + response_content.text
+                + str(response_content.text)
         )
         return self.mono.code_handler(response_content, *code_info)
 

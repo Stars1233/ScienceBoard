@@ -135,7 +135,7 @@ class Agent:
         timeout: int = Manager.HETERO_TIMEOUT
     ) -> Message:
         assert hasattr(self, "context"), "Call _init() first"
-        assert retry > 0, f"Max reties exceeded when calling {self.model.model_name}"
+        assert retry > 0, f"Max retries exceeded when calling {self.model.model_name}"
 
         assert isinstance(contents, list)
         for content in contents:
@@ -161,7 +161,8 @@ class Agent:
         response_message = self.model.access(response, context_length)
         if response_message is None:
             self.vlog.error(
-                f"Unexpected error when requesting {self.model.model_name}.\n"
+                f"Unexpected error when requesting {self.model.model_name}"
+                    + f" with status code of {response.status_code}.\n"
                     + response.text
             )
             Manager.pause(Primitive.WAIT_TIME)
