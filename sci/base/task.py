@@ -61,6 +61,15 @@ class Task:
             if not hasattr(getattr(Primitive, item), "__wrapped__")
         }.union(primitives)
 
+        # remove primitive that has not been implemented
+        self.primitives = {
+            item for item in self.primitives if not(
+                hasattr((primitive := getattr(Primitive, item)), "__dec__") \
+                    and primitive.__dec__() == Primitive.virtual_handler \
+                    and not hasattr(self.manager, item)
+            )
+        }
+
         self.__check_config()
         if self.__class__ != Task:
             assert self.version == self.manager.version
@@ -364,6 +373,8 @@ class Task:
             self.__test_prompt()
             if self.ans is not None:
                 self.vlog.info(f"Answer: {self.ans}")
+            from . import CodeLike
+            CodeLike(code="CODE 2d y = x + 1")(self.manager, self.primitives)
             primitive_text = self.vlog.input(
                 f"Finish task manually: ",
                 end=""
