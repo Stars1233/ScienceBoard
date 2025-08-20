@@ -89,8 +89,8 @@ class Primitive:
     # but its implementation depends on each app manager
     @staticmethod
     @virtual_handler
-    def CODE() -> None:
-        """don't show me"""
+    def CODE(*args) -> None:
+        """When you want to execute some commands, use «CODE»"""
         raise
 
     # nearly every trajectory ends with one status (e.g. DONE, FAIL, ...)
@@ -254,7 +254,12 @@ class CodeLike:
         if self.is_primitive(primitives):
             splits = self.code.split(" ")
             try:
-                getattr(Primitive, splits[0])(*splits[1:])
+                primitive = getattr(Primitive, splits[0])
+                if hasattr(primitive, "__dec__") \
+                    and primitive.__dec__() == Primitive.virtual_handler:
+                    getattr(manager, splits[0])(*splits[1:])
+                else:
+                    primitive(*splits[1:])
             except Primitive.PlannedTermination as early_stop:
                 # pass planned exception
                 raise early_stop
