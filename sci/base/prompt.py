@@ -46,7 +46,15 @@ class Primitive:
         @functools.wraps(method)
         def option_wrapper(*args, **kwargs):
             return method(*args, **kwargs)
+        option_wrapper.__dec__ = lambda: Primitive.option_handler
         return option_wrapper
+
+    def virtual_handler(method: Callable) -> Callable:
+        @functools.wraps(method)
+        def virtual_wrapper(*args, **kwargs):
+            return method(*args, **kwargs)
+        virtual_wrapper.__dec__ = lambda: Primitive.virtual_handler
+        return virtual_wrapper
 
     class PlannedTermination(Exception):
         def __init__(self, type: staticmethod, *args) -> None:
@@ -69,12 +77,26 @@ class Primitive:
         time_span = Primitive.WAIT_TIME if time_span is None else int(time_span)
         Manager.pause(time_span)
 
+    # optional primitives distinguish by existence of '__wrapped__' attr
+    # will be added automatically if some the task need to end the traj
     @staticmethod
     @option_handler
     def ANS(*args) -> None:
         """When you are asked to submit an answer, return «ANS s» without quotation marks surrounding s, and use «FAIL» if there is no answer to the question"""
         raise Primitive.PlannedTermination(Primitive.ANS, *args)
 
+    # specially, virtual primitives act basically the same as the optional ones
+    # but its implementation depends on each app manager
+    @staticmethod
+    @virtual_handler
+    def CODE() -> None:
+        """don't show me"""
+        raise
+
+    # nearly every trajectory ends with one status (e.g. DONE, FAIL, ...)
+    # status is one of the primitive, but the opposite is not true
+    # we use a fake primitive to depict 'ends without any status'
+    # which distinguishes from the previous ones by existence of doc-string
     @staticmethod
     def TIMEOUT() -> None:
         ...
@@ -225,7 +247,7 @@ class CodeLike:
     def __call__(
         self,
         manager: Manager,
-        primitives: List[str]
+        primitives: Set[str]
     ) -> Optional[bool]:
         assert self.desc is False
 

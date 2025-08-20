@@ -39,6 +39,7 @@ class Task:
         manager: Optional[Manager] = None,
         community: Optional[Community] = None,
         obs_types: Optional[Set[str]] = None,
+        primitives: Set[str] = set(),
         debug: bool = False,
         relative: bool = False
     ) -> None:
@@ -58,7 +59,8 @@ class Task:
         self.primitives = {
             item for item in Primitive.PRIMITIVES
             if not hasattr(getattr(Primitive, item), "__wrapped__")
-        }
+        }.union(primitives)
+
         self.__check_config()
         if self.__class__ != Task:
             assert self.version == self.manager.version

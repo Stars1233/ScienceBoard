@@ -20,6 +20,7 @@ from . import Agent, AIOAgent, Community
 from . import Manager, VManager, Task
 from . import Log, VirtualLog
 from . import OBS, Presets
+from . import Primitive
 
 POLY = TypeVar("POLY")
 
@@ -237,6 +238,7 @@ class Tester:
         debug: bool = False,
         optimize: bool = True,
         relative: bool = False,
+        primitives: Set[str] = set(),
         handle_managers: Callable = Presets.spawn_managers
     ) -> None:
         assert isinstance(tasks_path, str)
@@ -280,6 +282,15 @@ class Tester:
         else:
             assert vm_path is None
         self.vm_path = vm_path
+
+        assert isinstance(primitives, Set)
+        self.primitives = set()
+
+        for primitive in primitives:
+            if hasattr(primitive, "__name__"):
+                self.primitives.add(primitive.__name__)
+            elif isinstance(primitive, str) and hasattr(Primitive, primitive):
+                self.primitives.add(primitive)
 
         # manager in managers should not be Manager itself
         assert hasattr(handle_managers, "__call__")
@@ -339,6 +350,7 @@ class Tester:
             manager=self.__manager(type_sort),
             community=self.community,
             obs_types=self.obs_types,
+            primitives=self.primitives,
             debug=self.debug,
             relative=self.relative
         )
