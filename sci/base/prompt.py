@@ -392,11 +392,22 @@ class AIOPromptFactory(PromptFactory):
     def _general_usage(self, type_sort: TypeSort) -> str:
         return "\n".join(self.getattr(type_sort, "USAGE", []))
 
-    def _special_command(self, primitives: Set[str]) -> str:
-        docs = [
-            self.code_handler(getattr(Primitive, item).__doc__)
-            for item in primitives
-        ]
+    def _virtual_command(self, primitive: staticmethod, manager: Optional[Manager]):
+        if hasattr(primitive, "__dec__") \
+            and primitive.__dec__() == Primitive.virtual_handler:
+            return ":\n" + getattr(manager, primitive.__name__).__doc__
+        else:
+            return ""
+
+    def _special_command(
+        self,
+        primitives: Set[str],
+        manager: Optional[Manager]
+    ) -> str:
+        docs = [self.code_handler(
+            (primitive := getattr(Primitive, item)).__doc__ \
+                + self._virtual_command(primitive, manager)
+        ) for item in primitives]
 
         return "\n".join([self.SPECIAL_OVERVIEW, *[
             item + ("." if index + 1 == len(docs) else ";")
@@ -407,12 +418,13 @@ class AIOPromptFactory(PromptFactory):
         self,
         obs: FrozenSet[str],
         type_sort: TypeSort,
-        primitives: Set[str]
+        primitives: Set[str],
+        manager: Optional[Manager]
     ) -> str:
         return "\n\n".join(PromptFactory.filter([
             self._general_command(obs, type_sort),
             self._general_usage(type_sort),
-            self._special_command(primitives)
+            self._special_command(primitives, manager)
         ]))
 
     def _warning(self, type_sort: TypeSort) -> str:
@@ -434,11 +446,12 @@ class AIOPromptFactory(PromptFactory):
         self,
         obs: FrozenSet[str],
         type_sort: TypeSort,
-        primitives: Set[str]
+        primitives: Set[str],
+        manager: Optional[Manager]
     ) -> Callable[[str], str]:
         return lambda inst: "\n\n".join(PromptFactory.filter([
             self._intro(obs, type_sort),
-            self._command(obs, type_sort, primitives),
+            self._command(obs, type_sort, primitives, manager),
             self._warning(type_sort),
             self._ending()(inst)
         ]))
@@ -460,11 +473,12 @@ class PlannerPromptFactory(AIOPromptFactory):
         self,
         obs: FrozenSet[str],
         type_sort: TypeSort,
-        primitives: Set[str]
+        primitives: Set[str],
+        manager: Optional[Manager]
     ) -> str:
         return "\n".join(PromptFactory.filter([
             self.RETURN_OVERVIEW,
-            self._special_command(primitives)
+            self._special_command(primitives, manager)
         ]))
 
     def _warning(self, type_sort: TypeSort) -> str:
@@ -510,7 +524,8 @@ SCROLL: to scroll in the specified direction.
         self,
         obs: FrozenSet[str],
         type_sort: TypeSort,
-        primitives: Set[str]
+        primitives: Set[str],
+        manager: Optional[Manager]
     ) -> str:
         return self._general_command(obs, type_sort)
 
@@ -545,7 +560,9 @@ class ActorPromptFactory(PromptFactory):
     def __call__(
         self,
         obs: FrozenSet[str],
-        type_sort: TypeSort
+        type_sort: TypeSort,
+        primitives: Set[str],
+        manager: Optional[Manager]
     ) -> Callable[[str], str]:
         # prompts are processed at server side
         return lambda _: ""

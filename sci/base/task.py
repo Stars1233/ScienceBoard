@@ -281,7 +281,8 @@ class Task:
             obs=observation,
             code_info=(self.primitives, nested_tags),
             type_sort=self.type_sort,
-            timeout=self.manager.HETERO_TIMEOUT
+            timeout=self.manager.HETERO_TIMEOUT,
+            manager=self.manager
         )
 
         # save the log first
@@ -309,7 +310,13 @@ class Task:
     def __test_prompt(self) -> None:
         obs = frozenset({OBS.screenshot if self.manager.is_gui else OBS.textual})
         for name, agent in self.community:
-            agent._init(obs, self.instruction, self.type_sort, self.primitives)
+            agent._init(
+                obs,
+                self.instruction,
+                self.type_sort,
+                self.primitives,
+                self.manager
+            )
             prompt = agent.system_message.content[0].text
             self.vlog.info(f"Prompt sample of {name}: \n" + prompt)
 
@@ -373,8 +380,6 @@ class Task:
             self.__test_prompt()
             if self.ans is not None:
                 self.vlog.info(f"Answer: {self.ans}")
-            from . import CodeLike
-            CodeLike(code="CODE 2d y = x + 1")(self.manager, self.primitives)
             primitive_text = self.vlog.input(
                 f"Finish task manually: ",
                 end=""

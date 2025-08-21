@@ -118,6 +118,9 @@ class Automata:
         }
 
     def __call__(self, agent_cls: POLY = AIOAgent) -> POLY:
+        if agent_cls == ...:
+            return self
+
         model = Model(**self.model_args)
         agent = agent_cls(model=model, **self.agent_args)
         for handler in self.register:
@@ -143,8 +146,14 @@ class Automata:
                     )
         return _image_token
 
-    def prompt(self, obs: FrozenSet[str], type_sort: TypeSort) -> str:
-        return self().prompt_factory(obs, type_sort)("...")
+    def prompt(
+        self,
+        obs: FrozenSet[str],
+        type_sort: TypeSort,
+        primitives: Set[str],
+        manager: Optional[Manager]
+    ) -> str:
+        return self().prompt_factory(obs, type_sort, primitives, manager)("...")
 
 
 class TaskInfo:

@@ -6,7 +6,7 @@ from typing import Optional, Any, Self
 from dataclasses import dataclass
 
 sys.dont_write_bytecode = True
-from .manager import OBS
+from .manager import OBS, Manager
 from .log import VirtualLog
 from .agent import Agent, AIOAgent
 from .agent import PlannerAgent, GrounderAgent
@@ -45,7 +45,8 @@ class Community:
         obs: Dict[str, Any],
         code_info: tuple[set[str], Optional[List[List[int]]]],
         type_sort: TypeSort,
-        timeout: int
+        timeout: int,
+        manager: Manager
     ) -> List[CodeLike]:
         raise NotImplementedError
 
@@ -61,13 +62,15 @@ class AllInOne(Community):
         obs: Dict[str, Any],
         code_info: tuple[set[str], Optional[List[List[int]]]],
         type_sort: TypeSort,
-        timeout: int
+        timeout: int,
+        manager: Manager
     ) -> List[CodeLike]:
         step_index, total_steps = steps
         init_kwargs = {
             "inst": inst,
             "type_sort": type_sort,
-            "primitives": code_info[0]
+            "primitives": code_info[0],
+            "manager": manager
         } if step_index == 0 else None
 
         user_content = self.mono._step(obs, init_kwargs)
@@ -95,7 +98,8 @@ class SeeAct(Community):
         obs: Dict[str, Any],
         code_info: tuple[set[str], Optional[List[List[int]]]],
         type_sort: TypeSort,
-        timeout: int
+        timeout: int,
+        manager: Manager
     ) -> List[CodeLike]:
         step_index, total_steps = steps
         first_step = step_index == 0
@@ -103,7 +107,8 @@ class SeeAct(Community):
         init_kwargs = {
             "inst": inst,
             "type_sort": type_sort,
-            "primitives": code_info[0]
+            "primitives": code_info[0],
+            "manager": manager
         } if first_step else None
 
         planner_content = self.planner._step(obs, init_kwargs)
@@ -152,7 +157,8 @@ class Disentangled(Community):
         obs: Dict[str, Any],
         code_info: tuple[set[str], Optional[List[List[int]]]],
         type_sort: TypeSort,
-        timeout: int
+        timeout: int,
+        manager: Manager
     ) -> List[CodeLike]:
         step_index, total_steps = steps
         first_step = step_index == 0
@@ -160,7 +166,8 @@ class Disentangled(Community):
         init_kwargs = {
             "inst": inst,
             "type_sort": type_sort,
-            "primitives": code_info[0]
+            "primitives": code_info[0],
+            "manager": manager
         } if first_step else None
 
         coder_content = self.coder._step(obs, init_kwargs)
