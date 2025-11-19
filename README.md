@@ -191,10 +191,6 @@ It is recommended to run this project with at least the following configuration:
 - Memory: 32 GB RAM
 - Storage: > 100 GB available disk space
 
-## 🤔 FAQ
-We have collected some questions from emails, Hugging Face, and WeChat communications. Please check the [FAQ](https://github.com/OS-Copilot/ScienceBoard/blob/main/faq.md) 🤖
-
-
 ## 📋 Citation
 If you are interested in our work or find this repository / our data helpful, please consider using the following citation format when referencing our paper:
 
