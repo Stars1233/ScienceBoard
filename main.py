@@ -18,15 +18,27 @@ gpt_4o = lambda cls: Automata(
     overflow_style="openai_gpt"
 )(cls)
 
+gpt_5 = lambda cls: Automata(
+    model_style="openai",
+    base_url="https://api.openai.com/v1/chat/completions",
+    model_name="gpt-5-2025-08-07",
+    api_key=os.environ["OPENAI_API_KEY"],
+    max_tokens=None,
+    top_p=None,
+    temperature=None,
+    reason_effort="high",
+    overflow_style="openai_gpt"
+)(cls)
+
 gpt_o3 = lambda cls: Automata(
     model_style="openai",
     base_url="https://api.openai.com/v1/chat/completions",
     model_name="o3-mini-2025-01-31",
     api_key=os.environ["OPENAI_API_KEY"],
     proxy=os.environ["HTTPX_PROXY"],
-    overflow_style="openai_gpt",
     max_tokens=None,
-    top_p=None
+    top_p=None,
+    overflow_style="openai_gpt"
 )(cls)
 
 gemini_2 = lambda cls: Automata(

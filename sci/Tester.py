@@ -77,6 +77,7 @@ class AutomataType(TypedDict):
     max_tokens: NotRequired[Optional[int]]
     top_p: NotRequired[Optional[float]]
     temperature: NotRequired[Optional[float]]
+    reason_effort: NotRequired[Optional[str]]
     overflow_style: NotRequired[Optional[str]]
     context_window: NotRequired[int]
     hide_text: NotRequired[bool]

@@ -154,7 +154,8 @@ class Model:
     version: Optional[str] = None
     max_tokens: Optional[int] = 1500
     top_p: Optional[float] = 0.9
-    temperature: Optional[float] = 0.5
+    temperature: Optional[float] = 0.5,
+    reason_effort: Optional[str] = None
 
     def message(
         self,
@@ -183,12 +184,14 @@ class Model:
             "messages": messages,
             "max_tokens": self.max_tokens,
             "top_p": self.top_p,
-            "temperature": self.temperature
+            "temperature": self.temperature,
+            "reasoning_effort": self.reason_effort
         }
 
-        if self.max_tokens is None:  del payload["max_tokens"]
-        if self.top_p is None:       del payload["top_p"]
-        if self.temperature is None: del payload["temperature"]
+        if self.max_tokens is None:    del payload["max_tokens"]
+        if self.top_p is None:         del payload["top_p"]
+        if self.temperature is None:   del payload["temperature"]
+        if self.reason_effort is None: del payload["reasoning_effort"]
 
         return requests.post(
             self.base_url,
