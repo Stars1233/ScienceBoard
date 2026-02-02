@@ -15,6 +15,7 @@ Code, environment and data for "ScienceBoard: Evaluating Multimodal Autonomous A
 
 ## 🗞️ Updates
 
+- **2026-01-26**: ScienceBoard is accepted by ICLR 2026! 🎉
 - **2025-08-28**: We release [CODA](https://arxiv.org/abs/2508.20096), a dual-brain agent that achieves SOTA on ScienceBoard. 🧠
 - **2025-06-30**: We release new evaluation results (GUI-Actor, UI-TARS-1.5) and [agent trajectories](https://huggingface.co/datasets/OS-Copilot/ScienceBoard-Traj/tree/main). 🎊
 - **2025-06-08**: ScienceBoard will be presented at [WCUA@ICML 2025](https://www.icml-computeruseagents.com/) as an oral paper! 🚀
